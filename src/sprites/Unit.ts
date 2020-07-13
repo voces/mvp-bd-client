@@ -141,8 +141,11 @@ class Unit extends Sprite {
 	walkTo(target: Point): void {
 		let updateProgress = 0;
 		let updateTicks = 0;
-		let renderProgress = 0;
 		let path = tweenPoints(this.round.pathingMap.path(this, target));
+
+		let start = this.game.time;
+		this.position.renderTween = (time: number) =>
+			path((time - start) * this.speed);
 
 		const update = (delta: number, retry = true) => {
 			updateTicks++;
@@ -177,7 +180,8 @@ class Unit extends Sprite {
 						this.round.pathingMap.path(this, target),
 					);
 					updateProgress = 0;
-					renderProgress = 0;
+
+					start = this.game.time;
 
 					if (!pathable && retry) update(delta, false);
 				}
@@ -186,17 +190,6 @@ class Unit extends Sprite {
 
 		this.activity = {
 			update,
-			render: (delta: number) => {
-				renderProgress += delta * this.speed;
-				if (this.html?.htmlElement) {
-					const { x, y } = path(renderProgress);
-
-					this.html.htmlElement.style.left =
-						(x - this.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-					this.html.htmlElement.style.top =
-						(y - this.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-				}
-			},
 			toJSON: () => ({
 				name: "walkTo",
 				path,

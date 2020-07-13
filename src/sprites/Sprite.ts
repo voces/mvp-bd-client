@@ -52,9 +52,14 @@ type Activity = {
 
 export type SpriteEvents = {
 	death: () => void;
+	remove: () => void;
 };
 
 class Sprite implements Emitter<SpriteEvents> {
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	static isSprite = (object: Object): object is Sprite =>
+		object instanceof Sprite;
+
 	game: Game;
 	radius: number;
 	id: number;
@@ -237,6 +242,7 @@ class Sprite implements Emitter<SpriteEvents> {
 	}
 
 	remove(): void {
+		this.dispatchEvent("remove");
 		this.removeEventListeners();
 		this.round.pathingMap.removeEntity(this);
 

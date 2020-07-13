@@ -1,8 +1,12 @@
-import { WORLD_TO_GRAPHICS_RATIO } from "../../constants.js";
 import { tweenPoints, PathTweener } from "../../util/tweenPoints.js";
 import { Unit } from "../Unit.js";
 import { Sprite } from "../Sprite.js";
 import { Point } from "../../pathing/PathingMap.js";
+import {
+	AttackTargetManager,
+	AttackTarget,
+} from "../../components/AttackTarget.js";
+import { MoveTargetManager, MoveTarget } from "../../components/MoveTarget.js";
 
 const isInRange = (attacker: Unit, target: Sprite) => {
 	if (!attacker.weapon) return false;
@@ -17,6 +21,35 @@ const isInRange = (attacker: Unit, target: Sprite) => {
 	);
 };
 
+class NoWeaponError extends Error {}
+class TargetTooFarError extends Error {}
+
+const attack2 = (attacker: Unit, target: Sprite): void => {
+	// We can't attack withouta  weapon
+	if (!attacker.weapon) throw new NoWeaponError();
+
+	// Attacker can't move and target is not in range; do nothing
+	if (!attacker.speed && isInRange(attacker, target))
+		throw new TargetTooFarError();
+
+	// const pathingMap = attacker.round.pathingMap;
+	// const path = tweenPoints(
+	// 	pathingMap.withoutEntity(target, () =>
+	// 		pathingMap.path(attacker, target.position),
+	// 	),
+	// );
+
+	AttackTargetManager.set(attacker, new AttackTarget(attacker, target));
+	MoveTargetManager.set(
+		attacker,
+		new MoveTarget({
+			entity: attacker,
+			target,
+			distance: attacker.weapon.range,
+		}),
+	);
+};
+
 export const attack = (attacker: Unit, target: Sprite): void => {
 	if (!attacker.weapon) return;
 
@@ -24,8 +57,8 @@ export const attack = (attacker: Unit, target: Sprite): void => {
 	let path: PathTweener;
 	let updateProgress = 0;
 	let updateTicks = 0;
-	let renderProgress = 0;
 	let renderedPosition: Point | undefined;
+	let start = 0;
 
 	// Attacker can't move and target is not in range; do nothing
 	if (!attacker.speed && !isInRange(attacker, target)) return;
@@ -45,9 +78,9 @@ export const attack = (attacker: Unit, target: Sprite): void => {
 			),
 		);
 
-		// We only render the attacker moving
-		attacker.activity.render = (delta) => {
-			if (!attacker.weapon) return;
+		start = attacker.game.time;
+		attacker.position.renderTween = (time: number) => {
+			if (!attacker.weapon) return attacker.position;
 
 			const range =
 				attacker.weapon.range + attacker.radius + target.radius;
@@ -56,7 +89,7 @@ export const attack = (attacker: Unit, target: Sprite): void => {
 					(target.position.y - attacker.position.y) ** 2,
 			);
 			// If we're attacking, we don't need to animate movement
-			if (realDistanceToTarget < range) return;
+			if (realDistanceToTarget < range) return attacker.position;
 
 			// If we're rendered as near enough, no need to animate movement
 			const pos = renderedPosition || attacker.position;
@@ -64,10 +97,9 @@ export const attack = (attacker: Unit, target: Sprite): void => {
 				(target.position.x - pos.x) ** 2 +
 					(target.position.y - pos.y) ** 2,
 			);
-			if (renderedDistanceToTarget < range) return;
+			if (renderedDistanceToTarget < range) return attacker.position;
 
-			renderProgress += delta * attacker.speed;
-			let { x, y } = path(renderProgress);
+			let { x, y } = path((time - start) * attacker.speed);
 
 			const distanceToTarget = Math.sqrt(
 				(target.position.x - x) ** 2 + (target.position.y - y) ** 2,
@@ -79,12 +111,8 @@ export const attack = (attacker: Unit, target: Sprite): void => {
 			}
 
 			renderedPosition = { x, y };
-			if (attacker.html?.htmlElement) {
-				attacker.html.htmlElement.style.left =
-					(x - attacker.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-				attacker.html.htmlElement.style.top =
-					(y - attacker.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-			}
+
+			return renderedPosition;
 		};
 	}
 
@@ -171,8 +199,8 @@ export const attack = (attacker: Unit, target: Sprite): void => {
 				);
 
 				updateProgress = 0;
-				renderProgress = 0;
 				renderedPosition = undefined;
+				start = attacker.game.time;
 
 				if (!pathable && retry) update(delta, false);
 			}

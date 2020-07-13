@@ -24,8 +24,8 @@ type HTMLEntity = Sprite & {
 export type EntityElement = HTMLDivElement & { sprite: HTMLEntity };
 
 class HTMLGraphics extends System<HTMLEntity> {
-	dirty: Set<HTMLEntity> = new Set();
 	entityData: Map<HTMLEntity, () => void> = new Map();
+	protected dirty = new Set<HTMLEntity>();
 
 	test(entity: Sprite): entity is HTMLEntity {
 		return !!entity.html;
@@ -77,18 +77,31 @@ class HTMLGraphics extends System<HTMLEntity> {
 		}
 	}
 
-	postRender(): void {
-		for (const entity of this.dirty) {
-			const elem = entity.html.htmlElement;
+	render(entity: HTMLEntity, delta: number, time: number): void {
+		const elem = entity.html.htmlElement;
+		// console.log("render", entity);
+		if (!elem) return;
 
-			if (!elem) return;
+		// If we have a tween, we should use that and continue to consider
+		// the entity dirty
+		if (entity.position.renderTween) {
+			const { x, y } = entity.position.renderTween(time);
 			elem.style.left =
-				(entity.position.x - entity.radius) * WORLD_TO_GRAPHICS_RATIO +
-				"px";
+				(x - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
 			elem.style.top =
-				(entity.position.y - entity.radius) * WORLD_TO_GRAPHICS_RATIO +
-				"px";
+				(y - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
+			return;
 		}
+
+		// Otherwise update the rendering position and mark clean
+		elem.style.left =
+			(entity.position.x - entity.radius) * WORLD_TO_GRAPHICS_RATIO +
+			"px";
+		elem.style.top =
+			(entity.position.y - entity.radius) * WORLD_TO_GRAPHICS_RATIO +
+			"px";
+
+		this.dirty.delete(entity);
 	}
 }
 

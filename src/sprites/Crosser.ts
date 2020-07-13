@@ -1,4 +1,3 @@
-import { WORLD_TO_GRAPHICS_RATIO } from "../constants.js";
 import { tweenPoints } from "../util/tweenPoints.js";
 import { Unit, UnitProps } from "./Unit.js";
 import { dragSelect } from "./dragSelect.js";
@@ -79,8 +78,13 @@ export class Crosser extends Unit {
 	buildAt(target: Point, ObstructionClass: ObstructionSubclass): void {
 		let updateProgress = 0;
 		let updateTicks = 0;
-		let renderProgress = 0;
+
 		let path = tweenPoints(this.round.pathingMap.path(this, target));
+
+		let start = this.game.time;
+		this.position.renderTween = (time: number) =>
+			path((time - start) * this.speed);
+
 		const blueprint =
 			this.owner === this.game.localPlayer
 				? new Blueprint({
@@ -175,7 +179,8 @@ export class Crosser extends Unit {
 						this.round.pathingMap.path(this, target),
 					);
 					updateProgress = 0;
-					renderProgress = 0;
+
+					start = this.game.time;
 
 					if (!pathable && retry) update(delta, false);
 				}
@@ -184,17 +189,6 @@ export class Crosser extends Unit {
 
 		this.activity = {
 			update,
-			render: (delta) => {
-				renderProgress += delta * this.speed;
-				if (this.html?.htmlElement) {
-					const { x, y } = path(renderProgress);
-
-					this.html.htmlElement.style.left =
-						(x - this.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-					this.html.htmlElement.style.top =
-						(y - this.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-				}
-			},
 			cleanup: () =>
 				blueprint && blueprint.kill({ removeImmediately: true }),
 			toJSON: () => ({
