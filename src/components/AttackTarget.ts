@@ -1,7 +1,7 @@
-import { Point } from "../pathing/PathingMap";
-import { Sprite } from "../sprites/Sprite";
-import { Component } from "../core/Component";
-import { ComponentManager } from "../core/ComponentManager";
+import { Point } from "../pathing/PathingMap.js";
+import { Sprite } from "../sprites/Sprite.js";
+import { Component } from "../core/Component.js";
+import { ComponentManager } from "../core/ComponentManager.js";
 
 export class AttackTarget extends Component {
 	target: Point | Sprite;
@@ -12,4 +12,6 @@ export class AttackTarget extends Component {
 	}
 }
 
-export const AttackTargetManager = new ComponentManager<AttackTarget>();
+export const AttackTargetManager = new ComponentManager<AttackTarget>(
+	AttackTarget,
+);

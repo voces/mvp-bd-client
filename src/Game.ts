@@ -16,6 +16,7 @@ import { initPlayerLogic } from "./players/playerLogic.js";
 import { initSpriteLogicListeners } from "./sprites/spriteLogic.js";
 import { App } from "./core/App.js";
 import { HTMLGraphics } from "./systems/HTMLGraphics.js";
+import { MoveSystem } from "./systems/MoveSystem.js";
 
 const tilesElemnt = document.getElementById("tiles")!;
 
@@ -66,6 +67,7 @@ class Game extends App {
 		super();
 		emitter(this);
 		this.addSystem(new HTMLGraphics());
+		this.addSystem(new MoveSystem());
 
 		this.network = network;
 		this.addNetworkListener = this.network.addEventListener.bind(

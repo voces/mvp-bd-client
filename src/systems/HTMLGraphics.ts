@@ -2,6 +2,8 @@ import { document } from "../util/globals.js";
 import { System } from "../core/System.js";
 import { WORLD_TO_GRAPHICS_RATIO } from "../constants.js";
 import { Sprite } from "../sprites/Sprite.js";
+import { MoveTargetManager } from "../components/MoveTarget.js";
+import { Unit } from "../sprites/Unit.js";
 
 // TODO: abstract dom into a class
 const arenaElement = document.getElementById("arena")!;
@@ -24,7 +26,10 @@ type HTMLEntity = Sprite & {
 export type EntityElement = HTMLDivElement & { sprite: HTMLEntity };
 
 class HTMLGraphics extends System<HTMLEntity> {
-	entityData: Map<HTMLEntity, () => void> = new Map();
+	entityData: Map<
+		HTMLEntity,
+		{ onRemoveListener: () => void; renderProgress: number }
+	> = new Map();
 	protected dirty = new Set<HTMLEntity>();
 
 	test(entity: Sprite): entity is HTMLEntity {
@@ -63,16 +68,22 @@ class HTMLGraphics extends System<HTMLEntity> {
 
 		const listener = () => this.dirty.add(entity);
 		entity.position.addEventListener("change", listener);
-		this.entityData.set(entity, listener);
+		this.entityData.set(entity, {
+			onRemoveListener: listener,
+			renderProgress: 0,
+		});
 	}
 
 	onRemoveEntity(entity: HTMLEntity): void {
 		if (!entity.html.htmlElement) return;
 
 		arenaElement.removeChild(entity.html.htmlElement);
-		const listener = this.entityData.get(entity);
-		if (listener) {
-			entity.position.removeEventListener("change", listener);
+		const data = this.entityData.get(entity);
+		if (data) {
+			entity.position.removeEventListener(
+				"change",
+				data.onRemoveListener,
+			);
 			this.entityData.delete(entity);
 		}
 	}
@@ -91,6 +102,21 @@ class HTMLGraphics extends System<HTMLEntity> {
 			elem.style.top =
 				(y - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
 			return;
+		}
+
+		const moveTarget = MoveTargetManager.get(entity);
+
+		if (moveTarget && Unit.isUnit(entity)) {
+			const data = this.entityData.get(entity);
+			if (data) {
+				data.renderProgress += entity.speed * delta;
+				const { x, y } = moveTarget.path(data.renderProgress);
+				elem.style.left =
+					(x - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
+				elem.style.top =
+					(y - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
+				return;
+			}
 		}
 
 		// Otherwise update the rendering position and mark clean

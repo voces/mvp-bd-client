@@ -1,14 +1,14 @@
-import { Point } from "../pathing/PathingMap";
-import { Sprite } from "../sprites/Sprite";
+import { Point } from "../pathing/PathingMap.js";
+import { Sprite } from "../sprites/Sprite.js";
 import {
 	PathTweener,
 	tweenPoints,
 	distanceBetweenPoints,
 	shortenPath,
 	calcAndTweenShortenedPath,
-} from "../util/tweenPoints";
-import { Component } from "../core/Component";
-import { ComponentManager } from "../core/ComponentManager";
+} from "../util/tweenPoints.js";
+import { Component } from "../core/Component.js";
+import { ComponentManager } from "../core/ComponentManager.js";
 
 export class MoveTarget extends Component {
 	target: Point | Sprite;

@@ -24,20 +24,20 @@ const isInRange = (attacker: Unit, target: Sprite) => {
 class NoWeaponError extends Error {}
 class TargetTooFarError extends Error {}
 
-const attack2 = (attacker: Unit, target: Sprite): void => {
-	// We can't attack withouta  weapon
+export const attack = (attacker: Unit, target: Sprite): void => {
+	// We can't attack without a weapon
 	if (!attacker.weapon) throw new NoWeaponError();
+
+	const pathingMap = attacker.round.pathingMap;
+	let path: PathTweener;
+	let updateProgress = 0;
+	let updateTicks = 0;
+	let renderedPosition: Point | undefined;
+	let start = 0;
 
 	// Attacker can't move and target is not in range; do nothing
 	if (!attacker.speed && isInRange(attacker, target))
 		throw new TargetTooFarError();
-
-	// const pathingMap = attacker.round.pathingMap;
-	// const path = tweenPoints(
-	// 	pathingMap.withoutEntity(target, () =>
-	// 		pathingMap.path(attacker, target.position),
-	// 	),
-	// );
 
 	AttackTargetManager.set(attacker, new AttackTarget(attacker, target));
 	MoveTargetManager.set(
@@ -48,20 +48,6 @@ const attack2 = (attacker: Unit, target: Sprite): void => {
 			distance: attacker.weapon.range,
 		}),
 	);
-};
-
-export const attack = (attacker: Unit, target: Sprite): void => {
-	if (!attacker.weapon) return;
-
-	const pathingMap = attacker.round.pathingMap;
-	let path: PathTweener;
-	let updateProgress = 0;
-	let updateTicks = 0;
-	let renderedPosition: Point | undefined;
-	let start = 0;
-
-	// Attacker can't move and target is not in range; do nothing
-	if (!attacker.speed && !isInRange(attacker, target)) return;
 
 	attacker.activity = {
 		toJSON: () => ({
@@ -116,7 +102,7 @@ export const attack = (attacker: Unit, target: Sprite): void => {
 		};
 	}
 
-	const update = (delta: number, retry = true) => {
+	const update = (delta: number) => {
 		if (!attacker.weapon) {
 			attacker.activity = undefined;
 			return;
@@ -175,35 +161,6 @@ export const attack = (attacker: Unit, target: Sprite): void => {
 			attacker.position.setXY(x, y);
 
 			renderedPosition = undefined;
-		} else if (attacker.speed) {
-			// Update self
-			const pathable = pathingMap.pathable(attacker, x, y);
-			if (pathable) attacker.position.setXY(x, y);
-
-			// Recheck path, start a new one periodically or if check fails
-			if (
-				!pathable ||
-				updateTicks % 5 === 0 ||
-				!pathingMap.withoutEntity(target, () =>
-					pathingMap.recheck(
-						path.points,
-						attacker,
-						delta * attacker.speed * 6,
-					),
-				)
-			) {
-				path = tweenPoints(
-					pathingMap.withoutEntity(target, () =>
-						pathingMap.path(attacker, target.position),
-					),
-				);
-
-				updateProgress = 0;
-				renderedPosition = undefined;
-				start = attacker.game.time;
-
-				if (!pathable && retry) update(delta, false);
-			}
 		}
 	};
 

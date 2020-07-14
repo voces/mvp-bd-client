@@ -1,5 +1,5 @@
 import { Sprite } from "../sprites/Sprite.js";
-import { Component } from "./Component.js";
+import { ComponentConstructor } from "./Component.js";
 
 type SystemEvents = {
 	add: (entity: Sprite) => void;
@@ -12,7 +12,7 @@ abstract class System<T extends Sprite = Sprite> {
 	private _callbacks: Map<Sprite, { removeListener: () => void }> = new Map();
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static components: typeof Component[] = [];
+	static components: ComponentConstructor<any>[] = [];
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	test(entity: Sprite | T): entity is T {

@@ -2,7 +2,7 @@ import { AnySystem, System } from "./System.js";
 import { Mechanism } from "./Merchanism.js";
 import { Sprite } from "../sprites/Sprite.js";
 import { requestAnimationFrame } from "../util/globals.js";
-import { Component } from "./Component.js";
+import { ComponentConstructor } from "./Component.js";
 
 class App {
 	private systems: AnySystem[] = [];
@@ -10,7 +10,11 @@ class App {
 	private lastRender = 0;
 	private requestedAnimationFrame?: number;
 	private _time = 0;
-	private componentUpdateMap = new Map<typeof Component, AnySystem[]>();
+	private componentUpdateMap = new Map<
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		ComponentConstructor<any>,
+		AnySystem[]
+	>();
 	// TODO: make this private!
 	lastUpdate = 0;
 
@@ -65,9 +69,10 @@ class App {
 	 * Should be called when an entity's component is updated. This will trigger
 	 * the checking of systems that care about the component.
 	 */
-	entityComponentUpdated<T extends typeof Component>(
+	entityComponentUpdated(
 		entity: Sprite,
-		component: T,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		component: ComponentConstructor<any>,
 	): void {
 		const arr = this.componentUpdateMap.get(component);
 		if (!arr) return;

@@ -7,3 +7,8 @@ export class Component<T extends Sprite = Sprite> {
 		this.entity = entity;
 	}
 }
+
+export type ComponentConstructor<T extends Component> = new (
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	...args: any[]
+) => T;

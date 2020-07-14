@@ -1,13 +1,13 @@
-import { Component } from "./Component.js";
+import { Component, ComponentConstructor } from "./Component.js";
 import { Sprite } from "../sprites/Sprite.js";
 
 export class ComponentManager<T extends Component> {
 	private map = new WeakMap<Sprite, T>();
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private component: new (...args: any[]) => T;
+	private component: ComponentConstructor<T>;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	constructor(componentConstructor: new (...args: any[]) => T) {
+	constructor(componentConstructor: ComponentConstructor<T>) {
 		this.component = componentConstructor;
 	}
 
