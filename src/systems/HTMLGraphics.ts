@@ -26,10 +26,7 @@ type HTMLEntity = Sprite & {
 export type EntityElement = HTMLDivElement & { sprite: HTMLEntity };
 
 class HTMLGraphics extends System<HTMLEntity> {
-	entityData: Map<
-		HTMLEntity,
-		{ onRemoveListener: () => void; renderProgress: number }
-	> = new Map();
+	entityData: Map<HTMLEntity, { onRemoveListener: () => void }> = new Map();
 	protected dirty = new Set<HTMLEntity>();
 
 	test(entity: Sprite): entity is HTMLEntity {
@@ -66,12 +63,9 @@ class HTMLGraphics extends System<HTMLEntity> {
 
 		arenaElement.appendChild(elem);
 
-		const listener = () => this.dirty.add(entity);
-		entity.position.addEventListener("change", listener);
-		this.entityData.set(entity, {
-			onRemoveListener: listener,
-			renderProgress: 0,
-		});
+		const onRemoveListener = () => this.dirty.add(entity);
+		entity.position.addEventListener("change", onRemoveListener);
+		this.entityData.set(entity, { onRemoveListener });
 	}
 
 	onRemoveEntity(entity: HTMLEntity): void {
@@ -90,8 +84,19 @@ class HTMLGraphics extends System<HTMLEntity> {
 
 	render(entity: HTMLEntity, delta: number, time: number): void {
 		const elem = entity.html.htmlElement;
-		// console.log("render", entity);
 		if (!elem) return;
+
+		const moveTarget = MoveTargetManager.get(entity);
+
+		if (moveTarget && Unit.isUnit(entity)) {
+			moveTarget.renderProgress += entity.speed * delta;
+			const { x, y } = moveTarget.path(moveTarget.renderProgress);
+			elem.style.left =
+				(x - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
+			elem.style.top =
+				(y - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
+			return;
+		}
 
 		// If we have a tween, we should use that and continue to consider
 		// the entity dirty
@@ -102,21 +107,6 @@ class HTMLGraphics extends System<HTMLEntity> {
 			elem.style.top =
 				(y - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
 			return;
-		}
-
-		const moveTarget = MoveTargetManager.get(entity);
-
-		if (moveTarget && Unit.isUnit(entity)) {
-			const data = this.entityData.get(entity);
-			if (data) {
-				data.renderProgress += entity.speed * delta;
-				const { x, y } = moveTarget.path(data.renderProgress);
-				elem.style.left =
-					(x - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-				elem.style.top =
-					(y - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-				return;
-			}
 		}
 
 		// Otherwise update the rendering position and mark clean

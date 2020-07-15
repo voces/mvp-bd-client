@@ -1,7 +1,6 @@
 import { System } from "../core/System.js";
 import { MoveTargetManager, MoveTarget } from "../components/MoveTarget.js";
 import { Sprite } from "../sprites/Sprite.js";
-import { calcAndTweenShortenedPath } from "../util/tweenPoints.js";
 import { Unit } from "../sprites/Unit.js";
 import { PathingMap, Point } from "../pathing/PathingMap.js";
 
@@ -18,60 +17,51 @@ const withoutTarget = <A>(
 export class MoveSystem extends System<Unit> {
 	static components = [MoveTarget];
 
-	private data = new WeakMap<Sprite, { ticks: number; progress: number }>();
-
 	test(entity: Sprite): entity is Unit {
 		return MoveTargetManager.has(entity) && entity instanceof Unit;
 	}
 
-	onAddEntity(entity: Unit): void {
-		this.data.set(entity, { ticks: 0, progress: 0 });
-	}
-
 	update(entity: Unit, delta: number, time: number, retry = true): void {
 		const moveTarget = MoveTargetManager.get(entity);
-		const data = this.data.get(entity);
 
-		if (!moveTarget || !data) this.remove(entity);
-		else {
-			const pathingMap = entity.round.pathingMap;
+		if (!moveTarget) return this.remove(entity);
 
-			// Move
-			data.progress += delta * entity.speed;
-			const { x, y } = moveTarget.path(data.progress);
+		const pathingMap = entity.round.pathingMap;
 
-			// Validate data
-			if (isNaN(x) || isNaN(y)) {
-				MoveTargetManager.delete(entity);
-				throw new Error(`Returning NaN location x=${x} y=${y}`);
-			}
+		// Move
+		moveTarget.progress += delta * entity.speed;
+		const { x, y } = moveTarget.path(moveTarget.progress);
 
-			// Update self
-			const pathable = pathingMap.pathable(entity, x, y);
-			if (pathable) entity.position.setXY(x, y);
+		// Validate data
+		if (isNaN(x) || isNaN(y)) {
+			MoveTargetManager.delete(entity);
+			throw new Error(`Returning NaN location x=${x} y=${y}`);
+		}
 
-			// Recheck path, start a new one periodically or if check fails
-			if (
-				!pathable ||
-				data.ticks % 5 === 0 ||
-				!withoutTarget(pathingMap, moveTarget.target, () =>
-					pathingMap.recheck(
-						moveTarget.path.points,
-						entity,
-						delta * entity.speed * 6,
-					),
-				)
-			) {
-				moveTarget.path = calcAndTweenShortenedPath(
+		// Update self
+		const pathable = pathingMap.pathable(entity, x, y);
+		if (pathable) entity.position.setXY(x, y);
+
+		if (moveTarget.path.distance === 0) {
+			entity.activity = undefined;
+			MoveTargetManager.delete(entity);
+		}
+
+		// Recheck path, start a new one periodically or if check fails
+		if (
+			!pathable ||
+			moveTarget.ticks % 5 === 0 ||
+			!withoutTarget(pathingMap, moveTarget.target, () =>
+				pathingMap.recheck(
+					moveTarget.path.points,
 					entity,
-					moveTarget.target,
-					moveTarget.distance,
-				);
+					delta * entity.speed * 6,
+				),
+			)
+		) {
+			moveTarget.recalc();
 
-				data.progress = 0;
-
-				if (!pathable && retry) this.update(entity, delta, time, false);
-			}
+			if (!pathable && retry) this.update(entity, delta, time, false);
 		}
 	}
 }

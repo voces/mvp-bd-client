@@ -12,6 +12,8 @@ import {
 	active as activeObstructionPlacement,
 	stop as hideObstructionPlacement,
 } from "./obstructionPlacement.js";
+import { MoveTargetManager } from "../components/MoveTarget.js";
+import { AttackTargetManager } from "../components/AttackTarget.js";
 
 const holdPosition: Action = {
 	name: "Hold Position",
@@ -201,10 +203,14 @@ class Unit extends Sprite {
 
 	holdPosition(): void {
 		this.activity = { toJSON: () => ({ name: "hold" }) };
+		MoveTargetManager.delete(this);
+		AttackTargetManager.delete(this);
 	}
 
 	stop(): void {
 		this.activity = undefined;
+		MoveTargetManager.delete(this);
+		AttackTargetManager.delete(this);
 	}
 
 	get actions(): Action[] {

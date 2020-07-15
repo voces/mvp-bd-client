@@ -22,6 +22,7 @@ import {
 } from "./obstructions/index.js";
 import { Blueprint } from "./obstructions/Blueprint.js";
 import { Action } from "./spriteLogic.js";
+import { MoveTargetManager, MoveTarget } from "../components/MoveTarget.js";
 
 const destroyLastBox: Action = {
 	name: "Destroy box",
@@ -81,9 +82,14 @@ export class Crosser extends Unit {
 
 		let path = tweenPoints(this.round.pathingMap.path(this, target));
 
-		let start = this.game.time;
-		this.position.renderTween = (time: number) =>
-			path((time - start) * this.speed);
+		MoveTargetManager.set(
+			this,
+			new MoveTarget({
+				entity: this,
+				target,
+				distance: BUILD_DISTANCE,
+			}),
+		);
 
 		const blueprint =
 			this.owner === this.game.localPlayer
@@ -102,6 +108,7 @@ export class Crosser extends Unit {
 			const { x, y } = path(updateProgress);
 			if (isNaN(x) || isNaN(y)) {
 				this.activity = undefined;
+				MoveTargetManager.delete(this);
 				throw new Error(`Returning NaN location x=${x} y=${y}`);
 			}
 
@@ -110,6 +117,7 @@ export class Crosser extends Unit {
 			);
 			if (distanceRemaining < BUILD_DISTANCE) {
 				this.activity = undefined;
+				MoveTargetManager.delete(this);
 
 				if (ObstructionClass.defaults.cost) {
 					const check = this.owner.checkResources(
@@ -158,6 +166,7 @@ export class Crosser extends Unit {
 				updateProgress < BUILD_DISTANCE
 			) {
 				this.activity = undefined;
+				MoveTargetManager.delete(this);
 				this.position.setXY(x, y);
 			} else {
 				// Update self
@@ -179,8 +188,6 @@ export class Crosser extends Unit {
 						this.round.pathingMap.path(this, target),
 					);
 					updateProgress = 0;
-
-					start = this.game.time;
 
 					if (!pathable && retry) update(delta, false);
 				}
