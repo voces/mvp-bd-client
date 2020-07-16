@@ -271,17 +271,27 @@ export const calcAndTweenShortenedPath = (
 	entity: Sprite,
 	target: Point | Sprite,
 	distanceToShorten: number,
-): PathTweener =>
-	tweenPoints(
-		Sprite.isSprite(target)
-			? entity.round.pathingMap.withoutEntity(target, () =>
-					shortenPath(
-						entity.round.pathingMap.path(entity, target.position),
-						distanceToShorten,
-					),
-			  )
-			: shortenPath(
-					entity.round.pathingMap.path(entity, target),
-					distanceToShorten,
-			  ),
-	);
+): PathTweener => {
+	// Normalize the target
+	const targetPoint = Sprite.isSprite(target) ? target.position : target;
+
+	// Calculate the path, which may not get to the target
+	const path = Sprite.isSprite(target)
+		? entity.round.pathingMap.withoutEntity(target, () =>
+				entity.round.pathingMap.path(entity, targetPoint),
+		  )
+		: entity.round.pathingMap.path(entity, targetPoint);
+
+	// Check how far we are away from the target and get remaining distance
+	// E.g., if we don't make it to the target, we don't need to shorten (as
+	// much).
+	const end = path[path.length - 1];
+	const remainingDistance =
+		distanceToShorten - distanceBetweenPoints(end, targetPoint);
+
+	// We are a far distance from the target; don't shorten at all
+	if (remainingDistance < 0) return tweenPoints(path);
+
+	// We're close, so shorten
+	return tweenPoints(shortenPath(path, remainingDistance));
+};

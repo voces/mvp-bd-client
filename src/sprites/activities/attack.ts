@@ -13,8 +13,9 @@ const isInRange = (attacker: Unit, target: Sprite) => {
 		(target.position.x - attacker.position.x) ** 2 +
 			(target.position.y - attacker.position.y) ** 2,
 	);
+
 	return (
-		distanceToTarget <
+		distanceToTarget <=
 		attacker.weapon.range + attacker.radius + target.radius
 	);
 };
@@ -36,62 +37,55 @@ export const attack = (attacker: Unit, target: Sprite): void => {
 		new MoveTarget({
 			entity: attacker,
 			target,
-			distance: attacker.weapon.range,
+			distance: attacker.radius + attacker.weapon.range + target.radius,
 		}),
 	);
 
 	attacker.activity = {
+		update: () => {
+			if (!attacker.weapon) {
+				attacker.activity = undefined;
+				MoveTargetManager.delete(attacker);
+				return;
+			}
+
+			if (target.health <= 0) {
+				attacker.activity = undefined;
+				MoveTargetManager.delete(attacker);
+				return;
+			}
+
+			// Not within range and not in cooldown
+			if (
+				!isInRange(attacker, target) ||
+				attacker.weapon.last + attacker.weapon.cooldown >
+					attacker.round.lastUpdate
+			)
+				return;
+
+			if (attacker.weapon.projectile === "instant") {
+				const damage = attacker.isIllusion ? 0 : attacker.weapon.damage;
+				const actualDamage = target.damage(damage);
+				if (attacker.weapon.onDamage)
+					attacker.weapon.onDamage(target, actualDamage, attacker);
+
+				if (target.health <= 0) {
+					attacker.activity = undefined;
+					MoveTargetManager.delete(attacker);
+				}
+			} else attacker.weapon.projectile(target, attacker);
+
+			if (attacker.html?.htmlElement)
+				attacker.html.htmlElement.classList.add("attack");
+			attacker.round.setTimeout(
+				() => attacker.html?.htmlElement?.classList.remove("attack"),
+				0.25,
+			);
+			attacker.weapon.last = attacker.round.lastUpdate;
+		},
 		toJSON: () => ({
 			name: "attack",
 			target: target.id,
 		}),
 	};
-
-	const update = () => {
-		if (!attacker.weapon) {
-			attacker.activity = undefined;
-			MoveTargetManager.delete(attacker);
-			return;
-		}
-
-		if (target.health <= 0) {
-			attacker.activity = undefined;
-			MoveTargetManager.delete(attacker);
-			return;
-		}
-
-		// Within range to attack
-		if (isInRange(attacker, target))
-			if (
-				attacker.weapon.last + attacker.weapon.cooldown <
-				attacker.round.lastUpdate
-			) {
-				// Not on cooldown
-				if (attacker.weapon.projectile === "instant") {
-					const damage = attacker.isIllusion
-						? 0
-						: attacker.weapon.damage;
-					const actualDamage = target.damage(damage);
-					if (attacker.weapon.onDamage)
-						attacker.weapon.onDamage(
-							target,
-							actualDamage,
-							attacker,
-						);
-
-					if (target.health <= 0) attacker.activity = undefined;
-				} else attacker.weapon.projectile(target, attacker);
-
-				if (attacker.html?.htmlElement)
-					attacker.html.htmlElement.classList.add("attack");
-				attacker.round.setTimeout(
-					() =>
-						attacker.html?.htmlElement?.classList.remove("attack"),
-					0.25,
-				);
-				attacker.weapon.last = attacker.round.lastUpdate;
-			}
-	};
-
-	attacker.activity.update = update;
 };

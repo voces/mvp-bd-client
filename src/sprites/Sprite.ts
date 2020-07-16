@@ -77,6 +77,7 @@ class Sprite implements Emitter<SpriteEvents> {
 	_selected = false;
 	_health!: number;
 	color?: string;
+	selectable: boolean;
 
 	// components
 	html?: HTMLComponent;
@@ -139,12 +140,12 @@ class Sprite implements Emitter<SpriteEvents> {
 		this.owner = owner;
 		this.facing = facing;
 		this.color = color;
+		this.selectable = selectable;
 		// todo:
 		Object.assign(this, { html: {} });
 		this.position = new Position(x, y);
 
-		if (selectable) dragSelect.addSelectables([this]);
-		else this.html?.htmlElement?.classList.add("doodad");
+		if (!selectable) this.html?.htmlElement?.classList.add("doodad");
 
 		// Lists
 		if (this.owner) this.owner.sprites.push(this);

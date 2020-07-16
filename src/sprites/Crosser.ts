@@ -1,4 +1,3 @@
-import { tweenPoints } from "../util/tweenPoints.js";
 import { Unit, UnitProps } from "./Unit.js";
 import { dragSelect } from "./dragSelect.js";
 import {
@@ -46,7 +45,7 @@ const destroyLastBox: Action = {
 	},
 };
 
-// Math.SQRT2 (~1.41) allows building tinies across diag space
+// Inclusive of unit radius, allowing for "jumping"
 const BUILD_DISTANCE = 1.4;
 
 export class Crosser extends Unit {
@@ -77,19 +76,13 @@ export class Crosser extends Unit {
 	}
 
 	buildAt(target: Point, ObstructionClass: ObstructionSubclass): void {
-		let updateProgress = 0;
-		let updateTicks = 0;
+		const moveTarget = new MoveTarget({
+			entity: this,
+			target,
+			distance: BUILD_DISTANCE - 1e-7,
+		});
 
-		let path = tweenPoints(this.round.pathingMap.path(this, target));
-
-		MoveTargetManager.set(
-			this,
-			new MoveTarget({
-				entity: this,
-				target,
-				distance: BUILD_DISTANCE,
-			}),
-		);
+		MoveTargetManager.set(this, moveTarget);
 
 		const blueprint =
 			this.owner === this.game.localPlayer
@@ -100,17 +93,8 @@ export class Crosser extends Unit {
 				  })
 				: undefined;
 
-		const update = (delta: number, retry = true) => {
-			updateTicks++;
-
-			const stepProgress = delta * this.speed;
-			updateProgress += stepProgress;
-			const { x, y } = path(updateProgress);
-			if (isNaN(x) || isNaN(y)) {
-				this.activity = undefined;
-				MoveTargetManager.delete(this);
-				throw new Error(`Returning NaN location x=${x} y=${y}`);
-			}
+		const update = () => {
+			const { x, y } = this.position;
 
 			const distanceRemaining = Math.sqrt(
 				(x - target.x) ** 2 + (y - target.y) ** 2,
@@ -151,7 +135,6 @@ export class Crosser extends Unit {
 						this.obstructions.push(obstruction);
 					} else obstruction.kill({ removeImmediately: true });
 
-					const { x, y } = path.radialStepBack(BUILD_DISTANCE);
 					const newPos = this.round.pathingMap.nearestSpiralPathing(
 						x,
 						y,
@@ -159,38 +142,6 @@ export class Crosser extends Unit {
 					);
 					this.position.setXY(newPos.x, newPos.y);
 				});
-
-				// We're never going to get there
-			} else if (
-				path.distance < updateProgress &&
-				updateProgress < BUILD_DISTANCE
-			) {
-				this.activity = undefined;
-				MoveTargetManager.delete(this);
-				this.position.setXY(x, y);
-			} else {
-				// Update self
-				const pathable = this.round.pathingMap.pathable(this, x, y);
-				if (pathable) this.position.setXY(x, y);
-
-				// Recheck path, start a new one periodically or if check
-				// fails
-				if (
-					!pathable ||
-					updateTicks % 5 === 0 ||
-					!this.round.pathingMap.recheck(
-						path.points,
-						this,
-						delta * this.speed * 6,
-					)
-				) {
-					path = tweenPoints(
-						this.round.pathingMap.path(this, target),
-					);
-					updateProgress = 0;
-
-					if (!pathable && retry) update(delta, false);
-				}
 			}
 		};
 
@@ -202,8 +153,8 @@ export class Crosser extends Unit {
 				name: "buildAt",
 				obstruction: Obstruction.name,
 				target,
-				path,
-				ticks: updateTicks,
+				path: moveTarget.path,
+				ticks: moveTarget.ticks,
 			}),
 		};
 	}

@@ -4,6 +4,7 @@ import { WORLD_TO_GRAPHICS_RATIO } from "../constants.js";
 import { Sprite } from "../sprites/Sprite.js";
 import { MoveTargetManager } from "../components/MoveTarget.js";
 import { Unit } from "../sprites/Unit.js";
+import { dragSelect } from "../sprites/dragSelect.js";
 
 // TODO: abstract dom into a class
 const arenaElement = document.getElementById("arena")!;
@@ -66,6 +67,8 @@ class HTMLGraphics extends System<HTMLEntity> {
 		const onRemoveListener = () => this.dirty.add(entity);
 		entity.position.addEventListener("change", onRemoveListener);
 		this.entityData.set(entity, { onRemoveListener });
+
+		if (entity.selectable) dragSelect.addSelectables([entity]);
 	}
 
 	onRemoveEntity(entity: HTMLEntity): void {

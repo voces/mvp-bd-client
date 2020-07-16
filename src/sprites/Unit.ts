@@ -1,6 +1,5 @@
 import { dragSelect } from "./dragSelect.js";
 import { WORLD_TO_GRAPHICS_RATIO } from "../constants.js";
-import { tweenPoints } from "../util/tweenPoints.js";
 import { Sprite, SpriteProps, SpriteEvents } from "./Sprite.js";
 import { Point } from "../pathing/PathingMap.js";
 import { Player } from "../players/Player.js";
@@ -12,7 +11,7 @@ import {
 	active as activeObstructionPlacement,
 	stop as hideObstructionPlacement,
 } from "./obstructionPlacement.js";
-import { MoveTargetManager } from "../components/MoveTarget.js";
+import { MoveTargetManager, MoveTarget } from "../components/MoveTarget.js";
 import { AttackTargetManager } from "../components/AttackTarget.js";
 
 const holdPosition: Action = {
@@ -141,64 +140,8 @@ class Unit extends Sprite {
 	}
 
 	walkTo(target: Point): void {
-		let updateProgress = 0;
-		let updateTicks = 0;
-		let path = tweenPoints(this.round.pathingMap.path(this, target));
-
-		let start = this.game.time;
-		this.position.renderTween = (time: number) =>
-			path((time - start) * this.speed);
-
-		const update = (delta: number, retry = true) => {
-			updateTicks++;
-
-			const stepProgress = delta * this.speed;
-			updateProgress += stepProgress;
-			const { x, y } = path(updateProgress);
-			if (isNaN(x) || isNaN(y)) {
-				this.activity = undefined;
-				throw new Error(`Returning NaN location x=${x} y=${y}`);
-			}
-
-			if (path.distance < updateProgress) {
-				this.position.setXY(x, y);
-				this.activity = undefined;
-			} else {
-				// Update self
-				const pathable = this.round.pathingMap.pathable(this, x, y);
-				if (pathable) this.position.setXY(x, y);
-
-				if (
-					!pathable ||
-					updateTicks % 5 === 0 ||
-					!this.round.pathingMap.recheck(
-						path.points,
-						this,
-						delta * this.speed * 6,
-					)
-				) {
-					// Start new walk path
-					path = tweenPoints(
-						this.round.pathingMap.path(this, target),
-					);
-					updateProgress = 0;
-
-					start = this.game.time;
-
-					if (!pathable && retry) update(delta, false);
-				}
-			}
-		};
-
-		this.activity = {
-			update,
-			toJSON: () => ({
-				name: "walkTo",
-				path,
-				target,
-				ticks: updateTicks,
-			}),
-		};
+		MoveTargetManager.set(this, new MoveTarget({ entity: this, target }));
+		AttackTargetManager.delete(this);
 	}
 
 	holdPosition(): void {

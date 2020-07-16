@@ -42,10 +42,7 @@ export class MoveSystem extends System<Unit> {
 		const pathable = pathingMap.pathable(entity, x, y);
 		if (pathable) entity.position.setXY(x, y);
 
-		if (moveTarget.path.distance === 0) {
-			entity.activity = undefined;
-			MoveTargetManager.delete(entity);
-		}
+		if (moveTarget.path.distance === 0) MoveTargetManager.delete(entity);
 
 		// Recheck path, start a new one periodically or if check fails
 		if (
