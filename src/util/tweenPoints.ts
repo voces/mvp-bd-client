@@ -286,11 +286,11 @@ export const calcAndTweenShortenedPath = (
 	// E.g., if we don't make it to the target, we don't need to shorten (as
 	// much).
 	const end = path[path.length - 1];
-	const remainingDistance =
-		distanceToShorten - distanceBetweenPoints(end, targetPoint);
+	const distanceFromPathEndToTarget = distanceBetweenPoints(end, targetPoint);
+	const remainingDistance = distanceToShorten - distanceFromPathEndToTarget;
 
 	// We are a far distance from the target; don't shorten at all
-	if (remainingDistance < 0) return tweenPoints(path);
+	if (remainingDistance <= 0) return tweenPoints(path);
 
 	// We're close, so shorten
 	return tweenPoints(shortenPath(path, remainingDistance));

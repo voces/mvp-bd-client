@@ -3,7 +3,6 @@ import { WORLD_TO_GRAPHICS_RATIO } from "../constants.js";
 import { Sprite, SpriteProps, SpriteEvents } from "./Sprite.js";
 import { Point } from "../pathing/PathingMap.js";
 import { Player } from "../players/Player.js";
-import { attack } from "./activities/attack.js";
 import { Emitter } from "../emitter.js";
 import { Action } from "./spriteLogic.js";
 import { Obstruction } from "./obstructions/index.js";
@@ -12,7 +11,15 @@ import {
 	stop as hideObstructionPlacement,
 } from "./obstructionPlacement.js";
 import { MoveTargetManager, MoveTarget } from "../components/MoveTarget.js";
-import { AttackTargetManager } from "../components/AttackTarget.js";
+import {
+	AttackTargetManager,
+	AttackTarget,
+} from "../components/AttackTarget.js";
+import { isInAttackRange } from "./UnitApi.js";
+import {
+	HoldPositionManager,
+	HoldPositionComponent,
+} from "../components/HoldPositionComponent.js";
 
 const holdPosition: Action = {
 	name: "Hold Position",
@@ -70,6 +77,9 @@ export type Weapon = {
 	enabled: boolean;
 	onDamage?: (target: Sprite, damage: number, attacker: Sprite) => void;
 };
+
+class NoWeaponError extends Error {}
+class TargetTooFarError extends Error {}
 
 export type UnitProps = Omit<SpriteProps, "game"> & {
 	isIllusion?: boolean;
@@ -136,18 +146,38 @@ class Unit extends Sprite {
 	}
 
 	attack(target: Sprite): void {
-		if (this.weapon?.enabled) attack(this, target);
+		this.activity = undefined;
+
+		// We can't attack without a weapon
+		if (!this.weapon) throw new NoWeaponError();
+
+		// Attacker can't move and target is not in range; do nothing
+		if (!this.speed && isInAttackRange(this, target))
+			throw new TargetTooFarError();
+
+		AttackTargetManager.set(this, new AttackTarget(this, target));
+		MoveTargetManager.set(
+			this,
+			new MoveTarget({
+				entity: this,
+				target,
+				distance:
+					this.radius + this.weapon.range + target.radius - 1e-7,
+			}),
+		);
 	}
 
 	walkTo(target: Point): void {
-		MoveTargetManager.set(this, new MoveTarget({ entity: this, target }));
+		this.activity = undefined;
 		AttackTargetManager.delete(this);
+		MoveTargetManager.set(this, new MoveTarget({ entity: this, target }));
 	}
 
 	holdPosition(): void {
-		this.activity = { toJSON: () => ({ name: "hold" }) };
+		this.activity = undefined;
 		MoveTargetManager.delete(this);
 		AttackTargetManager.delete(this);
+		HoldPositionManager.set(this, new HoldPositionComponent(this));
 	}
 
 	stop(): void {

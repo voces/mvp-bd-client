@@ -100,7 +100,6 @@ export class Crosser extends Unit {
 				(x - target.x) ** 2 + (y - target.y) ** 2,
 			);
 			if (distanceRemaining < BUILD_DISTANCE) {
-				this.activity = undefined;
 				MoveTargetManager.delete(this);
 
 				if (ObstructionClass.defaults.cost) {

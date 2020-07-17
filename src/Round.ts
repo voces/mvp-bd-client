@@ -16,6 +16,9 @@ import { Arena } from "./arenas/types.js";
 import { Unit } from "./sprites/Unit.js";
 import { Sprite } from "./sprites/Sprite.js";
 import { Game } from "./Game.js";
+import { MoveTargetManager } from "./components/MoveTarget.js";
+import { AttackTargetManager } from "./components/AttackTarget.js";
+import { HoldPositionManager } from "./components/HoldPositionComponent.js";
 
 let placeholderPlayer: Player;
 
@@ -291,7 +294,10 @@ class Round {
 			else if (
 				Unit.isUnit(sprite) &&
 				sprite.autoAttack &&
-				sprite.weapon
+				sprite.weapon &&
+				!MoveTargetManager.has(sprite) &&
+				!AttackTargetManager.has(sprite) &&
+				!HoldPositionManager.has(sprite)
 			) {
 				const {
 					position: { x, y },

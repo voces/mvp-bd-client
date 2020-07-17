@@ -42,7 +42,9 @@ export class MoveSystem extends System<Unit> {
 		const pathable = pathingMap.pathable(entity, x, y);
 		if (pathable) entity.position.setXY(x, y);
 
-		if (moveTarget.path.distance === 0) MoveTargetManager.delete(entity);
+		// We've reached the end
+		if (moveTarget.path.distance < moveTarget.progress)
+			MoveTargetManager.delete(entity);
 
 		// Recheck path, start a new one periodically or if check fails
 		if (
@@ -57,6 +59,10 @@ export class MoveSystem extends System<Unit> {
 			)
 		) {
 			moveTarget.recalc();
+
+			// No move to go!
+			if (moveTarget.path.distance === 0)
+				MoveTargetManager.delete(entity);
 
 			if (!pathable && retry) this.update(entity, delta, time, false);
 		}
