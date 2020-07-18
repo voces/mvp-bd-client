@@ -18,3 +18,6 @@ export * from "./pathing/constants.js";
 export const INITIAL_OBSTRUCTION_PROGRESS = 0.1;
 
 export const MIRROR_SEPARATION = 2;
+
+// Inclusive of unit radius, allowing for "jumping"
+export const BUILD_DISTANCE = 1.4;

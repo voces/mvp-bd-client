@@ -4,12 +4,9 @@ import {
 	stop as stopPlacement,
 	active as activePlacement,
 } from "./obstructionPlacement.js";
-import { appendErrorMessage } from "../ui/chat.js";
-import { Point } from "../pathing/PathingMap.js";
 import { Sprite } from "./Sprite.js";
 import {
 	Obstruction,
-	ObstructionSubclass,
 	Basic,
 	Dense,
 	Huge,
@@ -19,9 +16,7 @@ import {
 	Stack,
 	Tiny,
 } from "./obstructions/index.js";
-import { Blueprint } from "./obstructions/Blueprint.js";
 import { Action } from "./spriteLogic.js";
-import { MoveTargetManager, MoveTarget } from "../components/MoveTarget.js";
 
 const destroyLastBox: Action = {
 	name: "Destroy box",
@@ -44,9 +39,6 @@ const destroyLastBox: Action = {
 		}
 	},
 };
-
-// Inclusive of unit radius, allowing for "jumping"
-const BUILD_DISTANCE = 1.4;
 
 export class Crosser extends Unit {
 	static isCrosser = (sprite: Sprite): sprite is Crosser =>
@@ -73,89 +65,6 @@ export class Crosser extends Unit {
 			// Cancel any active placements
 			if (activePlacement()) stopPlacement();
 		});
-	}
-
-	buildAt(target: Point, ObstructionClass: ObstructionSubclass): void {
-		const moveTarget = new MoveTarget({
-			entity: this,
-			target,
-			distance: BUILD_DISTANCE - 1e-7,
-		});
-
-		MoveTargetManager.set(this, moveTarget);
-
-		const blueprint =
-			this.owner === this.game.localPlayer
-				? new Blueprint({
-						...target,
-						game: this.game,
-						radius: ObstructionClass.defaults.radius,
-				  })
-				: undefined;
-
-		const update = () => {
-			const { x, y } = this.position;
-
-			const distanceRemaining = Math.sqrt(
-				(x - target.x) ** 2 + (y - target.y) ** 2,
-			);
-			if (distanceRemaining < BUILD_DISTANCE) {
-				MoveTargetManager.delete(this);
-
-				if (ObstructionClass.defaults.cost) {
-					const check = this.owner.checkResources(
-						ObstructionClass.defaults.cost,
-					);
-					if (check?.length) {
-						appendErrorMessage(`Not enough ${check.join(" ")}`);
-						return;
-					}
-
-					this.owner.subtractResources(
-						ObstructionClass.defaults.cost,
-					);
-				}
-
-				const obstruction = new ObstructionClass({
-					x: target.x,
-					y: target.y,
-					owner: this.owner,
-				});
-
-				this.round.pathingMap.withoutEntity(this, () => {
-					if (
-						this.round.pathingMap.pathable(
-							obstruction,
-							target.x,
-							target.y,
-						)
-					) {
-						this.round.pathingMap.addEntity(obstruction);
-						this.obstructions.push(obstruction);
-					} else obstruction.kill({ removeImmediately: true });
-
-					const newPos = this.round.pathingMap.nearestSpiralPathing(
-						x,
-						y,
-						this,
-					);
-					this.position.setXY(newPos.x, newPos.y);
-				});
-			}
-		};
-
-		this.activity = {
-			update,
-			cleanup: () =>
-				blueprint && blueprint.kill({ removeImmediately: true }),
-			toJSON: () => ({
-				name: "buildAt",
-				obstruction: Obstruction.name,
-				target,
-				path: moveTarget.path,
-				ticks: moveTarget.ticks,
-			}),
-		};
 	}
 
 	ascend(): void {

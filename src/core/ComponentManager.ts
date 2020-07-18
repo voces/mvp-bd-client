@@ -16,11 +16,17 @@ export class ComponentManager<T extends Component> {
 	}
 
 	set(entity: Sprite, component: T): void {
+		const oldComponent = this.map.get(entity);
+		oldComponent?.dispose();
+
 		this.map.set(entity, component);
 		entity.game.entityComponentUpdated(entity, this.component);
 	}
 
 	delete(entity: Sprite): void {
+		const component = this.map.get(entity);
+		component?.dispose();
+
 		this.map.delete(entity);
 		entity.game.entityComponentUpdated(entity, this.component);
 	}

@@ -1,11 +1,11 @@
 import { dragSelect } from "./dragSelect.js";
-import { WORLD_TO_GRAPHICS_RATIO } from "../constants.js";
+import { WORLD_TO_GRAPHICS_RATIO, BUILD_DISTANCE } from "../constants.js";
 import { Sprite, SpriteProps, SpriteEvents } from "./Sprite.js";
 import { Point } from "../pathing/PathingMap.js";
 import { Player } from "../players/Player.js";
 import { Emitter } from "../emitter.js";
 import { Action } from "./spriteLogic.js";
-import { Obstruction } from "./obstructions/index.js";
+import { Obstruction, ObstructionSubclass } from "./obstructions/index.js";
 import {
 	active as activeObstructionPlacement,
 	stop as hideObstructionPlacement,
@@ -20,6 +20,7 @@ import {
 	HoldPositionManager,
 	HoldPositionComponent,
 } from "../components/HoldPositionComponent.js";
+import { BuildTargetManager, BuildTarget } from "../components/BuildTarget.js";
 
 const holdPosition: Action = {
 	name: "Hold Position",
@@ -110,6 +111,7 @@ class Unit extends Sprite {
 	weapon?: Weapon;
 	name: string;
 	builds: typeof Obstruction[];
+	obstructions: Obstruction[] = [];
 
 	constructor({
 		isIllusion = Unit.defaults.isIllusion,
@@ -119,11 +121,12 @@ class Unit extends Sprite {
 		builds = [],
 		...props
 	}: UnitProps) {
-		const game = props.owner.game;
 		super({
-			game,
+			game: props.owner.game,
 			...props,
 		});
+
+		const game = props.owner.game;
 
 		this.isIllusion = isIllusion;
 		this.name = name ?? this.constructor.name;
@@ -147,6 +150,7 @@ class Unit extends Sprite {
 
 	attack(target: Sprite): void {
 		this.activity = undefined;
+		BuildTargetManager.delete(this);
 
 		// We can't attack without a weapon
 		if (!this.weapon) throw new NoWeaponError();
@@ -170,6 +174,7 @@ class Unit extends Sprite {
 	walkTo(target: Point): void {
 		this.activity = undefined;
 		AttackTargetManager.delete(this);
+		BuildTargetManager.delete(this);
 		MoveTargetManager.set(this, new MoveTarget({ entity: this, target }));
 	}
 
@@ -177,6 +182,7 @@ class Unit extends Sprite {
 		this.activity = undefined;
 		MoveTargetManager.delete(this);
 		AttackTargetManager.delete(this);
+		BuildTargetManager.delete(this);
 		HoldPositionManager.set(this, new HoldPositionComponent(this));
 	}
 
@@ -184,6 +190,21 @@ class Unit extends Sprite {
 		this.activity = undefined;
 		MoveTargetManager.delete(this);
 		AttackTargetManager.delete(this);
+		BuildTargetManager.delete(this);
+	}
+
+	buildAt(target: Point, ObstructionClass: ObstructionSubclass): void {
+		const moveTarget = new MoveTarget({
+			entity: this,
+			target,
+			distance: BUILD_DISTANCE - 1e-7,
+		});
+
+		MoveTargetManager.set(this, moveTarget);
+		BuildTargetManager.set(
+			this,
+			new BuildTarget(this, ObstructionClass, target),
+		);
 	}
 
 	get actions(): Action[] {

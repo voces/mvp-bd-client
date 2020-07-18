@@ -6,6 +6,10 @@ export class Component<T extends Sprite = Sprite> {
 	constructor(entity: T) {
 		this.entity = entity;
 	}
+
+	dispose(): void {
+		/* do nothing */
+	}
 }
 
 export type ComponentConstructor<T extends Component> = new (

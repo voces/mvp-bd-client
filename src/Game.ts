@@ -18,6 +18,7 @@ import { App } from "./core/App.js";
 import { HTMLGraphics } from "./systems/HTMLGraphics.js";
 import { MoveSystem } from "./systems/MoveSystem.js";
 import { AttackSystem } from "./systems/AttackSystem.js";
+import { BlueprintSystem } from "./systems/BlueprintSystem.js";
 
 const tilesElemnt = document.getElementById("tiles")!;
 
@@ -70,6 +71,7 @@ class Game extends App {
 		this.addSystem(new HTMLGraphics());
 		this.addSystem(new MoveSystem());
 		this.addSystem(new AttackSystem());
+		this.addSystem(new BlueprintSystem());
 
 		this.network = network;
 		this.addNetworkListener = this.network.addEventListener.bind(
