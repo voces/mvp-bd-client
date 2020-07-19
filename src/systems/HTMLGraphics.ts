@@ -26,8 +26,15 @@ type HTMLEntity = Sprite & {
 
 export type EntityElement = HTMLDivElement & { sprite: HTMLEntity };
 
+type EntityData = {
+	onChangePositionListener: () => void;
+	onHealthChangeListener: (prop: string) => void;
+	updatePosition: boolean;
+	updateHealth: boolean;
+};
+
 class HTMLGraphics extends System<HTMLEntity> {
-	entityData: Map<HTMLEntity, { onRemoveListener: () => void }> = new Map();
+	entityData: Map<HTMLEntity, EntityData> = new Map();
 	protected dirty = new Set<HTMLEntity>();
 
 	test(entity: Sprite): entity is HTMLEntity {
@@ -64,9 +71,26 @@ class HTMLGraphics extends System<HTMLEntity> {
 
 		arenaElement.appendChild(elem);
 
-		const onRemoveListener = () => this.dirty.add(entity);
-		entity.position.addEventListener("change", onRemoveListener);
-		this.entityData.set(entity, { onRemoveListener });
+		const data = {
+			onChangePositionListener: () => {
+				this.dirty.add(entity);
+				data.updatePosition = true;
+			},
+			onHealthChangeListener: (prop: string) => {
+				if (prop !== "health") return;
+				this.dirty.add(entity);
+				data.updateHealth = true;
+			},
+			updatePosition: true,
+			updateHealth: true,
+		};
+
+		entity.position.addEventListener(
+			"change",
+			data.onChangePositionListener,
+		);
+		entity.addEventListener("change", data.onHealthChangeListener);
+		this.entityData.set(entity, data);
 
 		if (entity.selectable) dragSelect.addSelectables([entity]);
 	}
@@ -79,18 +103,21 @@ class HTMLGraphics extends System<HTMLEntity> {
 		if (data) {
 			entity.position.removeEventListener(
 				"change",
-				data.onRemoveListener,
+				data.onChangePositionListener,
 			);
+			entity.removeEventListener("change", data.onHealthChangeListener);
 			this.entityData.delete(entity);
 		}
 	}
 
-	render(entity: HTMLEntity, delta: number, time: number): void {
-		const elem = entity.html.htmlElement;
-		if (!elem) return;
-
+	private updatePosition(
+		elem: EntityElement,
+		entity: HTMLEntity,
+		delta: number,
+		time: number,
+		data: EntityData,
+	): boolean {
 		const moveTarget = MoveTargetManager.get(entity);
-
 		if (moveTarget && Unit.isUnit(entity)) {
 			moveTarget.renderProgress += entity.speed * delta;
 			const { x, y } = moveTarget.path(moveTarget.renderProgress);
@@ -98,7 +125,7 @@ class HTMLGraphics extends System<HTMLEntity> {
 				(x - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
 			elem.style.top =
 				(y - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-			return;
+			return true;
 		}
 
 		// If we have a tween, we should use that and continue to consider
@@ -109,7 +136,7 @@ class HTMLGraphics extends System<HTMLEntity> {
 				(x - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
 			elem.style.top =
 				(y - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-			return;
+			return true;
 		}
 
 		// Otherwise update the rendering position and mark clean
@@ -120,7 +147,38 @@ class HTMLGraphics extends System<HTMLEntity> {
 			(entity.position.y - entity.radius) * WORLD_TO_GRAPHICS_RATIO +
 			"px";
 
-		this.dirty.delete(entity);
+		data.updatePosition = false;
+		return false;
+	}
+
+	private updateHealth(
+		elem: EntityElement,
+		entity: HTMLEntity,
+		data: EntityData,
+	): boolean {
+		if (entity.health <= 0) elem.classList.add("death");
+		else
+			elem.style.opacity = Math.max(
+				entity.health / entity.maxHealth,
+				0.1,
+			).toString();
+
+		data.updateHealth = false;
+		return false;
+	}
+
+	render(entity: HTMLEntity, delta: number, time: number): void {
+		const elem = entity.html.htmlElement;
+		const data = this.entityData.get(entity);
+		if (!elem || !data) return;
+
+		const stillDirty = [
+			data.updatePosition &&
+				this.updatePosition(elem, entity, delta, time, data),
+			data.updateHealth && this.updateHealth(elem, entity, data),
+		].some((v) => v);
+
+		if (!stillDirty) this.dirty.delete(entity);
 	}
 }
 

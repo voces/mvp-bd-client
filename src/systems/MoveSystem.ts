@@ -1,7 +1,6 @@
 import { System } from "../core/System.js";
 import { MoveTargetManager, MoveTarget } from "../components/MoveTarget.js";
 import { Sprite } from "../sprites/Sprite.js";
-import { Unit } from "../sprites/Unit.js";
 import { PathingMap, Point } from "../pathing/PathingMap.js";
 
 const withoutTarget = <A>(
@@ -14,14 +13,27 @@ const withoutTarget = <A>(
 	return fn();
 };
 
-export class MoveSystem extends System<Unit> {
+type MovingSprite = Sprite & {
+	speed: number;
+};
+
+export class MoveSystem extends System<MovingSprite> {
 	static components = [MoveTarget];
 
-	test(entity: Sprite): entity is Unit {
-		return MoveTargetManager.has(entity) && entity instanceof Unit;
+	test(entity: Sprite & { speed?: number }): entity is MovingSprite {
+		return (
+			MoveTargetManager.has(entity) &&
+			typeof entity.speed === "number" &&
+			entity.speed > 0
+		);
 	}
 
-	update(entity: Unit, delta: number, time: number, retry = true): void {
+	update(
+		entity: MovingSprite,
+		delta: number,
+		time: number,
+		retry = true,
+	): void {
 		const moveTarget = MoveTargetManager.get(entity);
 
 		if (!moveTarget) return this.remove(entity);
@@ -48,15 +60,16 @@ export class MoveSystem extends System<Unit> {
 
 		// Recheck path, start a new one periodically or if check fails
 		if (
-			!pathable ||
-			moveTarget.ticks % 5 === 0 ||
-			!withoutTarget(pathingMap, moveTarget.target, () =>
-				pathingMap.recheck(
-					moveTarget.path.points,
-					entity,
-					delta * entity.speed * 6,
-				),
-			)
+			entity.requiresPathing &&
+			(!pathable ||
+				moveTarget.ticks % 5 === 0 ||
+				!withoutTarget(pathingMap, moveTarget.target, () =>
+					pathingMap.recheck(
+						moveTarget.path.points,
+						entity,
+						delta * entity.speed * 6,
+					),
+				))
 		) {
 			moveTarget.recalc();
 

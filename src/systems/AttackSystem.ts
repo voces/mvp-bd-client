@@ -57,10 +57,8 @@ export class AttackSystem extends System<Unit> {
 					entity,
 				);
 
-			if (attackTarget.target.health <= 0) {
-				entity.activity = undefined;
+			if (attackTarget.target.health <= 0)
 				AttackTargetManager.delete(entity);
-			}
 		} else entity.weapon.projectile(attackTarget.target, entity);
 
 		if (entity.html?.htmlElement)

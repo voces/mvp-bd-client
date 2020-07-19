@@ -79,8 +79,12 @@ export type Weapon = {
 	onDamage?: (target: Sprite, damage: number, attacker: Sprite) => void;
 };
 
-class NoWeaponError extends Error {}
-class TargetTooFarError extends Error {}
+class NoWeaponError extends Error {
+	message = "No weapon";
+}
+class TargetTooFarError extends Error {
+	message = "Target too far";
+}
 
 export type UnitProps = Omit<SpriteProps, "game"> & {
 	isIllusion?: boolean;
@@ -149,14 +153,14 @@ class Unit extends Sprite {
 	}
 
 	attack(target: Sprite): void {
-		this.activity = undefined;
 		BuildTargetManager.delete(this);
+		HoldPositionManager.delete(this);
 
 		// We can't attack without a weapon
 		if (!this.weapon) throw new NoWeaponError();
 
 		// Attacker can't move and target is not in range; do nothing
-		if (!this.speed && isInAttackRange(this, target))
+		if (!this.speed && !isInAttackRange(this, target))
 			throw new TargetTooFarError();
 
 		AttackTargetManager.set(this, new AttackTarget(this, target));
@@ -172,25 +176,25 @@ class Unit extends Sprite {
 	}
 
 	walkTo(target: Point): void {
-		this.activity = undefined;
 		AttackTargetManager.delete(this);
 		BuildTargetManager.delete(this);
+		HoldPositionManager.delete(this);
 		MoveTargetManager.set(this, new MoveTarget({ entity: this, target }));
 	}
 
 	holdPosition(): void {
-		this.activity = undefined;
 		MoveTargetManager.delete(this);
 		AttackTargetManager.delete(this);
 		BuildTargetManager.delete(this);
+		HoldPositionManager.delete(this);
 		HoldPositionManager.set(this, new HoldPositionComponent(this));
 	}
 
 	stop(): void {
-		this.activity = undefined;
 		MoveTargetManager.delete(this);
 		AttackTargetManager.delete(this);
 		BuildTargetManager.delete(this);
+		HoldPositionManager.delete(this);
 	}
 
 	buildAt(target: Point, ObstructionClass: ObstructionSubclass): void {

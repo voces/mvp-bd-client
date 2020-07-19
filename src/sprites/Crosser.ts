@@ -69,7 +69,6 @@ export class Crosser extends Unit {
 
 	ascend(): void {
 		this._health = 0;
-		this.activity = undefined;
 		dragSelect.removeSelectables([this]);
 		if (this._selected)
 			dragSelect.setSelection(
