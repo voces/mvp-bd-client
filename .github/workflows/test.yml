@@ -4,6 +4,7 @@ on:
     paths:
       - '**.ts'
       - 'package.json'
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
