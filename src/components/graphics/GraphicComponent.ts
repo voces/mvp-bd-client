@@ -2,6 +2,7 @@ import { Sprite } from "../../sprites/Sprite.js";
 import { Component } from "../../core/Component.js";
 import { ComponentManager } from "../../core/ComponentManager.js";
 import { EntityElement } from "../../systems/HTMLGraphics.js";
+import { Mesh } from "../../../node_modules/three/src/objects/Mesh.js";
 
 export class GraphicComponent extends Component {
 	readonly shape: "square" | "circle";
@@ -11,6 +12,7 @@ export class GraphicComponent extends Component {
 	readonly scale?: number;
 	readonly shadow?: string;
 	entityElement?: EntityElement;
+	mesh?: Mesh;
 
 	constructor(
 		entity: Sprite,

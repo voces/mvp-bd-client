@@ -1,11 +1,11 @@
-import { AnySystem, System } from "./System.js";
+import { System } from "./System.js";
 import { Mechanism } from "./Merchanism.js";
 import { Sprite } from "../sprites/Sprite.js";
 import { requestAnimationFrame } from "../util/globals.js";
 import { ComponentConstructor } from "./Component.js";
 
 class App {
-	private systems: AnySystem[] = [];
+	protected systems: System[] = [];
 	private mechanisms: Mechanism[] = [];
 	private lastRender = 0;
 	private requestedAnimationFrame?: number;
@@ -13,7 +13,7 @@ class App {
 	private componentUpdateMap = new Map<
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		ComponentConstructor<any>,
-		AnySystem[]
+		System[]
 	>();
 	// TODO: make this private!
 	lastUpdate = 0;
@@ -24,7 +24,7 @@ class App {
 		);
 	}
 
-	addSystem(system: AnySystem): App {
+	addSystem(system: System): App {
 		this.systems.push(system);
 
 		for (const component of (system.constructor as typeof System)
@@ -42,7 +42,7 @@ class App {
 		return this;
 	}
 
-	removeSystem(system: AnySystem): App {
+	removeSystem(system: System): App {
 		const index = this.systems.indexOf(system);
 		if (index >= 0) this.systems.splice(index, 1);
 

@@ -7,7 +7,6 @@ type PositionEvents = {
 class Position {
 	private _x!: number;
 	private _y!: number;
-	renderTween?: (delta: number) => { x: number; y: number };
 
 	constructor(x: number, y: number) {
 		emitter(this);

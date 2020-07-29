@@ -24,10 +24,14 @@
     "jest": "jest --silent",
     "start": "node --experimental-modules --no-warnings server/src/index.js",
     "test": "jest",
-    "test-debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
+    "test-debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
+    "setup": "mkdir -p ./public/node_modules/three && ln -si ../../node_modules/three public/node_modules/three"
   },
   "author": "verit",
   "license": "ISC",
   "type": "module",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "three": "^0.118.3"
+  }
 }

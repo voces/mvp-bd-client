@@ -70,7 +70,7 @@ const center: Action = {
 		);
 		const x = xSum / dragSelect.selection.length;
 		const y = ySum / dragSelect.selection.length;
-		panTo({ x, y });
+		player.game.graphics?.panTo({ x, y });
 	},
 };
 

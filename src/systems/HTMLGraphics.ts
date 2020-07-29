@@ -148,17 +148,6 @@ class HTMLGraphics extends System<Sprite> {
 			return true;
 		}
 
-		// If we have a tween, we should use that and continue to consider
-		// the entity dirty
-		if (entity.position.renderTween) {
-			const { x, y } = entity.position.renderTween(time);
-			elem.style.left =
-				(x - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-			elem.style.top =
-				(y - entity.radius) * WORLD_TO_GRAPHICS_RATIO + "px";
-			return true;
-		}
-
 		// Otherwise update the rendering position and mark clean
 		elem.style.left =
 			(entity.position.x - entity.radius) * WORLD_TO_GRAPHICS_RATIO +

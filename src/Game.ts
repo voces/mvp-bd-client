@@ -15,7 +15,7 @@ import { initObstructionPlacement } from "./sprites/obstructionPlacement.js";
 import { initPlayerLogic } from "./players/playerLogic.js";
 import { initSpriteLogicListeners } from "./sprites/spriteLogic.js";
 import { App } from "./core/App.js";
-import { HTMLGraphics } from "./systems/HTMLGraphics.js";
+// import { HTMLGraphics } from "./systems/HTMLGraphics.js";
 import { MoveSystem } from "./systems/MoveSystem.js";
 import { AttackSystem } from "./systems/AttackSystem.js";
 import { BlueprintSystem } from "./systems/BlueprintSystem.js";
@@ -24,6 +24,7 @@ import { GerminateSystem } from "./systems/GerminateSystem.js";
 import { AutoAttackSystem } from "./systems/AutoAttackSystem.js";
 import { AnimationSystem } from "./systems/AnimationSystem.js";
 import { SelectedSystem } from "./systems/SelectedSystem.js";
+import { ThreeGraphics } from "./systems/ThreeGraphics.js";
 
 const tilesElemnt = document.getElementById("tiles")!;
 
@@ -73,7 +74,7 @@ class Game extends App {
 	constructor(network: Network) {
 		super();
 		emitter(this);
-		this.addSystem(new HTMLGraphics());
+		// this.addSystem(new HTMLGraphics());
 		this.addSystem(new MoveSystem());
 		this.addSystem(new AttackSystem());
 		this.addSystem(new BlueprintSystem());
@@ -82,6 +83,7 @@ class Game extends App {
 		this.addSystem(new AutoAttackSystem());
 		this.addSystem(new AnimationSystem());
 		this.addSystem(new SelectedSystem());
+		this.addSystem(new ThreeGraphics());
 
 		this.network = network;
 		this.addNetworkListener = this.network.addEventListener.bind(
@@ -130,99 +132,101 @@ class Game extends App {
 		this.arena = arenas[arenaIndex];
 
 		emptyElement(tilesElemnt);
-		for (let y = 0; y < this.arena.tiles.length; y++) {
-			const row = document.createElement("div");
-			row.classList.add("row");
-			for (let x = 0; x < this.arena.tiles[y].length; x++) {
-				const tile = document.createElement("div");
-				tile.classList.add(
-					"tile",
-					`layer-${this.arena.layers[y][x]}`,
-					TILE_NAMES[this.arena.tiles[y][x]] || "void",
-				);
+		// for (let y = 0; y < this.arena.tiles.length; y++) {
+		// 	const row = document.createElement("div");
+		// 	row.classList.add("row");
+		// 	for (let x = 0; x < this.arena.tiles[y].length; x++) {
+		// 		const tile = document.createElement("div");
+		// 		tile.classList.add(
+		// 			"tile",
+		// 			`layer-${this.arena.layers[y][x]}`,
+		// 			TILE_NAMES[this.arena.tiles[y][x]] || "void",
+		// 		);
 
-				tile.style.height = "32px";
-				tile.style.width = "32px";
+		// 		tile.style.height = "32px";
+		// 		tile.style.width = "32px";
 
-				if (
-					y !== 0 &&
-					this.arena.layers[y][x] < this.arena.layers[y - 1][x]
-				)
-					if (
-						this.arena.layers[y - 1][x] -
-							this.arena.layers[y][x] ===
-						1
-					) {
-						tile.style.backgroundColor = "transparent";
-						tile.style.backgroundImage = gradient(
-							"top",
-							this.arena.layers[y][x],
-							this.arena.layers[y - 1][x],
-						);
-					}
+		// 		if (
+		// 			y !== 0 &&
+		// 			this.arena.layers[y][x] < this.arena.layers[y - 1][x]
+		// 		)
+		// 			if (
+		// 				this.arena.layers[y - 1][x] -
+		// 					this.arena.layers[y][x] ===
+		// 				1
+		// 			) {
+		// 				tile.style.backgroundColor = "transparent";
+		// 				tile.style.backgroundImage = gradient(
+		// 					"top",
+		// 					this.arena.layers[y][x],
+		// 					this.arena.layers[y - 1][x],
+		// 				);
+		// 			}
 
-				if (
-					y < this.arena.tiles.length - 1 &&
-					this.arena.layers[y][x] < this.arena.layers[y + 1][x]
-				)
-					if (
-						this.arena.layers[y + 1][x] -
-							this.arena.layers[y][x] ===
-						1
-					) {
-						tile.style.backgroundColor = "transparent";
-						tile.style.backgroundImage = gradient(
-							"bottom",
-							this.arena.layers[y][x],
-							this.arena.layers[y + 1][x],
-						);
-					}
+		// 		if (
+		// 			y < this.arena.tiles.length - 1 &&
+		// 			this.arena.layers[y][x] < this.arena.layers[y + 1][x]
+		// 		)
+		// 			if (
+		// 				this.arena.layers[y + 1][x] -
+		// 					this.arena.layers[y][x] ===
+		// 				1
+		// 			) {
+		// 				tile.style.backgroundColor = "transparent";
+		// 				tile.style.backgroundImage = gradient(
+		// 					"bottom",
+		// 					this.arena.layers[y][x],
+		// 					this.arena.layers[y + 1][x],
+		// 				);
+		// 			}
 
-				if (
-					x !== 0 &&
-					this.arena.layers[y][x] < this.arena.layers[y][x - 1]
-				)
-					if (
-						this.arena.layers[y][x - 1] -
-							this.arena.layers[y][x] ===
-						1
-					) {
-						tile.style.backgroundColor = "transparent";
-						tile.style.backgroundImage = gradient(
-							"left",
-							this.arena.layers[y][x],
-							this.arena.layers[y][x - 1],
-						);
-					}
+		// 		if (
+		// 			x !== 0 &&
+		// 			this.arena.layers[y][x] < this.arena.layers[y][x - 1]
+		// 		)
+		// 			if (
+		// 				this.arena.layers[y][x - 1] -
+		// 					this.arena.layers[y][x] ===
+		// 				1
+		// 			) {
+		// 				tile.style.backgroundColor = "transparent";
+		// 				tile.style.backgroundImage = gradient(
+		// 					"left",
+		// 					this.arena.layers[y][x],
+		// 					this.arena.layers[y][x - 1],
+		// 				);
+		// 			}
 
-				if (
-					x < this.arena.tiles[y].length - 1 &&
-					this.arena.layers[y][x] < this.arena.layers[y][x + 1]
-				)
-					if (
-						this.arena.layers[y][x + 1] -
-							this.arena.layers[y][x] ===
-						1
-					) {
-						tile.style.backgroundColor = "transparent";
-						tile.style.backgroundImage = gradient(
-							"right",
-							this.arena.layers[y][x],
-							this.arena.layers[y][x + 1],
-						);
-					}
+		// 		if (
+		// 			x < this.arena.tiles[y].length - 1 &&
+		// 			this.arena.layers[y][x] < this.arena.layers[y][x + 1]
+		// 		)
+		// 			if (
+		// 				this.arena.layers[y][x + 1] -
+		// 					this.arena.layers[y][x] ===
+		// 				1
+		// 			) {
+		// 				tile.style.backgroundColor = "transparent";
+		// 				tile.style.backgroundImage = gradient(
+		// 					"right",
+		// 					this.arena.layers[y][x],
+		// 					this.arena.layers[y][x + 1],
+		// 				);
+		// 			}
 
-				row.appendChild(tile);
-			}
+		// 		row.appendChild(tile);
+		// 	}
 
-			tilesElemnt.appendChild(row);
-		}
+		// 	tilesElemnt.appendChild(row);
+		// }
 
-		panTo({
-			x: this.arena.tiles[0].length / 2,
-			y: this.arena.tiles.length / 2,
-			duration: 0,
-		});
+		this.graphics?.panTo(
+			{
+				x: this.arena.tiles[0].length / 2,
+				y: this.arena.tiles.length / 2,
+			},
+			0,
+		);
 	}
 
 	nextArena(): void {
@@ -234,6 +238,12 @@ class Game extends App {
 		this.settings.arenaIndex = this.settings.arenaIndex
 			? this.settings.arenaIndex - 1
 			: arenas.length - 1;
+	}
+
+	get graphics(): ThreeGraphics | undefined {
+		const sys = this.systems.find((s) => ThreeGraphics.isThreeGraphics(s));
+		if (!sys) return;
+		if (ThreeGraphics.isThreeGraphics(sys)) return sys;
 	}
 
 	start({ time }: { time: number }): void {

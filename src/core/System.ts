@@ -115,7 +115,4 @@ interface System<T> {
 	onRemoveEntity?(entity: Sprite): void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnySystem = System<Sprite>;
-
 export { System };
