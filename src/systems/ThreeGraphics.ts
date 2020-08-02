@@ -217,21 +217,21 @@ export class ThreeGraphics extends System {
 		return false;
 	}
 
-	private updateHealth(
-		mesh: Object3D,
-		entity: Entity,
-		data: EntityData,
-	): boolean {
-		// if (entity.health <= 0) elem.classList.add("death");
-		// else
-		// 	elem.style.opacity = Math.max(
-		// 		entity.health / entity.maxHealth,
-		// 		0.1,
-		// 	).toString();
+	// private updateHealth(
+	// 	mesh: Object3D,
+	// 	entity: Entity,
+	// 	data: EntityData,
+	// ): boolean {
+	// 	// if (entity.health <= 0) elem.classList.add("death");
+	// 	// else
+	// 	// 	elem.style.opacity = Math.max(
+	// 	// 		entity.health / entity.maxHealth,
+	// 	// 		0.1,
+	// 	// 	).toString();
 
-		// data.updateHealth = false;
-		return false;
-	}
+	// 	// data.updateHealth = false;
+	// 	return false;
+	// }
 
 	render(entity: Entity, delta: number, time: number): void {
 		const object = SceneObjectComponent.get(entity)!.object;
@@ -241,7 +241,7 @@ export class ThreeGraphics extends System {
 		const stillDirty = [
 			data.updatePosition &&
 				this.updatePosition(object, entity, delta, time, data),
-			data.updateHealth && this.updateHealth(object, entity, data),
+			// data.updateHealth && this.updateHealth(object, entity, data),
 		].some((v) => v);
 
 		if (!stillDirty) this.dirty.delete(entity);
