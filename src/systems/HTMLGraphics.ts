@@ -1,14 +1,14 @@
-import { document } from "../util/globals.js";
-import { System } from "../core/System.js";
-import { WORLD_TO_GRAPHICS_RATIO } from "../constants.js";
-import { Sprite } from "../sprites/Sprite.js";
-import { MoveTargetManager } from "../components/MoveTarget.js";
-import { Unit } from "../sprites/Unit.js";
-import { dragSelect } from "../sprites/dragSelect.js";
+import { document } from "../util/globals";
+import { System } from "../core/System";
+import { WORLD_TO_GRAPHICS_RATIO } from "../constants";
+import { Sprite } from "../entities/sprites/Sprite";
+import { MoveTargetManager } from "../components/MoveTarget";
+import { Unit } from "../entities/sprites/Unit";
+import { dragSelect } from "../entities/sprites/dragSelect";
 import {
-	GraphicComponentManager,
-	GraphicComponent,
-} from "../components/graphics/GraphicComponent.js";
+	MeshBuilderComponentManager,
+	MeshBuilderComponent,
+} from "../components/graphics/MeshBuilderComponent";
 
 // TODO: abstract dom into a class
 const arenaElement = document.getElementById("arena")!;
@@ -25,18 +25,18 @@ type EntityData = {
 class HTMLGraphics extends System<Sprite> {
 	private entityData: Map<Sprite, EntityData> = new Map();
 	protected dirty = new Set<Sprite>();
-	static components = [GraphicComponent];
+	static components = [MeshBuilderComponent];
 
 	test(entity: Sprite): entity is Sprite {
-		return GraphicComponentManager.has(entity);
+		return MeshBuilderComponentManager.has(entity);
 	}
 
 	onAddEntity(entity: Sprite): void {
 		const oldData = this.entityData.get(entity);
 		if (oldData) return;
 
-		const graphicComponent = GraphicComponentManager.get(entity);
-		if (!graphicComponent) return this.remove(entity);
+		const MeshBuilderComponent = MeshBuilderComponentManager.get(entity);
+		if (!MeshBuilderComponent) return this.remove(entity);
 
 		// Create a div if no htmlElement (only do this once!)
 		const div = Object.assign(document.createElement("div"), {
@@ -57,34 +57,35 @@ class HTMLGraphics extends System<Sprite> {
 
 		// Color
 		const color =
-			graphicComponent.color ??
+			MeshBuilderComponent.color ??
 			entity.color ??
 			entity.owner?.color?.hex ??
 			"white";
 
 		if (entity.owner) div.setAttribute("owner", entity.owner.id.toString());
 		div.style.backgroundColor = color;
-		if (graphicComponent.texture)
-			div.style.backgroundImage = graphicComponent.texture;
+		if (MeshBuilderComponent.texture)
+			div.style.backgroundImage = MeshBuilderComponent.texture;
 
 		// Shape
-		if (graphicComponent.shape === "circle") div.style.borderRadius = "50%";
+		if (MeshBuilderComponent.shape === "circle")
+			div.style.borderRadius = "50%";
 
 		// Transforms
 		const transforms = [];
-		if (graphicComponent.scale !== 1)
-			transforms.push(`scale(${graphicComponent.scale})`);
+		if (MeshBuilderComponent.scale !== 1)
+			transforms.push(`scale(${MeshBuilderComponent.scale})`);
 		if (entity.facing !== 270)
 			transforms.push(`rotate(${entity.facing - 270})`);
 		if (transforms.length > 0) div.style.transform = transforms.join(" ");
 
 		// Shadows
-		if (graphicComponent.shadow)
-			div.style.boxShadow = graphicComponent.shadow;
+		if (MeshBuilderComponent.shadow)
+			div.style.boxShadow = MeshBuilderComponent.shadow;
 
 		arenaElement.appendChild(div);
 
-		graphicComponent.entityElement = div;
+		MeshBuilderComponent.entityElement = div;
 
 		const data = {
 			onChangePositionListener: () => {
@@ -111,11 +112,11 @@ class HTMLGraphics extends System<Sprite> {
 	}
 
 	onRemoveEntity(entity: Sprite): void {
-		const graphicComponent = GraphicComponentManager.get(entity);
-		if (graphicComponent) {
-			const div = graphicComponent?.entityElement;
+		const MeshBuilderComponent = MeshBuilderComponentManager.get(entity);
+		if (MeshBuilderComponent) {
+			const div = MeshBuilderComponent?.entityElement;
 			if (div) arenaElement.removeChild(div);
-			graphicComponent.entityElement = undefined;
+			MeshBuilderComponent.entityElement = undefined;
 		}
 
 		const data = this.entityData.get(entity);
@@ -177,8 +178,8 @@ class HTMLGraphics extends System<Sprite> {
 	}
 
 	render(entity: Sprite, delta: number, time: number): void {
-		const graphicComponent = GraphicComponentManager.get(entity);
-		const div = graphicComponent?.entityElement;
+		const MeshBuilderComponent = MeshBuilderComponentManager.get(entity);
+		const div = MeshBuilderComponent?.entityElement;
 		const data = this.entityData.get(entity);
 		if (!data || !div) return;
 

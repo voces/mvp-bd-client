@@ -1,16 +1,16 @@
-import { Point } from "../pathing/PathingMap.js";
-import { Sprite } from "../sprites/Sprite.js";
+import { Point } from "../pathing/PathingMap";
+import { Sprite } from "../entities/sprites/Sprite";
 import {
 	PathTweener,
 	tweenPoints,
 	distanceBetweenPoints,
 	shortenPath,
 	calcAndTweenShortenedPath,
-} from "../util/tweenPoints.js";
-import { Component } from "../core/Component.js";
-import { ComponentManager } from "../core/ComponentManager.js";
+} from "../util/tweenPoints";
+import { Component } from "../core/Component";
+import { ComponentManager } from "../core/ComponentManager";
 
-export class MoveTarget extends Component {
+export class MoveTarget extends Component<Sprite> {
 	// The entity with the MoveTarget component.
 	target: Point | Sprite;
 
@@ -65,6 +65,7 @@ export class MoveTarget extends Component {
 	}
 
 	recalc(): void {
+		if (!Sprite.isSprite(this.entity)) return;
 		this.path = calcAndTweenShortenedPath(
 			this.entity,
 			this.target,

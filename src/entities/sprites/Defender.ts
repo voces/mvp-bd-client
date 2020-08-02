@@ -1,9 +1,9 @@
-import { MIRROR_SEPARATION } from "../constants.js";
-import { Unit, UnitProps } from "./Unit.js";
-import { Sprite } from "./Sprite.js";
-import { Point } from "../pathing/PathingMap.js";
-import { dragSelect } from "./dragSelect.js";
-import { Action } from "./spriteLogic.js";
+import { MIRROR_SEPARATION } from "../../constants";
+import { Unit, UnitProps } from "./Unit";
+import { Sprite } from "./Sprite";
+import { Point } from "../../pathing/PathingMap";
+import { dragSelect } from "./dragSelect";
+import { Action } from "./spriteLogic";
 
 const mirror: Action = {
 	name: "Mirror Image",

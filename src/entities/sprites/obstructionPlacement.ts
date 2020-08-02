@@ -1,10 +1,10 @@
-import { WORLD_TO_GRAPHICS_RATIO } from "../constants.js";
-import { document } from "../util/globals.js";
-import { clientToWorld } from "../players/camera.js";
-import { appendErrorMessage } from "../ui/chat.js";
-import { Obstruction } from "./obstructions/index.js";
-import { emptyElement } from "../util/html.js";
-import { Game } from "../Game.js";
+import { WORLD_TO_GRAPHICS_RATIO } from "../../constants";
+import { document } from "../../util/globals";
+import { clientToWorld } from "../../players/camera";
+import { appendErrorMessage } from "../../ui/chat";
+import { Obstruction } from "./obstructions/index";
+import { emptyElement } from "../../util/html";
+import { Game } from "../../Game";
 
 let game: Game;
 let plannedObstruction: typeof Obstruction | undefined;

@@ -1,14 +1,14 @@
-import { Sprite, Effect } from "../Sprite.js";
-import { Obstruction, ObstructionProps } from "./Obstruction.js";
-import { Unit } from "../Unit.js";
-import { clone } from "../../util/clone.js";
-import { Projectile } from "../projectiles/Projectile.js";
+import { Sprite, Effect } from "../Sprite";
+import { Obstruction, ObstructionProps } from "./Obstruction";
+import { Unit } from "../Unit";
+import { clone } from "../../../util/clone";
+import { Projectile } from "../projectiles/Projectile";
 import {
 	DamageComponentManager,
 	DamageComponent,
 	Weapon,
-} from "../../components/DamageComponent.js";
-import { GraphicComponentManager } from "../../components/graphics/GraphicComponent.js";
+} from "../../../components/DamageComponent";
+import { MeshBuilderComponentManager } from "../../../components/graphics/MeshBuilderComponent";
 
 const slowTimeout = (target: Sprite) =>
 	target.round.setTimeout(() => {
@@ -17,7 +17,7 @@ const slowTimeout = (target: Sprite) =>
 
 		if (Unit.isUnit(target)) target.speed = effect.oldSpeed;
 
-		const div = GraphicComponentManager.get(target)?.entityElement;
+		const div = MeshBuilderComponentManager.get(target)?.entityElement;
 		if (div) div.style.backgroundImage = effect.oldBackgroundImage;
 
 		target.effects.splice(effectIndex, 1);
@@ -55,7 +55,8 @@ export class Slow extends Obstruction {
 					return;
 				}
 
-				const div = GraphicComponentManager.get(target)?.entityElement;
+				const div = MeshBuilderComponentManager.get(target)
+					?.entityElement;
 
 				const effect: Effect = {
 					type: "slow",

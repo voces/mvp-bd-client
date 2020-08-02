@@ -1,4 +1,4 @@
-import { emitter, Emitter } from "../emitter.js";
+import { emitter, Emitter } from "../emitter";
 
 type PositionEvents = {
 	change: <T extends keyof Position>(prop: T, oldValue: Position[T]) => void;

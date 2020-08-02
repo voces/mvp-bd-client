@@ -1,5 +1,5 @@
-import { PATHING_TYPES } from "../../constants.js";
-import { Footprint } from "../../pathing/PathingMap.js";
+import { PATHING_TYPES } from "../../../constants";
+import { Footprint } from "../../../pathing/PathingMap";
 
 export const toFootprint = (
 	radius: number,

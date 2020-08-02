@@ -1,7 +1,8 @@
-import { Sprite } from "../sprites/Sprite";
+import { Entity } from "./Entity";
+import { App } from "./App";
 
 export abstract class Component<
-	T extends Sprite = Sprite,
+	T extends Entity = Entity,
 	A extends unknown[] = []
 > {
 	readonly entity: T;
@@ -15,27 +16,33 @@ export abstract class Component<
 	}
 }
 
+type EntityWithApp = { app: App };
+
+const hasAppProp = (entity: Entity): entity is EntityWithApp =>
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	"app" in entity && (<EntityWithApp>entity).app instanceof App;
+
 export class EComponent<
 	InitializationParameters extends unknown[] = []
-> extends Component<Sprite, InitializationParameters> {
-	protected static map = new WeakMap<Sprite, EComponent>();
-	static get(entity: Sprite): EComponent | undefined {
+> extends Component<Entity, InitializationParameters> {
+	protected static map = new WeakMap<Entity, EComponent>();
+	static get(entity: Entity): EComponent | undefined {
 		return this.map.get(entity);
 	}
-	static has(entity: Sprite): boolean {
+	static has(entity: Entity): boolean {
 		return this.map.has(entity);
 	}
-	static clear(entity: Sprite): boolean {
+	static clear(entity: Entity): boolean {
 		const cleared = this.map.delete(entity);
-		if (cleared)
-			entity.game.entityComponentUpdated(
+		if (cleared && hasAppProp(entity))
+			entity.app.entityComponentUpdated(
 				entity,
 				<ComponentConstructor<EComponent>>this,
 			);
 		return cleared;
 	}
 
-	constructor(entity: Sprite, ...rest: InitializationParameters) {
+	constructor(entity: Entity, ...rest: InitializationParameters) {
 		super(entity);
 
 		const constructor = <typeof EComponent>this.constructor;
@@ -47,10 +54,11 @@ export class EComponent<
 		constructor.map.set(entity, this);
 
 		if (this.initialize) this.initialize(...rest);
-		this.entity.game.entityComponentUpdated(
-			entity,
-			<ComponentConstructor<EComponent>>this.constructor,
-		);
+		if (hasAppProp(this.entity))
+			this.entity.app.entityComponentUpdated(
+				entity,
+				<ComponentConstructor<EComponent>>this.constructor,
+			);
 	}
 
 	// This method is invoked by the constructor before notifying the App of a

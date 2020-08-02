@@ -1,14 +1,14 @@
-import "./hotkeys.js";
-import { window } from "../util/globals.js";
-import { Game } from "../Game.js";
-import { emitter, Emitter } from "../emitter.js";
-import { initCameraListeners } from "../players/camera.js";
-import { initListeners } from "./listeners.js";
-import { initChatListeners } from "./chat.js";
-import { initSplashListeners } from "./waitingSplash.js";
-import { initEssenceListeners } from "./essence.js";
-import { initClockListeners } from "./clock.js";
-import { initLogin } from "./login.js";
+import "./hotkeys";
+import { window } from "../util/globals";
+import { Game } from "../Game";
+import { emitter, Emitter } from "../emitter";
+import { initCameraListeners } from "../players/camera";
+import { initListeners } from "./listeners";
+import { initChatListeners } from "./chat";
+import { initSplashListeners } from "./waitingSplash";
+import { initEssenceListeners } from "./essence";
+import { initClockListeners } from "./clock";
+import { initLogin } from "./login";
 
 enum MouseButton {
 	LEFT = 0,

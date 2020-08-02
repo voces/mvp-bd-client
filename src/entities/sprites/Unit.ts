@@ -1,30 +1,33 @@
-import { dragSelect } from "./dragSelect.js";
-import { BUILD_DISTANCE } from "../constants.js";
-import { Sprite, SpriteProps } from "./Sprite.js";
-import { Point } from "../pathing/PathingMap.js";
-import { Player } from "../players/Player.js";
-import { Action } from "./spriteLogic.js";
-import { Obstruction, ObstructionSubclass } from "./obstructions/index.js";
+import { dragSelect } from "./dragSelect";
+import { BUILD_DISTANCE } from "../../constants";
+import { Sprite, SpriteProps } from "./Sprite";
+import { Point } from "../../pathing/PathingMap";
+import { Player } from "../../players/Player";
+import { Action } from "./spriteLogic";
+import { Obstruction, ObstructionSubclass } from "./obstructions/index";
 import {
 	active as activeObstructionPlacement,
 	stop as hideObstructionPlacement,
-} from "./obstructionPlacement.js";
-import { MoveTargetManager, MoveTarget } from "../components/MoveTarget.js";
+} from "./obstructionPlacement";
+import { MoveTargetManager, MoveTarget } from "../../components/MoveTarget";
 import {
 	AttackTargetManager,
 	AttackTarget,
-} from "../components/AttackTarget.js";
-import { isInAttackRange } from "./UnitApi.js";
+} from "../../components/AttackTarget";
+import { isInAttackRange } from "./UnitApi";
 import {
 	HoldPositionManager,
 	HoldPositionComponent,
-} from "../components/HoldPositionComponent.js";
-import { BuildTargetManager, BuildTarget } from "../components/BuildTarget.js";
+} from "../../components/HoldPositionComponent";
+import {
+	BuildTargetManager,
+	BuildTarget,
+} from "../../components/BuildTarget";
 import {
 	DamageComponentManager,
 	Weapon,
 	DamageComponent,
-} from "../components/DamageComponent.js";
+} from "../../components/DamageComponent";
 
 const holdPosition: Action = {
 	name: "Hold Position",

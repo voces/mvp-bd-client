@@ -1,6 +1,6 @@
-import { Component } from "../../core/Component.js";
-import { Sprite } from "../../sprites/Sprite.js";
-import { ComponentManager } from "../../core/ComponentManager.js";
+import { Component } from "../../core/Component";
+import { Sprite } from "../../entities/sprites/Sprite";
+import { ComponentManager } from "../../core/ComponentManager";
 
 export class Animation extends Component {
 	readonly animation: string;

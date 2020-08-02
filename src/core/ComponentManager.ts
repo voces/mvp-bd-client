@@ -1,5 +1,5 @@
-import { Component, ComponentConstructor } from "./Component.js";
-import { Sprite } from "../sprites/Sprite.js";
+import { Component, ComponentConstructor } from "./Component";
+import { Sprite } from "../entities/sprites/Sprite";
 
 export class ComponentManager<T extends Component> {
 	private map = new WeakMap<Sprite, T>();

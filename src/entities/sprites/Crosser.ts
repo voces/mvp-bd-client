@@ -1,10 +1,10 @@
-import { Unit, UnitProps } from "./Unit.js";
-import { dragSelect } from "./dragSelect.js";
+import { Unit, UnitProps } from "./Unit";
+import { dragSelect } from "./dragSelect";
 import {
 	stop as stopPlacement,
 	active as activePlacement,
-} from "./obstructionPlacement.js";
-import { Sprite } from "./Sprite.js";
+} from "./obstructionPlacement";
+import { Sprite } from "./Sprite";
 import {
 	Obstruction,
 	Basic,
@@ -15,18 +15,18 @@ import {
 	Slow,
 	Stack,
 	Tiny,
-} from "./obstructions/index.js";
-import { Action } from "./spriteLogic.js";
-import { MoveTargetManager } from "../components/MoveTarget.js";
-import { AttackTargetManager } from "../components/AttackTarget.js";
-import { BuildTargetManager } from "../components/BuildTarget.js";
-import { HoldPositionManager } from "../components/HoldPositionComponent.js";
-import { GraphicComponentManager } from "../components/graphics/GraphicComponent.js";
+} from "./obstructions/index";
+import { Action } from "./spriteLogic";
+import { MoveTargetManager } from "../../components/MoveTarget";
+import { AttackTargetManager } from "../../components/AttackTarget";
+import { BuildTargetManager } from "../../components/BuildTarget";
+import { HoldPositionManager } from "../../components/HoldPositionComponent";
+import { MeshBuilderComponentManager } from "../../components/graphics/MeshBuilderComponent";
 import {
 	Animation,
 	AnimationManager,
-} from "../components/graphics/Animation.js";
-import { Selected } from "../components/Selected.js";
+} from "../../components/graphics/Animation";
+import { Selected } from "../../components/Selected";
 
 const destroyLastBox: Action = {
 	name: "Destroy box",
@@ -101,8 +101,8 @@ export class Crosser extends Unit {
 		// Cancel any active placements
 		if (activePlacement()) stopPlacement();
 
-		const graphicComponent = GraphicComponentManager.get(this);
-		if (graphicComponent)
+		const MeshBuilderComponent = MeshBuilderComponentManager.get(this);
+		if (MeshBuilderComponent)
 			AnimationManager.set(this, new Animation(this, "ascend", 1));
 
 		this.round.setTimeout(() => this.remove(), 1);

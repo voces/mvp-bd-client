@@ -1,18 +1,18 @@
-import { Sprite } from "../../sprites/Sprite.js";
+import { Sprite } from "../Sprite";
 import {
 	INITIAL_OBSTRUCTION_PROGRESS,
 	PATHING_TYPES,
-} from "../../constants.js";
-import { toFootprint } from "./toFootprint.js";
-import { ResourceMap } from "../../types.js";
-import { Player } from "../../players/Player.js";
-import { Unit, UnitProps } from "../Unit.js";
-import { Action } from "../spriteLogic.js";
-import { dragSelect } from "../dragSelect.js";
+} from "../../../constants";
+import { toFootprint } from "./toFootprint";
+import { ResourceMap } from "../../../types";
+import { Player } from "../../../players/Player";
+import { Unit, UnitProps } from "../Unit";
+import { Action } from "../spriteLogic";
+import { dragSelect } from "../dragSelect";
 import {
 	GerminateComponentManager,
 	GerminateComponent,
-} from "../../components/GerminateComponent.js";
+} from "../../../components/GerminateComponent";
 
 const destroySelf: Action = {
 	name: "Destroy box",

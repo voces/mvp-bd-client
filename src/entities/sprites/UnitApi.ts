@@ -1,6 +1,6 @@
-import { Unit } from "./Unit.js";
-import { Sprite } from "./Sprite.js";
-import { DamageComponentManager } from "../components/DamageComponent.js";
+import { Unit } from "./Unit";
+import { Sprite } from "./Sprite";
+import { DamageComponentManager } from "../../components/DamageComponent";
 
 export const isInAttackRange = (attacker: Unit, target: Sprite): boolean => {
 	const damageComponent = DamageComponentManager.get(attacker);

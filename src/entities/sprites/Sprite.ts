@@ -1,21 +1,22 @@
-import { PATHING_TYPES } from "../constants.js";
-import { dragSelect } from "./dragSelect.js";
-import { emitter, Emitter } from "../emitter.js";
-import { Player } from "../players/Player.js";
-import { Round } from "../Round.js";
-import { clone } from "../util/clone.js";
-import { Action } from "./spriteLogic.js";
-import { Game } from "../Game.js";
+import { PATHING_TYPES } from "../../constants";
+import { dragSelect } from "./dragSelect";
+import { emitter, Emitter } from "../../emitter";
+import { Player } from "../../players/Player";
+import { Round } from "../../Round";
+import { clone } from "../../util/clone";
+import { Action } from "./spriteLogic";
+import { Game } from "../../Game";
 import {
-	GraphicComponent,
-	GraphicComponentManager,
-} from "../components/graphics/GraphicComponent.js";
-import { Position } from "../components/Position.js";
-import { MoveTargetManager } from "../components/MoveTarget.js";
-import { AttackTargetManager } from "../components/AttackTarget.js";
-import { HoldPositionManager } from "../components/HoldPositionComponent.js";
-import { GerminateComponentManager } from "../components/GerminateComponent.js";
-import { Selected } from "../components/Selected.js";
+	MeshBuilderComponent,
+	MeshBuilderComponentManager,
+} from "../../components/graphics/MeshBuilderComponent";
+import { Position } from "../../components/Position";
+import { MoveTargetManager } from "../../components/MoveTarget";
+import { AttackTargetManager } from "../../components/AttackTarget";
+import { HoldPositionManager } from "../../components/HoldPositionComponent";
+import { GerminateComponentManager } from "../../components/GerminateComponent";
+import { Selected } from "../../components/Selected";
+import { App } from "../../core/App";
 
 export type SpriteElement = HTMLDivElement & { sprite: Sprite };
 
@@ -60,6 +61,7 @@ class Sprite {
 	static isSprite = (object: Object): object is Sprite =>
 		object instanceof Sprite;
 
+	app: App;
 	game: Game;
 	radius: number;
 	id: number;
@@ -123,6 +125,7 @@ class Sprite {
 		if (!game.round)
 			throw new Error("trying to create a sprite outside a round");
 		this.game = game;
+		this.app = game;
 		this.round = game.round;
 
 		this.radius = radius;
@@ -145,9 +148,9 @@ class Sprite {
 		Object.assign(this, { html: {} });
 		this.position = new Position(x, y);
 
-		GraphicComponentManager.set(
+		MeshBuilderComponentManager.set(
 			this,
-			new GraphicComponent(this, {
+			new MeshBuilderComponent(this, {
 				...graphic,
 				targetable: selectable,
 			}),

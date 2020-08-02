@@ -1,10 +1,9 @@
-import { Sprite } from "../../sprites/Sprite.js";
-import { Component } from "../../core/Component.js";
-import { ComponentManager } from "../../core/ComponentManager.js";
-import { EntityElement } from "../../systems/HTMLGraphics.js";
-import { Mesh } from "../../../node_modules/three/src/objects/Mesh.js";
+import { Sprite } from "../../entities/sprites/Sprite";
+import { Component } from "../../core/Component";
+import { ComponentManager } from "../../core/ComponentManager";
+import { EntityElement } from "../../systems/HTMLGraphics";
 
-export class GraphicComponent extends Component {
+export class MeshBuilderComponent extends Component {
 	readonly shape: "square" | "circle";
 	readonly targetable: boolean;
 	readonly color?: string;
@@ -12,7 +11,6 @@ export class GraphicComponent extends Component {
 	readonly scale?: number;
 	readonly shadow?: string;
 	entityElement?: EntityElement;
-	mesh?: Mesh;
 
 	constructor(
 		entity: Sprite,
@@ -42,6 +40,6 @@ export class GraphicComponent extends Component {
 	}
 }
 
-export const GraphicComponentManager = new ComponentManager<GraphicComponent>(
-	GraphicComponent,
-);
+export const MeshBuilderComponentManager = new ComponentManager<
+	MeshBuilderComponent
+>(MeshBuilderComponent);

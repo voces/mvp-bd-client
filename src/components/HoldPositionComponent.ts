@@ -1,6 +1,6 @@
-import { Sprite } from "../sprites/Sprite.js";
-import { Component } from "../core/Component.js";
-import { ComponentManager } from "../core/ComponentManager.js";
+import { Sprite } from "../entities/sprites/Sprite";
+import { Component } from "../core/Component";
+import { ComponentManager } from "../core/ComponentManager";
 
 export class HoldPositionComponent extends Component {
 	constructor(entity: Sprite) {

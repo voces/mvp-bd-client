@@ -1,11 +1,11 @@
-import { active } from "./obstructionPlacement.js";
-import { swallow } from "../util/swallow.js";
-import { emitter } from "../emitter.js";
-import { Sprite, SpriteElement } from "./Sprite.js";
-import DragSelectClass from "../lib/DragSelect.js";
-import { defined } from "../types.js";
-import { GraphicComponentManager } from "../components/graphics/GraphicComponent.js";
-import { Selected } from "../components/Selected.js";
+import { active } from "./obstructionPlacement";
+import { swallow } from "../../util/swallow";
+import { emitter } from "../../emitter";
+import { Sprite, SpriteElement } from "./Sprite";
+import DragSelectClass from "../../lib/DragSelect";
+import { defined } from "../../types";
+import { MeshBuilderComponentManager } from "../../components/graphics/MeshBuilderComponent";
+import { Selected } from "../../components/Selected";
 
 let allSelectables: SpriteElement[] | undefined;
 
@@ -44,7 +44,7 @@ function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
 
 if (typeof window !== "undefined")
 	(async () => {
-		const DragSelect = await import("../lib/DragSelect.js").then(
+		const DragSelect = await import("../../lib/DragSelect.js").then(
 			(i) => i.default,
 		);
 
@@ -98,7 +98,7 @@ if (typeof window !== "undefined")
 				.filter(Boolean);
 		dragSelect.setSelection = (v: Sprite[]) => {
 			const elements = v
-				.map((v) => GraphicComponentManager.get(v)?.entityElement)
+				.map((v) => MeshBuilderComponentManager.get(v)?.entityElement)
 				.filter(notEmpty);
 			const selection = Object.freeze(
 				elements.map((e) => e?.sprite).filter(notEmpty),
@@ -112,13 +112,19 @@ if (typeof window !== "undefined")
 		dragSelect.addSelectables = (v: Sprite[]) =>
 			internalDragSelect.addSelectables(
 				v
-					.map((v) => GraphicComponentManager.get(v)?.entityElement)
+					.map(
+						(v) =>
+							MeshBuilderComponentManager.get(v)?.entityElement,
+					)
 					.filter(defined),
 			);
 		dragSelect.removeSelectables = (v: Sprite[]) =>
 			internalDragSelect.removeSelectables(
 				v
-					.map((v) => GraphicComponentManager.get(v)?.entityElement)
+					.map(
+						(v) =>
+							MeshBuilderComponentManager.get(v)?.entityElement,
+					)
 					.filter(defined),
 			);
 	})();

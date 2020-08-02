@@ -1,6 +1,6 @@
-import { Network, activeHost } from "./network.js";
-import { Game } from "./Game.js";
-import { document, window } from "./util/globals.js";
+import { Network, activeHost } from "./network";
+import { Game } from "./Game";
+import { document, window } from "./util/globals";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const network = ((globalThis as any).network = new Network());

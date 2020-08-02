@@ -1,22 +1,22 @@
-import { dragSelect } from "./dragSelect.js";
+import { dragSelect } from "./dragSelect";
 import {
 	active as activeObstructionPlacement,
 	snap,
 	start as showObstructionPlacement,
 	stop as hideObstructionPlacement,
 	valid as obstructionPlacementValid,
-} from "./obstructionPlacement.js";
-import { Unit } from "./Unit.js";
-import { Crosser } from "./Crosser.js";
-import { Obstruction } from "./obstructions/Obstruction.js";
-import { clientToWorld } from "../players/camera.js";
-import { Defender } from "./Defender.js";
-import { SpriteElement } from "./Sprite.js";
-import { obstructionMap } from "./obstructions/index.js";
-import { activeHotkeys } from "../ui/hotkeys.js";
-import { UIEvents } from "../ui/index.js";
-import { Game } from "../Game.js";
-import { Player } from "../players/Player.js";
+} from "./obstructionPlacement";
+import { Unit } from "./Unit";
+import { Crosser } from "./Crosser";
+import { Obstruction } from "./obstructions/Obstruction";
+import { clientToWorld } from "../../players/camera";
+import { Defender } from "./Defender";
+import { SpriteElement } from "./Sprite";
+import { obstructionMap } from "./obstructions/index";
+import { activeHotkeys } from "../../ui/hotkeys";
+import { UIEvents } from "../../ui/index";
+import { Game } from "../../Game";
+import { Player } from "../../players/Player";
 
 export type Action = {
 	description?: string;

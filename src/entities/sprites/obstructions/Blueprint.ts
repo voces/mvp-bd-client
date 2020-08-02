@@ -1,4 +1,4 @@
-import { Sprite, SpriteProps } from "../Sprite.js";
+import { Sprite, SpriteProps } from "../Sprite";
 
 export class Blueprint extends Sprite {
 	static buildTime = 0;

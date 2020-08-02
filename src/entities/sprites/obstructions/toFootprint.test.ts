@@ -1,4 +1,4 @@
-import { toFootprint } from "./toFootprint.js";
+import { toFootprint } from "./toFootprint";
 
 describe("toFootprint", () => {
 	it("Tiny", () => {

@@ -1,26 +1,26 @@
-import { System } from "../core/System.js";
-import { Sprite } from "../sprites/Sprite.js";
-import { Selected } from "../components/Selected.js";
+import { System } from "../core/System";
+import { Sprite } from "../entities/sprites/Sprite";
+import { Selected } from "../components/Selected";
 import {
-	GraphicComponent,
-	GraphicComponentManager,
-} from "../components/graphics/GraphicComponent.js";
+	MeshBuilderComponent,
+	MeshBuilderComponentManager,
+} from "../components/graphics/MeshBuilderComponent";
 
 export class SelectedSystem extends System {
-	static components = [Selected, GraphicComponent];
+	static components = [Selected, MeshBuilderComponent];
 
 	test(entity: Sprite): entity is Sprite {
-		return Selected.has(entity) && GraphicComponentManager.has(entity);
+		return Selected.has(entity) && MeshBuilderComponentManager.has(entity);
 	}
 
 	onAddEntity(entity: Sprite): void {
-		const div = GraphicComponentManager.get(entity)?.entityElement;
+		const div = MeshBuilderComponentManager.get(entity)?.entityElement;
 		if (!div) return;
 		div.classList.add("selected");
 	}
 
 	onRemoveEntity(entity: Sprite): void {
-		const div = GraphicComponentManager.get(entity)?.entityElement;
+		const div = MeshBuilderComponentManager.get(entity)?.entityElement;
 		if (!div) return;
 		div.classList.remove("selected");
 	}

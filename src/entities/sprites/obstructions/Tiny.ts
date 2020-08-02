@@ -1,4 +1,4 @@
-import { Obstruction, ObstructionProps } from "./Obstruction.js";
+import { Obstruction, ObstructionProps } from "./Obstruction";
 
 export class Tiny extends Obstruction {
 	static defaults = {

@@ -1,5 +1,5 @@
-import { Player } from "../players/Player.js";
-import { Sprite } from "../sprites/Sprite.js";
+import { Player } from "../players/Player";
+import { Sprite } from "../entities/sprites/Sprite";
 
 export const clone = <T>(obj: T): T => {
 	if (

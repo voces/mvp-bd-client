@@ -1,9 +1,9 @@
-import { Sprite } from "../sprites/Sprite.js";
-import { Component } from "../core/Component.js";
-import { ComponentManager } from "../core/ComponentManager.js";
-import { ObstructionSubclass } from "../sprites/obstructions/index.js";
-import { Blueprint } from "../sprites/obstructions/Blueprint.js";
-import { Point } from "../pathing/PathingMap.js";
+import { Sprite } from "../entities/sprites/Sprite";
+import { Component } from "../core/Component";
+import { ComponentManager } from "../core/ComponentManager";
+import { ObstructionSubclass } from "../entities/sprites/obstructions/index";
+import { Blueprint } from "../entities/sprites/obstructions/Blueprint";
+import { Point } from "../pathing/PathingMap";
 
 export class BuildTarget extends Component {
 	obstructionClass: ObstructionSubclass;

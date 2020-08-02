@@ -1,10 +1,10 @@
-import { Action } from "../sprites/spriteLogic.js";
-import { document } from "../util/globals.js";
-import { dragSelect } from "../sprites/dragSelect.js";
-import { defined } from "../types.js";
-import { Unit } from "../sprites/Unit.js";
-import { emptyElement } from "../util/html.js";
-import { panTo } from "../players/camera.js";
+import { Action } from "../entities/sprites/spriteLogic";
+import { document } from "../util/globals";
+import { dragSelect } from "../entities/sprites/dragSelect";
+import { defined } from "../types";
+import { Unit } from "../entities/sprites/Unit";
+import { emptyElement } from "../util/html";
+import { panTo } from "../players/camera";
 
 const container = document.getElementById("hotkeys")!;
 

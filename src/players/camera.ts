@@ -1,11 +1,11 @@
-import { WORLD_TO_GRAPHICS_RATIO } from "../constants.js";
-import { tweenPoints, PathTweener } from "../util/tweenPoints.js";
-import { document, requestAnimationFrame, window } from "../util/globals.js";
-import { dragSelect } from "../sprites/dragSelect.js";
-import { registerCommand } from "../ui/chat.js";
-import { Round } from "../Round.js";
-import { Point } from "../pathing/PathingMap.js";
-import { UI } from "../ui/index.js";
+import { WORLD_TO_GRAPHICS_RATIO } from "../constants";
+import { tweenPoints, PathTweener } from "../util/tweenPoints";
+import { document, requestAnimationFrame, window } from "../util/globals";
+import { dragSelect } from "../entities/sprites/dragSelect";
+import { registerCommand } from "../ui/chat";
+import { Round } from "../Round";
+import { Point } from "../pathing/PathingMap";
+import { UI } from "../ui/index";
 
 type Direction = "right" | "left" | "down" | "up";
 

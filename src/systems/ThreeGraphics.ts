@@ -1,25 +1,22 @@
-import { PerspectiveCamera } from "../../node_modules/three/src/cameras/PerspectiveCamera.js";
-import { DirectionalLight } from "../../node_modules/three/src/lights/DirectionalLight.js";
-import { HemisphereLight } from "../../node_modules/three/src/lights/HemisphereLight.js";
-import { Vector2 } from "../../node_modules/three/src/math/Vector2.js";
-import { Vector3 } from "../../node_modules/three/src/math/Vector3.js";
-import { WebGLRenderer } from "../../node_modules/three/src/renderers/WebGLRenderer.js";
-import { Scene } from "../../node_modules/three/src/scenes/Scene.js";
-import { SphereBufferGeometry } from "../../node_modules/three/src/geometries/SphereGeometry.js";
-import { BoxBufferGeometry } from "../../node_modules/three/src/geometries/BoxGeometry.js";
-import { Mesh } from "../../node_modules/three/src/objects/Mesh.js";
-import { MeshPhongMaterial } from "../../node_modules/three/src/materials/MeshPhongMaterial.js";
+import { System } from "../core/System";
+import { Sprite } from "../entities/sprites/Sprite";
+import { document, window } from "../util/globals";
+import { Unit } from "../entities/sprites/Unit";
+import { MoveTargetManager } from "../components/MoveTarget";
+import { Point } from "../pathing/PathingMap";
+import { tweenPoints, PathTweener } from "../util/tweenPoints";
+import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
+import { Entity } from "../core/Entity";
 import {
-	GraphicComponent,
-	GraphicComponentManager,
-} from "../components/graphics/GraphicComponent.js";
-import { System } from "../core/System.js";
-import { Sprite } from "../sprites/Sprite.js";
-import { document, window } from "../util/globals.js";
-import { Unit } from "../sprites/Unit.js";
-import { MoveTargetManager } from "../components/MoveTarget.js";
-import { Point } from "../pathing/PathingMap.js";
-import { tweenPoints, PathTweener } from "../util/tweenPoints.js";
+	Object3D,
+	WebGLRenderer,
+	Scene,
+	HemisphereLight,
+	DirectionalLight,
+	Vector3,
+	Vector2,
+	PerspectiveCamera,
+} from "three";
 
 const getCanvas = () => {
 	const canvas = document.createElement("canvas");
@@ -81,39 +78,21 @@ const getCamera = (renderer: WebGLRenderer) => {
 	return camera;
 };
 
-const getColor = (entity: Sprite, graphic: GraphicComponent) =>
-	graphic.color ?? entity.color ?? entity.owner?.color?.hex ?? "white";
-
-const getMat = (entity: Sprite, graphic: GraphicComponent) =>
-	new MeshPhongMaterial({ color: getColor(entity, graphic) });
-
-const createSphere = (entity: Sprite, graphic: GraphicComponent): Mesh =>
-	new Mesh(
-		new SphereBufferGeometry(entity.radius / 2),
-		getMat(entity, graphic),
-	);
-
-const createBox = (entity: Sprite, graphic: GraphicComponent): Mesh =>
-	new Mesh(
-		new BoxBufferGeometry(entity.radius, entity.radius, entity.radius),
-		getMat(entity, graphic),
-	);
-
 type EntityData = {
-	onChangePositionListener: () => void;
-	onHealthChangeListener: (prop: string) => void;
+	onChangePositionListener?: () => void;
+	onHealthChangeListener?: (prop: string) => void;
 	updatePosition: boolean;
 	updateHealth: boolean;
 };
 
 export class ThreeGraphics extends System {
-	static components = [GraphicComponent];
+	static components = [SceneObjectComponent];
 
 	static isThreeGraphics = (system: System): system is ThreeGraphics =>
 		system instanceof ThreeGraphics;
 
-	protected dirty = new Set<Sprite>();
-	private entityData: Map<Sprite, EntityData> = new Map();
+	protected dirty = new Set<Entity>();
+	private entityData: Map<Entity, EntityData> = new Map();
 	private renderer: WebGLRenderer;
 	private scene: Scene;
 
@@ -146,60 +125,56 @@ export class ThreeGraphics extends System {
 		this.camera.updateProjectionMatrix();
 	}
 
-	test(entity: Sprite): entity is Sprite {
-		return GraphicComponentManager.has(entity);
+	test(entity: Entity): entity is Entity {
+		return SceneObjectComponent.has(entity);
 	}
 
-	onAddEntity(entity: Sprite): void {
-		const graphic = GraphicComponentManager.get(entity);
-		if (!graphic) return;
-
-		// Build/set the mesh
-		const builder = graphic.shape === "circle" ? createSphere : createBox;
-		const mesh = builder(entity, graphic);
-		mesh.position.x = entity.position.x;
-		mesh.position.y = entity.position.y;
-		mesh.position.z = entity.radius;
-		this.scene.add(mesh);
-		graphic.mesh = mesh;
+	onAddEntity(entity: Entity): void {
+		const objectComponent = SceneObjectComponent.get(entity)!;
+		this.scene.add(objectComponent.object);
 
 		// Add listeners
-		const data = {
-			onChangePositionListener: () => {
-				this.dirty.add(entity);
-				data.updatePosition = true;
-			},
-			onHealthChangeListener: (prop: string) => {
-				if (prop !== "health") return;
-				this.dirty.add(entity);
-				data.updateHealth = true;
-			},
+		const data: EntityData = {
 			updatePosition: true,
 			updateHealth: true,
 		};
-		entity.position.addEventListener(
-			"change",
-			data.onChangePositionListener,
-		);
-		entity.addEventListener("change", data.onHealthChangeListener);
+		if (Sprite.isSprite(entity)) {
+			data.onChangePositionListener = () => {
+				this.dirty.add(entity);
+				data.updatePosition = true;
+			};
+			(data.onHealthChangeListener = (prop: string) => {
+				if (prop !== "health") return;
+				this.dirty.add(entity);
+				data.updateHealth = true;
+			}),
+				entity.position.addEventListener(
+					"change",
+					data.onChangePositionListener,
+				);
+			entity.addEventListener("change", data.onHealthChangeListener);
+		}
 		this.entityData.set(entity, data);
 	}
 
-	onRemoveEntity(entity: Sprite): void {
-		const graphicComponent = GraphicComponentManager.get(entity);
-		if (graphicComponent) {
-			const mesh = graphicComponent?.mesh;
-			if (mesh) this.scene.remove(mesh);
-			graphicComponent.mesh = undefined;
-		}
+	onRemoveEntity(entity: Entity): void {
+		const objectComponent = SceneObjectComponent.get(entity);
+		if (objectComponent?.object) this.scene.remove(objectComponent?.object);
 
-		const data = this.entityData.get(entity);
-		if (data) {
-			entity.position.removeEventListener(
-				"change",
-				data.onChangePositionListener,
-			);
-			entity.removeEventListener("change", data.onHealthChangeListener);
+		if (Sprite.isSprite(entity)) {
+			const data = this.entityData.get(entity);
+			if (data) {
+				if (data.onChangePositionListener)
+					entity.position.removeEventListener(
+						"change",
+						data.onChangePositionListener,
+					);
+				if (data.onHealthChangeListener)
+					entity.removeEventListener(
+						"change",
+						data.onHealthChangeListener,
+					);
+			}
 		}
 
 		this.entityData.delete(entity);
@@ -217,32 +192,34 @@ export class ThreeGraphics extends System {
 	}
 
 	private updatePosition(
-		mesh: Mesh,
-		entity: Sprite,
+		mesh: Object3D,
+		entity: Entity,
 		delta: number,
 		time: number,
 		data: EntityData,
 	): boolean {
-		const moveTarget = MoveTargetManager.get(entity);
-		if (moveTarget && Unit.isUnit(entity)) {
-			moveTarget.renderProgress += entity.speed * delta;
-			const { x, y } = moveTarget.path(moveTarget.renderProgress);
-			mesh.position.x = x;
-			mesh.position.y = y;
-			return true;
-		}
+		if (Sprite.isSprite(entity)) {
+			const moveTarget = MoveTargetManager.get(entity);
+			if (moveTarget && Unit.isUnit(entity)) {
+				moveTarget.renderProgress += entity.speed * delta;
+				const { x, y } = moveTarget.path(moveTarget.renderProgress);
+				mesh.position.x = x;
+				mesh.position.y = y;
+				return true;
+			}
 
-		// Otherwise update the rendering position and mark clean
-		mesh.position.x = entity.position.x;
-		mesh.position.y = entity.position.y;
+			// Otherwise update the rendering position and mark clean
+			mesh.position.x = entity.position.x;
+			mesh.position.y = entity.position.y;
+		}
 
 		data.updatePosition = false;
 		return false;
 	}
 
 	private updateHealth(
-		mesh: Mesh,
-		entity: Sprite,
+		mesh: Object3D,
+		entity: Entity,
 		data: EntityData,
 	): boolean {
 		// if (entity.health <= 0) elem.classList.add("death");
@@ -256,16 +233,15 @@ export class ThreeGraphics extends System {
 		return false;
 	}
 
-	render(entity: Sprite, delta: number, time: number): void {
-		const graphicComponent = GraphicComponentManager.get(entity);
-		const mesh = graphicComponent?.mesh;
+	render(entity: Entity, delta: number, time: number): void {
+		const object = SceneObjectComponent.get(entity)!.object;
 		const data = this.entityData.get(entity);
-		if (!data || !mesh) return;
+		if (!data || !object) return;
 
 		const stillDirty = [
 			data.updatePosition &&
-				this.updatePosition(mesh, entity, delta, time, data),
-			data.updateHealth && this.updateHealth(mesh, entity, data),
+				this.updatePosition(object, entity, delta, time, data),
+			data.updateHealth && this.updateHealth(object, entity, data),
 		].some((v) => v);
 
 		if (!stillDirty) this.dirty.delete(entity);
@@ -274,7 +250,6 @@ export class ThreeGraphics extends System {
 	private updateCamera(delta = 17 / 1000): void {
 		const activePan = this.activePan;
 		if (activePan) {
-			console.log("activePan");
 			const { x, y } = activePan.step(
 				(delta * activePan.distance) / activePan.duration,
 			);

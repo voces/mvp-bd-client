@@ -1,10 +1,10 @@
-import { System } from "../core/System.js";
-import { Sprite } from "../sprites/Sprite.js";
+import { System } from "../core/System";
+import { Sprite } from "../entities/sprites/Sprite";
 import {
 	Animation,
 	AnimationManager,
-} from "../components/graphics/Animation.js";
-import { GraphicComponentManager } from "../components/graphics/GraphicComponent.js";
+} from "../components/graphics/Animation";
+import { MeshBuilderComponentManager } from "../components/graphics/MeshBuilderComponent";
 
 export class AnimationSystem extends System<Sprite> {
 	static components = [Animation];
@@ -12,12 +12,13 @@ export class AnimationSystem extends System<Sprite> {
 
 	test(entity: Sprite): entity is Sprite {
 		return (
-			AnimationManager.has(entity) && GraphicComponentManager.has(entity)
+			AnimationManager.has(entity) &&
+			MeshBuilderComponentManager.has(entity)
 		);
 	}
 
 	onAddEntity(entity: Sprite): void {
-		const div = GraphicComponentManager.get(entity)?.entityElement;
+		const div = MeshBuilderComponentManager.get(entity)?.entityElement;
 		if (!div) return this.remove(entity);
 
 		const animation = AnimationManager.get(entity);
@@ -32,7 +33,7 @@ export class AnimationSystem extends System<Sprite> {
 		const data = this.entityData.get(entity);
 		if (!data) return;
 
-		const div = GraphicComponentManager.get(entity)?.entityElement;
+		const div = MeshBuilderComponentManager.get(entity)?.entityElement;
 		if (!div) return this.remove(entity);
 
 		div.classList.remove(data.animation.animation);

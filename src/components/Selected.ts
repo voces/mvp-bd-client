@@ -1,5 +1,5 @@
-import { EComponent } from "../core/Component.js";
-import { Sprite } from "../sprites/Sprite.js";
+import { EComponent } from "../core/Component";
+import { Sprite } from "../entities/sprites/Sprite";
 
 export class Selected extends EComponent {
 	protected static map = new WeakMap<Sprite, Selected>();

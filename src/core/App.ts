@@ -1,8 +1,8 @@
-import { System } from "./System.js";
-import { Mechanism } from "./Merchanism.js";
-import { Sprite } from "../sprites/Sprite.js";
-import { requestAnimationFrame } from "../util/globals.js";
-import { ComponentConstructor } from "./Component.js";
+import { System } from "./System";
+import { Mechanism } from "./Merchanism";
+import { requestAnimationFrame } from "../util/globals";
+import { ComponentConstructor } from "./Component";
+import { Entity } from "./Entity";
 
 class App {
 	protected systems: System[] = [];
@@ -62,13 +62,13 @@ class App {
 		for (const system of this.systems) system.dispose();
 	}
 
-	add(...entities: Sprite[]): App {
+	add(...entities: Entity[]): App {
 		for (const system of this.systems) system.add(...entities);
 
 		return this;
 	}
 
-	remove(...entities: Sprite[]): App {
+	remove(...entities: Entity[]): App {
 		for (const system of this.systems) system.remove(...entities);
 
 		return this;
@@ -79,7 +79,7 @@ class App {
 	 * the checking of systems that care about the component.
 	 */
 	entityComponentUpdated(
-		entity: Sprite,
+		entity: Entity,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		component: ComponentConstructor<any>,
 	): void {

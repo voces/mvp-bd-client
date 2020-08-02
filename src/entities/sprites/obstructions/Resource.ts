@@ -1,4 +1,4 @@
-import { Obstruction, ObstructionProps } from "./Obstruction.js";
+import { Obstruction, ObstructionProps } from "./Obstruction";
 
 export class Resource extends Obstruction {
 	static defaults = {

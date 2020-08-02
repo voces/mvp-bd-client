@@ -1,4 +1,4 @@
-import { RecursivePartial } from "../types.js";
+import { RecursivePartial } from "../types";
 
 /**
  * Swallow returns a recrusive empty object, allowing you to do
