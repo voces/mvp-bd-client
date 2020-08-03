@@ -38,6 +38,20 @@ const getRenderer = (canvas: HTMLCanvasElement) => {
 	return renderer;
 };
 
+const sunTilt = new Vector3(-10, -15, 25);
+const updateLight = (sun: DirectionalLight) => {
+	const height = sun.position.z;
+	sun.position.copy(sun.position).add(sunTilt);
+	sun.shadow.camera.near = 0;
+	sun.shadow.camera.far = height * 5 + 100;
+	sun.shadow.camera.left = -height * 10;
+	sun.shadow.camera.right = height * 6;
+	sun.shadow.camera.top = height * 10;
+	sun.shadow.camera.bottom = -height * 4;
+	sun.shadow.mapSize.width = 4096;
+	sun.shadow.mapSize.height = 4096;
+};
+
 const getScene = () => {
 	const scene = new Scene();
 
@@ -46,25 +60,12 @@ const getScene = () => {
 
 	// Sun
 	const sun = new DirectionalLight(0xffffff, 1);
-	sun.target = sun;
-	const sunTilt = new Vector3(-10, -15, 25);
-	const updateLight = () => {
-		const height = sun.position.z;
-		sun.position.copy(sun.position).add(sunTilt);
-		sun.shadow.camera.near = 0;
-		sun.shadow.camera.far = height * 5 + 100;
-		sun.shadow.camera.left = -height * 10;
-		sun.shadow.camera.right = height * 6;
-		sun.shadow.camera.top = height * 10;
-		sun.shadow.camera.bottom = -height * 4;
-		sun.shadow.mapSize.width = 4096;
-		sun.shadow.mapSize.height = 4096;
-	};
-	updateLight();
+	// sun.target = sun;
+	updateLight(sun);
 	sun.castShadow = true;
 	scene.add(sun);
 
-	return scene;
+	return { scene, sun };
 };
 
 const getCamera = (renderer: WebGLRenderer) => {
@@ -83,6 +84,7 @@ type EntityData = {
 	onHealthChangeListener?: (prop: string) => void;
 	updatePosition: boolean;
 	updateHealth: boolean;
+	knownObject: Object3D;
 };
 
 export class ThreeGraphics extends System {
@@ -95,6 +97,7 @@ export class ThreeGraphics extends System {
 	private entityData: Map<Entity, EntityData> = new Map();
 	private renderer: WebGLRenderer;
 	private scene: Scene;
+	private sun: DirectionalLight;
 
 	// This should ideally be an entity...
 	camera: PerspectiveCamera;
@@ -106,8 +109,10 @@ export class ThreeGraphics extends System {
 
 		const canvas = getCanvas();
 		this.renderer = getRenderer(canvas);
-		this.scene = getScene();
 		this.camera = getCamera(this.renderer);
+		const { scene, sun } = getScene();
+		this.scene = scene;
+		this.sun = sun;
 
 		// helps with camera -> renderer -> updateSize -> camera
 		(async () => this.updateSize())();
@@ -130,13 +135,14 @@ export class ThreeGraphics extends System {
 	}
 
 	onAddEntity(entity: Entity): void {
-		const objectComponent = SceneObjectComponent.get(entity)!;
-		this.scene.add(objectComponent.object);
+		const object = SceneObjectComponent.get(entity)!.object;
+		this.scene.add(object);
 
 		// Add listeners
 		const data: EntityData = {
 			updatePosition: true,
 			updateHealth: true,
+			knownObject: object,
 		};
 		if (Sprite.isSprite(entity)) {
 			data.onChangePositionListener = () => {
@@ -158,8 +164,8 @@ export class ThreeGraphics extends System {
 	}
 
 	onRemoveEntity(entity: Entity): void {
-		const objectComponent = SceneObjectComponent.get(entity);
-		if (objectComponent?.object) this.scene.remove(objectComponent?.object);
+		const object = this.entityData.get(entity)?.knownObject;
+		if (object) this.scene.remove(object);
 
 		if (Sprite.isSprite(entity)) {
 			const data = this.entityData.get(entity);
@@ -247,7 +253,7 @@ export class ThreeGraphics extends System {
 		if (!stillDirty) this.dirty.delete(entity);
 	}
 
-	private updateCamera(delta = 17 / 1000): void {
+	private updateCamera(delta = 17 / 1000, time?: number): void {
 		const activePan = this.activePan;
 		if (activePan) {
 			const { x, y } = activePan.step(
@@ -255,12 +261,18 @@ export class ThreeGraphics extends System {
 			);
 			this.camera.position.x = x;
 			this.camera.position.y = y;
+			this.sun.position.copy(this.camera.position);
+			updateLight(this.sun);
 			if (activePan.remaining === 0) this.activePan = undefined;
 		}
+		// if (time) {
+		// 	this.sun.position.x = Math.cos(time) * 10;
+		// 	this.sun.position.y = Math.sin(time) * 10;
+		// }
 	}
 
-	postRender(delta: number): void {
-		this.updateCamera(delta);
+	postRender(delta: number, time: number): void {
+		this.updateCamera(delta, time);
 		this.renderer.render(this.scene, this.camera);
 	}
 }

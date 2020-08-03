@@ -4,7 +4,6 @@ import { dragSelect } from "../entities/sprites/dragSelect";
 import { defined } from "../types";
 import { Unit } from "../entities/sprites/Unit";
 import { emptyElement } from "../util/html";
-import { panTo } from "../players/camera";
 
 const container = document.getElementById("hotkeys")!;
 
@@ -70,6 +69,7 @@ const center: Action = {
 		);
 		const x = xSum / dragSelect.selection.length;
 		const y = ySum / dragSelect.selection.length;
+		console.log("panTo", player.game.graphics?.panTo, { x, y });
 		player.game.graphics?.panTo({ x, y });
 	},
 };

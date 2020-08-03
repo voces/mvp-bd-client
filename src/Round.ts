@@ -194,6 +194,10 @@ class Round {
 			const targetTile = isCrosser ? TILE_TYPES.START : TILE_TYPES.SPAWN;
 			const Unit = isCrosser ? Crosser : Defender;
 			this._spawnUnit(player, Unit, targetTile);
+			// if (isCrosser)
+			// 	for (let i = 0; i < 30; i++)
+			// 		this._spawnUnit(player, Unit, targetTile);
+			// else this._spawnUnit(player, Unit, targetTile);
 		});
 	}
 

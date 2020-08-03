@@ -57,6 +57,8 @@ export class MeshBuilder extends System {
 		// Build/set the mesh
 		const builder = graphic.shape === "circle" ? createSphere : createBox;
 		const mesh = builder(entity, graphic);
+		mesh.castShadow = true;
+		mesh.receiveShadow = true;
 		mesh.position.x = entity.position.x;
 		mesh.position.y = entity.position.y;
 		mesh.position.z = entity.radius;
@@ -84,6 +86,7 @@ export class MeshBuilder extends System {
 
 		// Attach the mesh to the entity
 		new SceneObjectComponent(entity, mesh);
+		console.log(mesh);
 	}
 
 	onRemoveEntity(entity: Sprite): void {

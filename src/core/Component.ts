@@ -1,10 +1,7 @@
 import { Entity } from "./Entity";
 import { App } from "./App";
 
-export abstract class Component<
-	T extends Entity = Entity,
-	A extends unknown[] = []
-> {
+export abstract class Component<T extends Entity = Entity> {
 	readonly entity: T;
 
 	constructor(entity: T) {
@@ -22,11 +19,13 @@ const hasAppProp = (entity: Entity): entity is EntityWithApp =>
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	"app" in entity && (<EntityWithApp>entity).app instanceof App;
 
-export class EComponent<
+export abstract class EComponent<
 	InitializationParameters extends unknown[] = []
-> extends Component<Entity, InitializationParameters> {
-	protected static map = new WeakMap<Entity, EComponent>();
-	static get(entity: Entity): EComponent | undefined {
+> extends Component<Entity> {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	protected static map = new WeakMap<Entity, EComponent<any>>();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	static get(entity: Entity): EComponent<any> | undefined {
 		return this.map.get(entity);
 	}
 	static has(entity: Entity): boolean {
@@ -37,7 +36,7 @@ export class EComponent<
 		if (cleared && hasAppProp(entity))
 			entity.app.entityComponentUpdated(
 				entity,
-				<ComponentConstructor<EComponent>>this,
+				(this as unknown) as ComponentConstructor<EComponent>,
 			);
 		return cleared;
 	}
@@ -63,7 +62,7 @@ export class EComponent<
 
 	// This method is invoked by the constructor before notifying the App of a
 	// change
-	initialize?: (...rest: InitializationParameters) => void;
+	protected initialize?(...rest: InitializationParameters): void;
 }
 
 export type ComponentConstructor<T extends Component> = new (

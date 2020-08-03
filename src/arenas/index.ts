@@ -54,12 +54,12 @@ const processArena = (arena: InternalArena): Arena => {
 };
 
 export const arenas = [
-	theDump,
+	// theDump,
 	theFarm,
-	theGap,
-	theRock,
-	theTamedWoods,
-	theTarget,
-	theTinyRectangle,
-	theWoods,
+	// theGap,
+	// theRock,
+	// theTamedWoods,
+	// theTarget,
+	// theTinyRectangle,
+	// theWoods,
 ].map(processArena);
