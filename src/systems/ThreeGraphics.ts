@@ -29,8 +29,7 @@ const getRenderer = (canvas: HTMLCanvasElement) => {
 	const renderer = new WebGLRenderer({ antialias: true, canvas });
 	// renderer.gammaOutput = true;
 	renderer.setClearColor(0x000000);
-	// renderer.setPixelRatio( window.devicePixelRatio );
-	// renderer.setPixelRatio(0.5);
+	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.shadowMap.enabled = true;
 	if (!renderer.domElement.parentElement)
 		document.body.prepend(renderer.domElement);
@@ -39,20 +38,22 @@ const getRenderer = (canvas: HTMLCanvasElement) => {
 };
 
 const sunTilt = new Vector3(-10, -15, 25);
-const updateLight = (sun: DirectionalLight) => {
+const updateLight = (camera: PerspectiveCamera, sun: DirectionalLight) => {
+	sun.position.copy(camera.position).add(sunTilt);
 	const height = sun.position.z;
-	sun.position.copy(sun.position).add(sunTilt);
 	sun.shadow.camera.near = 0;
 	sun.shadow.camera.far = height * 5 + 100;
-	sun.shadow.camera.left = -height * 10;
-	sun.shadow.camera.right = height * 6;
-	sun.shadow.camera.top = height * 10;
-	sun.shadow.camera.bottom = -height * 4;
+
+	sun.shadow.camera.left = -height * 1;
+	sun.shadow.camera.right = height * 0.6;
+	sun.shadow.camera.top = height * 1;
+	sun.shadow.camera.bottom = -height * 0.4;
+
 	sun.shadow.mapSize.width = 4096;
 	sun.shadow.mapSize.height = 4096;
 };
 
-const getScene = () => {
+const getScene = (camera: PerspectiveCamera) => {
 	const scene = new Scene();
 
 	// Basic lighting
@@ -60,8 +61,8 @@ const getScene = () => {
 
 	// Sun
 	const sun = new DirectionalLight(0xffffff, 1);
-	// sun.target = sun;
-	updateLight(sun);
+	sun.target = camera;
+	updateLight(camera, sun);
 	sun.castShadow = true;
 	scene.add(sun);
 
@@ -110,7 +111,7 @@ export class ThreeGraphics extends System {
 		const canvas = getCanvas();
 		this.renderer = getRenderer(canvas);
 		this.camera = getCamera(this.renderer);
-		const { scene, sun } = getScene();
+		const { scene, sun } = getScene(this.camera);
 		this.scene = scene;
 		this.sun = sun;
 
@@ -253,7 +254,7 @@ export class ThreeGraphics extends System {
 		if (!stillDirty) this.dirty.delete(entity);
 	}
 
-	private updateCamera(delta = 17 / 1000, time?: number): void {
+	private updateCamera(delta = 17 / 1000): void {
 		const activePan = this.activePan;
 		if (activePan) {
 			const { x, y } = activePan.step(
@@ -261,18 +262,13 @@ export class ThreeGraphics extends System {
 			);
 			this.camera.position.x = x;
 			this.camera.position.y = y;
-			this.sun.position.copy(this.camera.position);
-			updateLight(this.sun);
+			updateLight(this.camera, this.sun);
 			if (activePan.remaining === 0) this.activePan = undefined;
 		}
-		// if (time) {
-		// 	this.sun.position.x = Math.cos(time) * 10;
-		// 	this.sun.position.y = Math.sin(time) * 10;
-		// }
 	}
 
-	postRender(delta: number, time: number): void {
-		this.updateCamera(delta, time);
+	postRender(delta: number): void {
+		this.updateCamera(delta);
 		this.renderer.render(this.scene, this.camera);
 	}
 }

@@ -86,7 +86,6 @@ export class MeshBuilder extends System {
 
 		// Attach the mesh to the entity
 		new SceneObjectComponent(entity, mesh);
-		console.log(mesh);
 	}
 
 	onRemoveEntity(entity: Sprite): void {
