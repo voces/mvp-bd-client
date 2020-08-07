@@ -212,12 +212,22 @@ export class ThreeGraphics extends System {
 				const { x, y } = moveTarget.path(moveTarget.renderProgress);
 				mesh.position.x = x;
 				mesh.position.y = y;
+				mesh.position.z =
+					mesh.position.z * 0.9 +
+					entity.game.terrain!.groundHeight(x, y) * 0.1;
 				return true;
 			}
 
 			// Otherwise update the rendering position and mark clean
 			mesh.position.x = entity.position.x;
 			mesh.position.y = entity.position.y;
+			mesh.position.z =
+				mesh.position.z * 0.9 +
+				entity.game.terrain!.groundHeight(
+					entity.position.x,
+					entity.position.y,
+				) *
+					0.1;
 		}
 
 		data.updatePosition = false;

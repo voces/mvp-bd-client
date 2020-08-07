@@ -6,7 +6,6 @@ import { Defender } from "./entities/sprites/Defender";
 import { dragSelect } from "./entities/sprites/dragSelect";
 import { elo, updateDisplay } from "./players/elo";
 import { emitter, Emitter } from "./emitter";
-import { panTo } from "./players/camera";
 import { Player } from "./players/Player";
 import { colors } from "./players/colors";
 import { Resource } from "./entities/sprites/obstructions/index";
@@ -56,7 +55,6 @@ class Round {
 	arena: Arena;
 	pathingMap: PathingMap;
 	expireAt: number;
-	requestedAnimationFrame?: number;
 
 	private tileSystem: TileSystem;
 

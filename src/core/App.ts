@@ -6,7 +6,7 @@ import { Entity } from "./Entity";
 
 class App {
 	protected systems: System[] = [];
-	private mechanisms: Mechanism[] = [];
+	protected mechanisms: Mechanism[] = [];
 	private lastRender = 0;
 	private requestedAnimationFrame?: number;
 	private _time = 0;

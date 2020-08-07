@@ -1,11 +1,4 @@
 import { dragSelect } from "./dragSelect";
-import {
-	active as activeObstructionPlacement,
-	snap,
-	start as showObstructionPlacement,
-	stop as hideObstructionPlacement,
-	valid as obstructionPlacementValid,
-} from "./obstructionPlacement";
 import { Unit } from "./Unit";
 import { Crosser } from "./Crosser";
 import { Obstruction } from "./obstructions/Obstruction";
@@ -107,17 +100,19 @@ const rightClick: UIEvents["mouseDown"] = ({
 };
 
 const leftClick: UIEvents["mouseDown"] = ({ x: clientX, y: clientY, game }) => {
-	if (!obstructionPlacementValid()) return;
-	const obstruction = activeObstructionPlacement()!;
+	const obstructionPlacement = game.obstructionPlacement;
+	if (!obstructionPlacement) return;
+	if (!obstructionPlacement.valid) return;
+	const obstruction = obstructionPlacement.active!;
 
 	const { x: xWorld, y: yWorld } = clientToWorld({
 		x: clientX,
 		y: clientY,
 	});
-	const x = snap(xWorld);
-	const y = snap(yWorld);
+	const x = obstructionPlacement.snap(xWorld);
+	const y = obstructionPlacement.snap(yWorld);
 
-	hideObstructionPlacement();
+	obstructionPlacement.stop();
 
 	const builder = dragSelect.selection.find(
 		(s) => s.owner === game.localPlayer && s instanceof Crosser,
@@ -158,8 +153,11 @@ export const initSpriteLogicListeners = (game: Game): void => {
 					u.owner === game.localPlayer && u.constructor === Crosser,
 			);
 
-			if (ownerCrossers.length)
-				showObstructionPlacement(hotkey.obstruction);
+			if (ownerCrossers.length) {
+				const obstructionPlacement = game.obstructionPlacement;
+				if (!obstructionPlacement) return;
+				obstructionPlacement.start(hotkey.obstruction);
+			}
 		}
 	});
 

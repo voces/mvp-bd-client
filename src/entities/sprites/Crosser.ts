@@ -1,9 +1,5 @@
 import { Unit, UnitProps } from "./Unit";
 import { dragSelect } from "./dragSelect";
-import {
-	stop as stopPlacement,
-	active as activePlacement,
-} from "./obstructionPlacement";
 import { Sprite } from "./Sprite";
 import {
 	Obstruction,
@@ -73,7 +69,7 @@ export class Crosser extends Unit {
 			[...this.owner.sprites].forEach((sprite) => sprite.kill());
 
 			// Cancel any active placements
-			if (activePlacement()) stopPlacement();
+			this.game.obstructionPlacement?.stop();
 		});
 	}
 
@@ -99,7 +95,7 @@ export class Crosser extends Unit {
 		if (index >= 0) this.round.sprites.splice(index, 1);
 
 		// Cancel any active placements
-		if (activePlacement()) stopPlacement();
+		this.game.obstructionPlacement?.stop();
 
 		const MeshBuilderComponent = MeshBuilderComponentManager.get(this);
 		if (MeshBuilderComponent)

@@ -5,10 +5,6 @@ import { Point } from "../../pathing/PathingMap";
 import { Player } from "../../players/Player";
 import { Action } from "./spriteLogic";
 import { Obstruction, ObstructionSubclass } from "./obstructions/index";
-import {
-	active as activeObstructionPlacement,
-	stop as hideObstructionPlacement,
-} from "./obstructionPlacement";
 import { MoveTargetManager, MoveTarget } from "../../components/MoveTarget";
 import {
 	AttackTargetManager,
@@ -19,10 +15,7 @@ import {
 	HoldPositionManager,
 	HoldPositionComponent,
 } from "../../components/HoldPositionComponent";
-import {
-	BuildTargetManager,
-	BuildTarget,
-} from "../../components/BuildTarget";
+import { BuildTargetManager, BuildTarget } from "../../components/BuildTarget";
 import {
 	DamageComponentManager,
 	Weapon,
@@ -65,12 +58,12 @@ const stop: Action = {
 	},
 };
 
-const cancel = {
+const cancel: Action = {
 	name: "Cancel",
 	hotkey: "Escape" as const,
 	type: "custom" as const,
-	handler: (): void => {
-		if (activeObstructionPlacement()) hideObstructionPlacement();
+	handler: ({ player }): void => {
+		player.game.obstructionPlacement?.stop();
 	},
 };
 

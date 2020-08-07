@@ -9,7 +9,7 @@ import { Settings } from "./types";
 import { emptyElement } from "./util/html";
 import { Network, NetworkEventCallback } from "./Network";
 import { UI } from "./ui/index";
-import { initObstructionPlacement } from "./entities/sprites/obstructionPlacement";
+// import { initObstructionPlacement } from "./entities/sprites/obstructionPlacement";
 import { initPlayerLogic } from "./players/playerLogic";
 import { initSpriteLogicListeners } from "./entities/sprites/spriteLogic";
 import { App } from "./core/App";
@@ -26,6 +26,7 @@ import { MeshBuilder } from "./systems/MeshBuilder";
 // import { Terrain as TerrainMesh } from "notextures";
 import { Terrain } from "./entities/Terrain";
 import { ThreeGraphics } from "./systems/ThreeGraphics";
+import { ObstructionPlacement } from "./mechanisms/ObstructionPlacement";
 
 const tilesElemnt = document.getElementById("tiles")!;
 
@@ -88,7 +89,7 @@ class Game extends App {
 		this.addNetworkListener("update", (e) => this.update(e));
 
 		this.ui = new UI(this);
-		initObstructionPlacement(this);
+		this.addMechanism(new ObstructionPlacement(this));
 		initPlayerLogic(this);
 		initSpriteLogicListeners(this);
 
@@ -241,6 +242,14 @@ class Game extends App {
 		const sys = this.systems.find((s) => ThreeGraphics.isThreeGraphics(s));
 		if (!sys) return;
 		if (ThreeGraphics.isThreeGraphics(sys)) return sys;
+	}
+
+	get obstructionPlacement(): ObstructionPlacement | undefined {
+		const mech = this.mechanisms.find((s) =>
+			ObstructionPlacement.isObstructionPlacement(s),
+		);
+		if (!mech) return;
+		if (ObstructionPlacement.isObstructionPlacement(mech)) return mech;
 	}
 
 	start({ time }: { time: number }): void {

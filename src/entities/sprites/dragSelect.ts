@@ -1,4 +1,3 @@
-import { active } from "./obstructionPlacement";
 import { swallow } from "../../util/swallow";
 import { emitter } from "../../emitter";
 import { Sprite, SpriteElement } from "./Sprite";
@@ -57,7 +56,9 @@ if (typeof window !== "undefined")
 		const internalDragSelect = new DragSelect({
 			selector,
 			onDragStartBegin: () => {
-				if (active()) return internalDragSelect.break();
+				// TODO: restore this functionality when dragSelect is turned
+				// into a mechanism
+				// if (active()) return internalDragSelect.break();
 			},
 			onDragMove: () => {
 				if (allSelectables) return;
