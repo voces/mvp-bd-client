@@ -18,12 +18,11 @@ const getColor = (entity: Sprite, graphic: MeshBuilderComponent) =>
 const getMat = (entity: Sprite, graphic: MeshBuilderComponent) =>
 	new MeshPhongMaterial({ color: getColor(entity, graphic) });
 
-const createSphere = (entity: Sprite, graphic: MeshBuilderComponent): Mesh =>
-	new Mesh(
-		new SphereBufferGeometry(entity.radius / 2),
-		getMat(entity, graphic),
-	);
-
+const createSphere = (entity: Sprite, graphic: MeshBuilderComponent): Mesh => {
+	const geometry = new SphereBufferGeometry(entity.radius);
+	geometry.translate(0, 0, entity.radius);
+	return new Mesh(geometry, getMat(entity, graphic));
+};
 const createBox = (entity: Sprite, graphic: MeshBuilderComponent): Mesh =>
 	new Mesh(
 		new BoxBufferGeometry(entity.radius, entity.radius, entity.radius),

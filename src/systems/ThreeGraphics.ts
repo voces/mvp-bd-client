@@ -16,7 +16,10 @@ import {
 	Vector3,
 	Vector2,
 	PerspectiveCamera,
+	PCFSoftShadowMap,
 } from "three";
+import { Position } from "../components/Position";
+import { Game } from "../Game";
 
 const getCanvas = () => {
 	const canvas = document.createElement("canvas");
@@ -26,11 +29,15 @@ const getCanvas = () => {
 };
 
 const getRenderer = (canvas: HTMLCanvasElement) => {
-	const renderer = new WebGLRenderer({ antialias: true, canvas });
+	const renderer = new WebGLRenderer({
+		antialias: window.devicePixelRatio > 1 ? false : true,
+		canvas,
+	});
 	// renderer.gammaOutput = true;
 	renderer.setClearColor(0x000000);
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = PCFSoftShadowMap;
 	if (!renderer.domElement.parentElement)
 		document.body.prepend(renderer.domElement);
 
@@ -100,13 +107,16 @@ export class ThreeGraphics extends System {
 	private scene: Scene;
 	private sun: DirectionalLight;
 
+	private game: Game;
+
 	// This should ideally be an entity...
 	camera: PerspectiveCamera;
 
 	private activePan?: PathTweener & { duration: number };
 
-	constructor() {
+	constructor(game: Game) {
 		super();
+		this.game = game;
 
 		const canvas = getCanvas();
 		this.renderer = getRenderer(canvas);
@@ -205,6 +215,8 @@ export class ThreeGraphics extends System {
 		time: number,
 		data: EntityData,
 	): boolean {
+		let position: Position | undefined;
+
 		if (Sprite.isSprite(entity)) {
 			const moveTarget = MoveTargetManager.get(entity);
 			if (moveTarget && Unit.isUnit(entity)) {
@@ -222,12 +234,18 @@ export class ThreeGraphics extends System {
 			mesh.position.x = entity.position.x;
 			mesh.position.y = entity.position.y;
 			mesh.position.z =
-				mesh.position.z * 0.9 +
+				mesh.position.z * 0.75 +
 				entity.game.terrain!.groundHeight(
 					entity.position.x,
 					entity.position.y,
 				) *
-					0.1;
+					0.25;
+		} else if ((position = Position.get(entity))) {
+			mesh.position.x = position.x;
+			mesh.position.y = position.y;
+			mesh.position.z =
+				mesh.position.z * 0.75 +
+				this.game.terrain!.groundHeight(position.x, position.y) * 0.25;
 		}
 
 		data.updatePosition = false;

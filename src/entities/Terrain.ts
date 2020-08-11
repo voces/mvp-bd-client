@@ -29,15 +29,35 @@ const isRamp = (x: number, y: number, layers: number[][]) => {
 	return true;
 };
 
+/**
+ * Returns the z coordinate of point (x, y) on the plane defined by (a, b, c)
+ */
+export const interpolateZ = (
+	[a, b, c]: readonly [Vector3, Vector3, Vector3],
+	x: number,
+	y: number,
+): number => {
+	// Solution: https://math.stackexchange.com/a/28050 and
+	// https://math.stackexchange.com/a/28046
+	const v1 = a.clone().sub(b);
+	const v2 = a.clone().sub(c);
+	const n = v1.cross(v2);
+	const k = n.x * a.x + n.y * a.y + n.z * a.z;
+
+	return (k - n.x * x - n.y * y) / n.z;
+};
+
 type TVector = TerrainMesh["vertices"][number][number][number];
 
 export class Terrain {
 	private group: Group;
+	private height: number;
 	constructor(arena: Arena) {
 		const tileZeroes = arena.layers.map((r) => r.map(() => 0));
 		const vertexZeroes = Array(arena.layers[0].length + 1).fill(
 			new Array(arena.layers.length + 1),
 		);
+		this.height = arena.layers.length;
 		const mesh = new TerrainMesh({
 			masks: {
 				height: vertexZeroes,
@@ -55,7 +75,7 @@ export class Terrain {
 			},
 			offset: {
 				x: 0,
-				y: arena.layers.length - 2,
+				y: this.height,
 				z: 0,
 			},
 			tiles: [
@@ -67,7 +87,7 @@ export class Terrain {
 			],
 			size: {
 				width: arena.layers[0].length,
-				height: arena.layers.length,
+				height: this.height,
 			},
 		});
 		new SceneObjectComponent(this, mesh);
@@ -88,7 +108,8 @@ export class Terrain {
 		let triangle: [Vector3, Vector3, Vector3];
 		const terrain = SceneObjectComponent.get(this)!.object as TerrainMesh;
 		const geometry = terrain.ground.geometry as Geometry;
-		const faces = terrain.groundFaces[Math.floor(y)]?.[Math.floor(x)];
+		const faces =
+			terrain.groundFaces[Math.floor(this.height - y)]?.[Math.floor(x)];
 		if (!faces) return 0;
 
 		{
@@ -110,37 +131,9 @@ export class Terrain {
 					  ];
 		}
 
-		let height: number;
-
-		if (triangle[0].x !== triangle[1].x)
-			// h1 = z + diff.z * percent.x
-			height =
-				triangle[0].z -
-				((triangle[0].z - triangle[1].z) * (x - triangle[0].x)) /
-					(triangle[1].x - triangle[0].x);
-		else
-			height =
-				triangle[0].z -
-				((triangle[0].z - triangle[2].z) * (x - triangle[0].x)) /
-					(triangle[2].x - triangle[0].x);
-
-		if (triangle[0].y !== triangle[1].y)
-			// h1 = z + diff.z * percent.x
-			height +=
-				triangle[0].z -
-				((triangle[0].z - triangle[1].z) * (y - triangle[0].y)) /
-					(triangle[1].y - triangle[0].y);
-		else
-			height +=
-				triangle[0].z -
-				((triangle[0].z - triangle[2].z) * (y - triangle[0].y)) /
-					(triangle[2].y - triangle[0].y);
-
-		height = height / 2;
+		const height = interpolateZ(triangle, x, y);
 
 		this.lastGroundHeight = { x, y, height };
-
-		// console.log(this.lastGroundHeight);
 
 		return height;
 	}

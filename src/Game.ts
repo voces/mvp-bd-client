@@ -78,7 +78,7 @@ class Game extends App {
 		this.addSystem(new AnimationSystem());
 		this.addSystem(new SelectedSystem());
 		this.addSystem(new MeshBuilder());
-		this.addSystem(new ThreeGraphics());
+		this.addSystem(new ThreeGraphics(this));
 
 		this.network = network;
 		this.addNetworkListener = this.network.addEventListener.bind(

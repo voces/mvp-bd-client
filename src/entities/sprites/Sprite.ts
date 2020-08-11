@@ -10,7 +10,7 @@ import {
 	MeshBuilderComponent,
 	MeshBuilderComponentManager,
 } from "../../components/graphics/MeshBuilderComponent";
-import { Position } from "../../components/Position";
+import { DeprecatedPosition } from "../../components/DeprecatedPosition";
 import { MoveTargetManager } from "../../components/MoveTarget";
 import { AttackTargetManager } from "../../components/AttackTarget";
 import { HoldPositionManager } from "../../components/HoldPositionComponent";
@@ -81,7 +81,7 @@ class Sprite {
 	selectable: boolean;
 
 	// components
-	position: Position;
+	position: DeprecatedPosition;
 
 	// todo: move these to unit
 	buildProgress?: number;
@@ -146,7 +146,7 @@ class Sprite {
 		this.selectable = selectable;
 		// todo:
 		Object.assign(this, { html: {} });
-		this.position = new Position(x, y);
+		this.position = new DeprecatedPosition(x, y);
 
 		MeshBuilderComponentManager.set(
 			this,
@@ -244,7 +244,7 @@ class Sprite {
 		constructor: string;
 		health: number;
 		owner?: number;
-		position: Position;
+		position: DeprecatedPosition;
 	} {
 		return {
 			constructor: this.constructor.name,

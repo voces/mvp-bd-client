@@ -15,6 +15,8 @@ import { Unit } from "./entities/sprites/Unit";
 import { Sprite } from "./entities/sprites/Sprite";
 import { Game } from "./Game";
 import { TileSystem } from "./systems/TileSystem";
+import { SceneObjectComponent } from "./components/graphics/SceneObjectComponent";
+import { Mesh, Object3D } from "three";
 
 let placeholderPlayer: Player;
 
@@ -186,6 +188,20 @@ class Round {
 			});
 	}
 
+	ball(x: number, y: number): Sprite {
+		const radius = 0.25;
+		const sprite = new Sprite({
+			graphic: { shape: "circle" },
+			x,
+			y,
+			game: this.game,
+			radius,
+		});
+		const mesh = SceneObjectComponent.get(sprite)!.object;
+		mesh.position.z = this.game.terrain!.groundHeight(x, y);
+		return sprite;
+	}
+
 	spawnUnits(): void {
 		this.players.forEach((player) => {
 			const isCrosser = this.crossers.includes(player);
@@ -197,6 +213,15 @@ class Round {
 			// 		this._spawnUnit(player, Unit, targetTile);
 			// else this._spawnUnit(player, Unit, targetTile);
 		});
+		[
+			{ x: 0, y: 0 },
+			{ x: 0, y: this.game.arena.layers.length },
+			{ x: this.game.arena.layers[0].length, y: 0 },
+			{
+				x: this.game.arena.layers[0].length,
+				y: this.game.arena.layers.length,
+			},
+		].forEach(({ x, y }) => this.ball(x, y));
 	}
 
 	onCrosserRemoval(): void {
