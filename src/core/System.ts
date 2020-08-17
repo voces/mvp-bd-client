@@ -1,12 +1,7 @@
 import { Sprite } from "../entities/sprites/Sprite";
-import { ComponentConstructor } from "./Component";
+import { DeprecatedComponentConstructor } from "./Component";
 import { Unit } from "../entities/sprites/Unit";
 import { Entity } from "./Entity";
-
-type SystemEvents = {
-	add: (entity: Sprite) => void;
-	remove: (entity: Sprite) => void;
-};
 
 abstract class System<T extends Entity = Entity> {
 	private set: Set<T> = new Set();
@@ -20,7 +15,9 @@ abstract class System<T extends Entity = Entity> {
 	> = new Map();
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static readonly components: ReadonlyArray<ComponentConstructor<any>> = [];
+	static readonly components: ReadonlyArray<
+		DeprecatedComponentConstructor<any>
+	> = [];
 
 	static props = new Array<keyof Unit>();
 

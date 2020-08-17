@@ -1,8 +1,8 @@
-import { EComponent } from "../../core/Component";
+import { Component } from "../../core/Component";
 import { Entity } from "../../core/Entity";
 import { Object3D } from "three";
 
-export class SceneObjectComponent extends EComponent<[Object3D]> {
+export class SceneObjectComponent extends Component<[Object3D]> {
 	protected static map = new WeakMap<Entity, SceneObjectComponent>();
 	static get(entity: Entity): SceneObjectComponent | undefined {
 		return this.map.get(entity);

@@ -1,10 +1,9 @@
-import { dragSelect } from "./dragSelect";
 import { Unit } from "./Unit";
 import { Crosser } from "./Crosser";
 import { Obstruction } from "./obstructions/Obstruction";
 import { clientToWorld } from "../../players/camera";
 import { Defender } from "./Defender";
-import { SpriteElement } from "./Sprite";
+import { SpriteElement, Sprite } from "./Sprite";
 import { obstructionMap } from "./obstructions/index";
 import { activeHotkeys } from "../../ui/hotkeys";
 import { UIEvents } from "../../ui/index";
@@ -63,8 +62,8 @@ const rightClick: UIEvents["mouseDown"] = ({
 }) => {
 	const { x, y } = clientToWorld({ x: clientX, y: clientY });
 
-	const ownedSprites = dragSelect.selection.filter(
-		(s) => s.owner === game.localPlayer,
+	const ownedSprites = game.selectionSystem.selection.filter(
+		(s) => Sprite.isSprite(s) && s.owner === game.localPlayer,
 	);
 
 	const units = ownedSprites.filter((u) => u instanceof Unit);
@@ -96,7 +95,7 @@ const rightClick: UIEvents["mouseDown"] = ({
 
 	// Filter out obstructions when ordering to move
 	if (toMove.length > 0 && ownedSprites.some((u) => u instanceof Obstruction))
-		dragSelect.setSelection(units);
+		game.selectionSystem.setSelection(units);
 };
 
 const leftClick: UIEvents["mouseDown"] = ({ x: clientX, y: clientY, game }) => {
@@ -114,8 +113,11 @@ const leftClick: UIEvents["mouseDown"] = ({ x: clientX, y: clientY, game }) => {
 
 	obstructionPlacement.stop();
 
-	const builder = dragSelect.selection.find(
-		(s) => s.owner === game.localPlayer && s instanceof Crosser,
+	const builder = game.selectionSystem.selection.find(
+		(s): s is Crosser =>
+			Sprite.isSprite(s) &&
+			s.owner === game.localPlayer &&
+			Crosser.isCrosser(s),
 	);
 
 	if (!builder) return;
@@ -148,9 +150,11 @@ export const initSpriteLogicListeners = (game: Game): void => {
 			return hotkey.handler({ player: game.localPlayer });
 
 		if (hotkey.type === "build") {
-			const ownerCrossers = dragSelect.selection.filter(
-				(u) =>
-					u.owner === game.localPlayer && u.constructor === Crosser,
+			const ownerCrossers = game.selectionSystem.selection.filter(
+				(u): u is Crosser =>
+					Sprite.isSprite(u) &&
+					u.owner === game.localPlayer &&
+					u.constructor === Crosser,
 			);
 
 			if (ownerCrossers.length) {

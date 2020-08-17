@@ -1,7 +1,7 @@
 import { System } from "./System";
 import { Mechanism } from "./Merchanism";
 import { requestAnimationFrame } from "../util/globals";
-import { ComponentConstructor } from "./Component";
+import { DeprecatedComponentConstructor } from "./Component";
 import { Entity } from "./Entity";
 
 class App {
@@ -12,7 +12,7 @@ class App {
 	private _time = 0;
 	private componentUpdateMap = new Map<
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		ComponentConstructor<any>,
+		DeprecatedComponentConstructor<any>,
 		System[]
 	>();
 	// TODO: make this private!
@@ -81,7 +81,7 @@ class App {
 	entityComponentUpdated(
 		entity: Entity,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		component: ComponentConstructor<any>,
+		component: DeprecatedComponentConstructor<any>,
 	): void {
 		const arr = this.componentUpdateMap.get(component);
 		if (!arr) return;

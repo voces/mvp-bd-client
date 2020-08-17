@@ -1,9 +1,10 @@
 import { Action } from "../entities/sprites/spriteLogic";
 import { document } from "../util/globals";
-import { dragSelect } from "../entities/sprites/dragSelect";
 import { defined } from "../types";
 import { Unit } from "../entities/sprites/Unit";
 import { emptyElement } from "../util/html";
+import { Sprite } from "../entities/sprites/Sprite";
+import { Entity } from "../core/Entity";
 
 const container = document.getElementById("hotkeys")!;
 
@@ -57,18 +58,23 @@ const center: Action = {
 	hotkey: " " as const,
 	type: "custom" as const,
 	handler: ({ player }): void => {
-		if (dragSelect.selection.length === 0 && player.sprites.length)
-			return dragSelect.setSelection([player.sprites[0]]);
+		const selectionSystem = player.game.selectionSystem;
+		const selection = selectionSystem.selection;
 
-		const { xSum, ySum } = dragSelect.selection.reduce(
-			({ xSum, ySum }, { position: { x, y } }) => ({
-				xSum: xSum + x,
-				ySum: ySum + y,
-			}),
-			{ xSum: 0, ySum: 0 },
-		);
-		const x = xSum / dragSelect.selection.length;
-		const y = ySum / dragSelect.selection.length;
+		if (selection.length === 0 && player.sprites.length)
+			return selectionSystem.setSelection([player.sprites[0]]);
+
+		const { xSum, ySum } = selection
+			.filter((e): e is Sprite => Sprite.isSprite(e))
+			.reduce(
+				({ xSum, ySum }, { position: { x, y } }) => ({
+					xSum: xSum + x,
+					ySum: ySum + y,
+				}),
+				{ xSum: 0, ySum: 0 },
+			);
+		const x = xSum / selection.length;
+		const y = ySum / selection.length;
 		console.log("panTo", player.game.graphics?.panTo, { x, y });
 		player.game.graphics?.panTo({ x, y });
 	},
@@ -77,7 +83,9 @@ const center: Action = {
 const aCharCode = "a".charCodeAt(0);
 const zCharCode = "z".charCodeAt(0);
 
-dragSelect.addEventListener("selection", (sprites) => {
+// dragSelect.addEventListener("selection", (sprites) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const onSelection = (sprites: ReadonlyArray<Entity>) => {
 	// Clear hotkeys
 	emptyElement(container);
 	activeHotkeys.splice(0);
@@ -108,4 +116,4 @@ dragSelect.addEventListener("selection", (sprites) => {
 		const elem = action.elem ?? genNode(action);
 		container.appendChild(elem);
 	});
-});
+};

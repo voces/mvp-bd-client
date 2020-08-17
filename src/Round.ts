@@ -3,7 +3,6 @@ import { PathingMap } from "./pathing/PathingMap";
 import { TILE_TYPES, TileType } from "./constants";
 import { Crosser } from "./entities/sprites/Crosser";
 import { Defender } from "./entities/sprites/Defender";
-import { dragSelect } from "./entities/sprites/dragSelect";
 import { elo, updateDisplay } from "./players/elo";
 import { emitter, Emitter } from "./emitter";
 import { Player } from "./players/Player";
@@ -16,7 +15,6 @@ import { Sprite } from "./entities/sprites/Sprite";
 import { Game } from "./Game";
 import { TileSystem } from "./systems/TileSystem";
 import { SceneObjectComponent } from "./components/graphics/SceneObjectComponent";
-import { Mesh, Object3D } from "three";
 
 let placeholderPlayer: Player;
 
@@ -175,10 +173,9 @@ class Round {
 		if (!maxTries) console.error("Exhausted placement attempts");
 
 		// Select + pan to it
-		if (player === this.game.localPlayer) {
-			dragSelect.setSelection([unit]);
+		if (player === this.game.localPlayer)
+			// todo: set selection
 			this.game.graphics?.panTo(unit.position, 0);
-		}
 
 		// Add event listeners
 		if (player)

@@ -1,7 +1,7 @@
 import { Entity } from "./Entity";
-import { App } from "./App";
+import { hasAppProp } from "./util";
 
-export abstract class Component<T extends Entity = Entity> {
+export abstract class DeprecatedComponent<T extends Entity = Entity> {
 	readonly entity: T;
 
 	constructor(entity: T) {
@@ -13,30 +13,38 @@ export abstract class Component<T extends Entity = Entity> {
 	}
 }
 
-type EntityWithApp = { app: App };
-
-const hasAppProp = (entity: Entity): entity is EntityWithApp =>
+export type DeprecatedComponentConstructor<
+	T extends DeprecatedComponent
+> = new (
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	"app" in entity && (<EntityWithApp>entity).app instanceof App;
+	...args: any[]
+) => T;
 
-export abstract class EComponent<
+export abstract class Component<
 	InitializationParameters extends unknown[] = []
-> extends Component<Entity> {
+> extends DeprecatedComponent<Entity> {
+	static isComponentClass = (
+		klass: typeof DeprecatedComponent | typeof Component,
+	): klass is typeof Component => klass.prototype instanceof Component;
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	protected static map = new WeakMap<Entity, EComponent<any>>();
+	protected static map = new WeakMap<Entity, Component<any>>();
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static get(entity: Entity): EComponent<any> | undefined {
+	static get(entity: Entity): Component<any> | undefined {
 		return this.map.get(entity);
 	}
+
 	static has(entity: Entity): boolean {
 		return this.map.has(entity);
 	}
+
 	static clear(entity: Entity): boolean {
 		const cleared = this.map.delete(entity);
 		if (cleared && hasAppProp(entity))
 			entity.app.entityComponentUpdated(
 				entity,
-				(this as unknown) as ComponentConstructor<EComponent>,
+				(this as unknown) as DeprecatedComponentConstructor<Component>,
 			);
 		return cleared;
 	}
@@ -44,7 +52,7 @@ export abstract class EComponent<
 	constructor(entity: Entity, ...rest: InitializationParameters) {
 		super(entity);
 
-		const constructor = <typeof EComponent>this.constructor;
+		const constructor = <typeof Component>this.constructor;
 		if (constructor.has(entity))
 			throw new Error(
 				`Adding duplicate component ${constructor.name} to Entity ${entity.constructor.name}`,
@@ -56,7 +64,7 @@ export abstract class EComponent<
 		if (hasAppProp(this.entity))
 			this.entity.app.entityComponentUpdated(
 				entity,
-				<ComponentConstructor<EComponent>>this.constructor,
+				<DeprecatedComponentConstructor<Component>>this.constructor,
 			);
 	}
 

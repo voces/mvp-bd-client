@@ -1,27 +1,33 @@
 import { System } from "../core/System";
-import { Sprite } from "../entities/sprites/Sprite";
 import { Selected } from "../components/Selected";
-import {
-	MeshBuilderComponent,
-	MeshBuilderComponentManager,
-} from "../components/graphics/MeshBuilderComponent";
+import { Entity } from "../core/Entity";
 
 export class SelectedSystem extends System {
-	static components = [Selected, MeshBuilderComponent];
+	static components = [Selected];
 
-	test(entity: Sprite): entity is Sprite {
-		return Selected.has(entity) && MeshBuilderComponentManager.has(entity);
+	static isSelectedSystem = (system: System): system is SelectedSystem =>
+		system instanceof SelectedSystem;
+
+	test(entity: Entity): entity is Entity {
+		return Selected.has(entity);
 	}
 
-	onAddEntity(entity: Sprite): void {
-		const div = MeshBuilderComponentManager.get(entity)?.entityElement;
-		if (!div) return;
-		div.classList.add("selected");
+	onAddEntity(entity: Entity): void {}
+
+	onRemoveEntity(entity: Entity): void {}
+
+	get selection(): ReadonlyArray<Entity> {
+		return Array.from(this);
 	}
 
-	onRemoveEntity(entity: Sprite): void {
-		const div = MeshBuilderComponentManager.get(entity)?.entityElement;
-		if (!div) return;
-		div.classList.remove("selected");
+	select(entity: Entity): boolean {
+		if (this.test(entity)) return false;
+		new Selected(entity);
+		return true;
+	}
+
+	setSelection(entities: ReadonlyArray<Entity>): void {
+		for (const curSelected of this) Selected.clear(curSelected);
+		for (const newSelected of entities) new Selected(newSelected);
 	}
 }

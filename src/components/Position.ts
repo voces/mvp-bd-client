@@ -1,7 +1,7 @@
-import { EComponent } from "../core/Component";
+import { Component } from "../core/Component";
 import { Entity } from "../core/Entity";
 
-export class Position extends EComponent<
+export class Position extends Component<
 	[number, number, { zOffset: number; flyHeight: number }]
 > {
 	protected static map = new WeakMap<Entity, Position>();

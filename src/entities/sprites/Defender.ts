@@ -2,7 +2,6 @@ import { MIRROR_SEPARATION } from "../../constants";
 import { Unit, UnitProps } from "./Unit";
 import { Sprite } from "./Sprite";
 import { Point } from "../../pathing/PathingMap";
-import { dragSelect } from "./dragSelect";
 import { Action } from "./spriteLogic";
 
 const mirror: Action = {
@@ -10,8 +9,8 @@ const mirror: Action = {
 	hotkey: "r" as const,
 	type: "custom" as const,
 	handler: ({ player }): void => {
-		const ownUnits = dragSelect.selection.filter(
-			(u) => u.owner === player && Unit.isUnit(u),
+		const ownUnits = player.game.selectionSystem.selection.filter(
+			(u): u is Unit => Unit.isUnit(u) && u.owner === player,
 		);
 		const realDefenders = ownUnits.filter(
 			(u) => Unit.isUnit(u) && !u.isIllusion,

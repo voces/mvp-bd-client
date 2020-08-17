@@ -1,9 +1,9 @@
 import { Sprite } from "../entities/sprites/Sprite";
-import { Component } from "../core/Component";
-import { ComponentManager } from "../core/ComponentManager";
+import { DeprecatedComponent } from "../core/Component";
+import { DeprecatedComponentManager } from "../core/DeprecatedComponentManager";
 import { INITIAL_OBSTRUCTION_PROGRESS } from "../constants";
 
-export class GerminateComponent extends Component {
+export class GerminateComponent extends DeprecatedComponent {
 	progress = INITIAL_OBSTRUCTION_PROGRESS;
 
 	constructor(entity: Sprite) {
@@ -11,6 +11,6 @@ export class GerminateComponent extends Component {
 	}
 }
 
-export const GerminateComponentManager = new ComponentManager<
+export const GerminateComponentManager = new DeprecatedComponentManager<
 	GerminateComponent
 >(GerminateComponent);

@@ -1,4 +1,3 @@
-import { Sprite } from "../Sprite";
 import {
 	INITIAL_OBSTRUCTION_PROGRESS,
 	PATHING_TYPES,
@@ -8,11 +7,11 @@ import { ResourceMap } from "../../../types";
 import { Player } from "../../../players/Player";
 import { Unit, UnitProps } from "../Unit";
 import { Action } from "../spriteLogic";
-import { dragSelect } from "../dragSelect";
 import {
 	GerminateComponentManager,
 	GerminateComponent,
 } from "../../../components/GerminateComponent";
+import { Entity } from "../../../core/Entity";
 
 const destroySelf: Action = {
 	name: "Destroy box",
@@ -21,13 +20,15 @@ const destroySelf: Action = {
 	type: "custom" as const,
 	handler: ({ player }): void => {
 		// Get currently selected boxes
-		const obstructions = dragSelect.selection.filter(
-			(s) => s.owner === player && Obstruction.isObstruction,
+		const obstructions = player.game.selectionSystem.selection.filter(
+			(s): s is Obstruction =>
+				Obstruction.isObstruction(s) && s.owner === player,
 		);
 
 		// Select the main unit
 		const playerCrosser = player.unit;
-		if (playerCrosser) dragSelect.setSelection([playerCrosser]);
+		if (playerCrosser)
+			player.game.selectionSystem.setSelection([playerCrosser]);
 
 		// Kill selected obstructions
 		player.game.transmit({
@@ -57,8 +58,8 @@ export abstract class Obstruction extends Unit {
 		},
 	};
 
-	static isObstruction = (sprite: Sprite): sprite is Obstruction =>
-		sprite instanceof Obstruction;
+	static isObstruction = (entity: Entity): entity is Obstruction =>
+		entity instanceof Obstruction;
 
 	requiresTilemap = toFootprint(this.radius, this.requiresPathing);
 	blocksTilemap = toFootprint(this.radius, this.blocksPathing);

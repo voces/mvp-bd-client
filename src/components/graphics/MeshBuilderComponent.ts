@@ -1,19 +1,17 @@
-import { Sprite } from "../../entities/sprites/Sprite";
-import { Component } from "../../core/Component";
-import { ComponentManager } from "../../core/ComponentManager";
-import { EntityElement } from "../../systems/HTMLGraphics";
+import { DeprecatedComponent } from "../../core/Component";
+import { DeprecatedComponentManager } from "../../core/DeprecatedComponentManager";
+import { Entity } from "../../core/Entity";
 
-export class MeshBuilderComponent extends Component {
+export class MeshBuilderComponent extends DeprecatedComponent {
 	readonly shape: "square" | "circle";
 	readonly targetable: boolean;
 	readonly color?: string;
 	readonly texture?: string;
 	readonly scale?: number;
 	readonly shadow?: string;
-	entityElement?: EntityElement;
 
 	constructor(
-		entity: Sprite,
+		entity: Entity,
 		{
 			shape,
 			targetable,
@@ -40,6 +38,6 @@ export class MeshBuilderComponent extends Component {
 	}
 }
 
-export const MeshBuilderComponentManager = new ComponentManager<
+export const MeshBuilderComponentManager = new DeprecatedComponentManager<
 	MeshBuilderComponent
 >(MeshBuilderComponent);

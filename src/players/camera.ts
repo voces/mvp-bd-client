@@ -1,12 +1,12 @@
 import { WORLD_TO_GRAPHICS_RATIO } from "../constants";
 import { tweenPoints, PathTweener } from "../util/tweenPoints";
 import { document, requestAnimationFrame, window } from "../util/globals";
-import { dragSelect } from "../entities/sprites/dragSelect";
 import { registerCommand } from "../ui/chat";
 import { Round } from "../Round";
 import { Point } from "../pathing/PathingMap";
 import { UI } from "../ui/index";
 import { Game } from "../Game";
+import { Sprite } from "../entities/sprites/Sprite";
 
 type Direction = "right" | "left" | "down" | "up";
 
@@ -195,9 +195,12 @@ export const panTo = ({
 };
 
 const follow = () => {
-	if (dragSelect.selection.length === 0) return;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const selection = ((window as any) as { game: Game }).game.selectionSystem
+		.selection;
+	if (selection.length === 0) return;
 
-	const { xSum, ySum } = dragSelect.selection.reduce(
+	const { xSum, ySum } = selection.filter(Sprite.isSprite).reduce(
 		({ xSum, ySum }, { position: { x, y } }) => ({
 			xSum: xSum + x,
 			ySum: ySum + y,
@@ -205,8 +208,8 @@ const follow = () => {
 		{ xSum: 0, ySum: 0 },
 	);
 
-	const x = xSum / dragSelect.selection.length;
-	const y = ySum / dragSelect.selection.length;
+	const x = xSum / selection.length;
+	const y = ySum / selection.length;
 	panTo({ x, y, duration: 10 });
 };
 

@@ -1,4 +1,3 @@
-import { dragSelect } from "./dragSelect";
 import { BUILD_DISTANCE } from "../../constants";
 import { Sprite, SpriteProps } from "./Sprite";
 import { Point } from "../../pathing/PathingMap";
@@ -21,6 +20,7 @@ import {
 	Weapon,
 	DamageComponent,
 } from "../../components/DamageComponent";
+import { Entity } from "../../core/Entity";
 
 const holdPosition: Action = {
 	name: "Hold Position",
@@ -29,8 +29,9 @@ const holdPosition: Action = {
 	handler: ({ player }): void => {
 		if (!player.game.round) return;
 
-		const ownedUnits = dragSelect.selection.filter(
-			(u) => u.owner === player && Unit.isUnit(u) && u.speed > 0,
+		const ownedUnits = player.game.selectionSystem.selection.filter(
+			(u): u is Unit =>
+				Unit.isUnit(u) && u.owner === player && u.speed > 0,
 		);
 
 		player.game.transmit({
@@ -47,8 +48,8 @@ const stop: Action = {
 	handler: ({ player }): void => {
 		if (!player.game.round) return;
 
-		const ownedUnits = dragSelect.selection.filter(
-			(u) => u.owner === player && Unit.isUnit(u),
+		const ownedUnits = player.game.selectionSystem.selection.filter(
+			(u): u is Unit => Unit.isUnit(u) && u.owner === player,
 		);
 
 		player.game.transmit({
@@ -90,7 +91,7 @@ const revealIllusion = (owner: Player) =>
 // `Seeing Class extends value undefined is not a constructor or null`? Import
 // Player before Sprite.
 class Unit extends Sprite {
-	static isUnit = (sprite: Sprite): sprite is Unit => sprite instanceof Unit;
+	static isUnit = (entity: Entity): entity is Unit => entity instanceof Unit;
 
 	static defaults = {
 		...Sprite.clonedDefaults,

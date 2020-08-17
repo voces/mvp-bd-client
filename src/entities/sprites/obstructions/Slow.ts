@@ -8,7 +8,6 @@ import {
 	DamageComponent,
 	Weapon,
 } from "../../../components/DamageComponent";
-import { MeshBuilderComponentManager } from "../../../components/graphics/MeshBuilderComponent";
 
 const slowTimeout = (target: Sprite) =>
 	target.round.setTimeout(() => {
@@ -16,9 +15,6 @@ const slowTimeout = (target: Sprite) =>
 		const effect = target.effects[effectIndex];
 
 		if (Unit.isUnit(target)) target.speed = effect.oldSpeed;
-
-		const div = MeshBuilderComponentManager.get(target)?.entityElement;
-		if (div) div.style.backgroundImage = effect.oldBackgroundImage;
 
 		target.effects.splice(effectIndex, 1);
 	}, 5);
@@ -55,20 +51,15 @@ export class Slow extends Obstruction {
 					return;
 				}
 
-				const div = MeshBuilderComponentManager.get(target)
-					?.entityElement;
+				// todo: add a SlowEffect component?
 
 				const effect: Effect = {
 					type: "slow",
 					oldSpeed: target.speed,
-					oldBackgroundImage: div?.style.backgroundImage ?? "",
 					timeout: slowTimeout(target),
 				};
 
 				target.speed = target.speed * 0.6;
-				if (div)
-					div.style.backgroundImage +=
-						" radial-gradient(rgba(0, 0, 255, 0.25), rgba(0, 0, 255, 0.25))";
 
 				target.effects.push(effect);
 			},

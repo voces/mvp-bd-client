@@ -252,6 +252,14 @@ class Game extends App {
 		if (ObstructionPlacement.isObstructionPlacement(mech)) return mech;
 	}
 
+	get selectionSystem(): SelectedSystem {
+		const sys = this.systems.find((s) =>
+			SelectedSystem.isSelectedSystem(s),
+		);
+		if (!sys) throw new Error("expected a SelectedSystem");
+		return sys as SelectedSystem;
+	}
+
 	start({ time }: { time: number }): void {
 		if (this.round) throw new Error("A round is already in progress");
 

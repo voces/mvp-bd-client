@@ -1,5 +1,4 @@
 import { PATHING_TYPES } from "../../constants";
-import { dragSelect } from "./dragSelect";
 import { emitter, Emitter } from "../../emitter";
 import { Player } from "../../players/Player";
 import { Round } from "../../Round";
@@ -46,7 +45,6 @@ export type SpriteProps = {
 export type Effect = {
 	type: "slow";
 	oldSpeed: number;
-	oldBackgroundImage: string;
 	timeout: number;
 };
 
@@ -199,11 +197,7 @@ class Sprite {
 	_death({ removeImmediately = false } = {}): void {
 		if (removeImmediately) this._health = 0;
 
-		dragSelect.removeSelectables([this]);
-		if (Selected.has(this))
-			dragSelect.setSelection(
-				dragSelect.selection.filter((u: Sprite) => u !== this),
-			);
+		if (Selected.has(this)) Selected.clear(this);
 		if (this.owner) {
 			const index = this.owner.sprites.indexOf(this);
 			if (index >= 0) this.owner.sprites.splice(index, 1);

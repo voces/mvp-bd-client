@@ -1,5 +1,4 @@
 import { Unit, UnitProps } from "./Unit";
-import { dragSelect } from "./dragSelect";
 import { Sprite } from "./Sprite";
 import {
 	Obstruction,
@@ -75,11 +74,7 @@ export class Crosser extends Unit {
 
 	ascend(): void {
 		this.invulnerable = true;
-		dragSelect.removeSelectables([this]);
-		if (Selected.has(this))
-			dragSelect.setSelection(
-				dragSelect.selection.filter((u) => u !== this),
-			);
+		if (Selected.has(this)) Selected.clear(this);
 		if (this.owner) {
 			const index = this.owner.sprites.indexOf(this);
 			if (index >= 0) this.owner.sprites.splice(index, 1);
