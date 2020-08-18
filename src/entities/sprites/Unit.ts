@@ -27,13 +27,14 @@ const holdPosition: Action = {
 	hotkey: "h" as const,
 	type: "custom" as const,
 	handler: ({ player }): void => {
+		console.log("hold", 0);
 		if (!player.game.round) return;
-
+		console.log("hold", 1);
 		const ownedUnits = player.game.selectionSystem.selection.filter(
 			(u): u is Unit =>
 				Unit.isUnit(u) && u.owner === player && u.speed > 0,
 		);
-
+		console.log("hold", 2, ownedUnits);
 		player.game.transmit({
 			type: "holdPosition",
 			sprites: ownedUnits.map((u) => u.id),

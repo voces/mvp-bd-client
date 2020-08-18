@@ -1,6 +1,7 @@
 import { System } from "../core/System";
 import { Selected } from "../components/Selected";
 import { Entity } from "../core/Entity";
+// import { Game } from "../Game";
 
 export class SelectedSystem extends System {
 	static components = [Selected];
@@ -12,9 +13,9 @@ export class SelectedSystem extends System {
 		return Selected.has(entity);
 	}
 
-	onAddEntity(entity: Entity): void {}
-
-	onRemoveEntity(entity: Entity): void {}
+	onAddEntity(): void {
+		// Game.context.disp
+	}
 
 	get selection(): ReadonlyArray<Entity> {
 		return Array.from(this);

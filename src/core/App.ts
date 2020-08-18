@@ -3,8 +3,11 @@ import { Mechanism } from "./Merchanism";
 import { requestAnimationFrame } from "../util/globals";
 import { DeprecatedComponentConstructor } from "./Component";
 import { Entity } from "./Entity";
+import { Context } from "./Context";
 
-class App {
+export class App {
+	static manager = new Context<App | undefined>(undefined);
+
 	protected systems: System[] = [];
 	protected mechanisms: Mechanism[] = [];
 	private lastRender = 0;
@@ -139,5 +142,3 @@ class App {
 		return this._time;
 	}
 }
-
-export { App };

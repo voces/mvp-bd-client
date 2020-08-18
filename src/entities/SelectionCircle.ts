@@ -22,7 +22,8 @@ export class SelectionCircle {
 		geometry.vertices.shift();
 		const mesh = new Line(geometry, material);
 
-		new SceneObjectComponent(this, mesh);
-		new Position(this, x, y);
+		const obj = new SceneObjectComponent(this, mesh);
+		const pos = new Position(this, x, y);
+		console.log(this, obj, pos);
 	}
 }

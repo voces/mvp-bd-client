@@ -13,7 +13,6 @@ import { UI } from "./ui/index";
 import { initPlayerLogic } from "./players/playerLogic";
 import { initSpriteLogicListeners } from "./entities/sprites/spriteLogic";
 import { App } from "./core/App";
-// import { HTMLGraphics } from "./systems/HTMLGraphics";
 import { MoveSystem } from "./systems/MoveSystem";
 import { AttackSystem } from "./systems/AttackSystem";
 import { BlueprintSystem } from "./systems/BlueprintSystem";
@@ -23,14 +22,16 @@ import { AutoAttackSystem } from "./systems/AutoAttackSystem";
 import { AnimationSystem } from "./systems/AnimationSystem";
 import { SelectedSystem } from "./systems/SelectedSystem";
 import { MeshBuilder } from "./systems/MeshBuilder";
-// import { Terrain as TerrainMesh } from "notextures";
 import { Terrain } from "./entities/Terrain";
 import { ThreeGraphics } from "./systems/ThreeGraphics";
 import { ObstructionPlacement } from "./mechanisms/ObstructionPlacement";
+import { Context } from "./core/Context";
 
 const tilesElemnt = document.getElementById("tiles")!;
 
 class Game extends App {
+	static manager = new Context<Game | undefined>(undefined);
+
 	private network: Network;
 	addNetworkListener: Network["addEventListener"];
 	connect: Network["connect"];

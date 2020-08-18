@@ -173,9 +173,10 @@ class Round {
 		if (!maxTries) console.error("Exhausted placement attempts");
 
 		// Select + pan to it
-		if (player === this.game.localPlayer)
-			// todo: set selection
+		if (player === this.game.localPlayer) {
+			this.game.selectionSystem.select(unit);
 			this.game.graphics?.panTo(unit.position, 0);
+		}
 
 		// Add event listeners
 		if (player)

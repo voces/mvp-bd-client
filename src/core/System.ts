@@ -14,8 +14,8 @@ abstract class System<T extends Entity = Entity> {
 		}
 	> = new Map();
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	static readonly components: ReadonlyArray<
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		DeprecatedComponentConstructor<any>
 	> = [];
 
