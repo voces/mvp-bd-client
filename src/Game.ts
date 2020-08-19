@@ -26,6 +26,7 @@ import { Terrain } from "./entities/Terrain";
 import { ThreeGraphics } from "./systems/ThreeGraphics";
 import { ObstructionPlacement } from "./mechanisms/ObstructionPlacement";
 import { Context } from "./core/Context";
+import { MovingSelectionCircles } from "./systems/MovingSelectionCircles";
 
 const tilesElemnt = document.getElementById("tiles")!;
 
@@ -80,6 +81,7 @@ class Game extends App {
 		this.addSystem(new SelectedSystem());
 		this.addSystem(new MeshBuilder());
 		this.addSystem(new ThreeGraphics(this));
+		this.addSystem(new MovingSelectionCircles());
 
 		this.network = network;
 		this.addNetworkListener = this.network.addEventListener.bind(
@@ -131,95 +133,8 @@ class Game extends App {
 		if (this.terrain) this.remove(this.terrain);
 		this.terrain = new Terrain(this.arena);
 		this.add(this.terrain);
-		// for (let y = 0; y < this.arena.tiles.length; y++) {
-		// 	const row = document.createElement("div");
-		// 	row.classList.add("row");
-		// 	for (let x = 0; x < this.arena.tiles[y].length; x++) {
-		// 		const tile = document.createElement("div");
-		// 		tile.classList.add(
-		// 			"tile",
-		// 			`layer-${this.arena.layers[y][x]}`,
-		// 			TILE_NAMES[this.arena.tiles[y][x]] || "void",
-		// 		);
 
-		// 		tile.style.height = "32px";
-		// 		tile.style.width = "32px";
-
-		// 		if (
-		// 			y !== 0 &&
-		// 			this.arena.layers[y][x] < this.arena.layers[y - 1][x]
-		// 		)
-		// 			if (
-		// 				this.arena.layers[y - 1][x] -
-		// 					this.arena.layers[y][x] ===
-		// 				1
-		// 			) {
-		// 				tile.style.backgroundColor = "transparent";
-		// 				tile.style.backgroundImage = gradient(
-		// 					"top",
-		// 					this.arena.layers[y][x],
-		// 					this.arena.layers[y - 1][x],
-		// 				);
-		// 			}
-
-		// 		if (
-		// 			y < this.arena.tiles.length - 1 &&
-		// 			this.arena.layers[y][x] < this.arena.layers[y + 1][x]
-		// 		)
-		// 			if (
-		// 				this.arena.layers[y + 1][x] -
-		// 					this.arena.layers[y][x] ===
-		// 				1
-		// 			) {
-		// 				tile.style.backgroundColor = "transparent";
-		// 				tile.style.backgroundImage = gradient(
-		// 					"bottom",
-		// 					this.arena.layers[y][x],
-		// 					this.arena.layers[y + 1][x],
-		// 				);
-		// 			}
-
-		// 		if (
-		// 			x !== 0 &&
-		// 			this.arena.layers[y][x] < this.arena.layers[y][x - 1]
-		// 		)
-		// 			if (
-		// 				this.arena.layers[y][x - 1] -
-		// 					this.arena.layers[y][x] ===
-		// 				1
-		// 			) {
-		// 				tile.style.backgroundColor = "transparent";
-		// 				tile.style.backgroundImage = gradient(
-		// 					"left",
-		// 					this.arena.layers[y][x],
-		// 					this.arena.layers[y][x - 1],
-		// 				);
-		// 			}
-
-		// 		if (
-		// 			x < this.arena.tiles[y].length - 1 &&
-		// 			this.arena.layers[y][x] < this.arena.layers[y][x + 1]
-		// 		)
-		// 			if (
-		// 				this.arena.layers[y][x + 1] -
-		// 					this.arena.layers[y][x] ===
-		// 				1
-		// 			) {
-		// 				tile.style.backgroundColor = "transparent";
-		// 				tile.style.backgroundImage = gradient(
-		// 					"right",
-		// 					this.arena.layers[y][x],
-		// 					this.arena.layers[y][x + 1],
-		// 				);
-		// 			}
-
-		// 		row.appendChild(tile);
-		// 	}
-
-		// 	tilesElemnt.appendChild(row);
-		// }
-
-		this.graphics?.panTo(
+		this.graphics.panTo(
 			{
 				x: this.arena.tiles[0].length / 2,
 				y: this.arena.tiles.length / 2,
@@ -239,18 +154,18 @@ class Game extends App {
 			: arenas.length - 1;
 	}
 
-	get graphics(): ThreeGraphics | undefined {
+	get graphics(): ThreeGraphics {
 		const sys = this.systems.find((s) => ThreeGraphics.isThreeGraphics(s));
-		if (!sys) return;
-		if (ThreeGraphics.isThreeGraphics(sys)) return sys;
+		if (!sys) throw new Error("expected a ThreeGraphics");
+		return sys as ThreeGraphics;
 	}
 
-	get obstructionPlacement(): ObstructionPlacement | undefined {
-		const mech = this.mechanisms.find((s) =>
-			ObstructionPlacement.isObstructionPlacement(s),
+	get obstructionPlacement(): ObstructionPlacement {
+		const mech = this.mechanisms.find((m) =>
+			ObstructionPlacement.isObstructionPlacement(m),
 		);
-		if (!mech) return;
-		if (ObstructionPlacement.isObstructionPlacement(mech)) return mech;
+		if (!mech) throw new Error("expected a ObstructionPlacement");
+		return mech as ObstructionPlacement;
 	}
 
 	get selectionSystem(): SelectedSystem {

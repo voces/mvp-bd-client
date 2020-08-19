@@ -21,7 +21,6 @@ import {
 	Animation,
 	AnimationManager,
 } from "../../components/graphics/Animation";
-import { Selected } from "../../components/Selected";
 
 const destroyLastBox: Action = {
 	name: "Destroy box",
@@ -74,7 +73,6 @@ export class Crosser extends Unit {
 
 	ascend(): void {
 		this.invulnerable = true;
-		if (Selected.has(this)) Selected.clear(this);
 		if (this.owner) {
 			const index = this.owner.sprites.indexOf(this);
 			if (index >= 0) this.owner.sprites.splice(index, 1);

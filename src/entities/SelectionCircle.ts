@@ -1,6 +1,7 @@
 import { CircleGeometry, LineBasicMaterial, Line } from "three";
 import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
 import { Position } from "../components/Position";
+import { App } from "../core/App";
 
 export class SelectionCircle {
 	constructor({
@@ -14,16 +15,18 @@ export class SelectionCircle {
 		x: number;
 		y: number;
 	}) {
-		const geometry = new CircleGeometry(radius / 2, 64);
+		const geometry = new CircleGeometry(radius, 64);
 		const material = new LineBasicMaterial({
 			color,
+			linewidth: radius / 32,
 		});
 
 		geometry.vertices.shift();
 		const mesh = new Line(geometry, material);
 
-		const obj = new SceneObjectComponent(this, mesh);
-		const pos = new Position(this, x, y);
-		console.log(this, obj, pos);
+		new SceneObjectComponent(this, mesh);
+		new Position(this, x, y);
+
+		App.manager.context?.add(this);
 	}
 }

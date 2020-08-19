@@ -1,5 +1,7 @@
 import { Component } from "../core/Component";
 import { Entity } from "../core/Entity";
+import { Sprite } from "../entities/sprites/Sprite";
+import { Point } from "../pathing/PathingMap";
 
 export class Position extends Component<
 	[number, number, { zOffset: number; flyHeight: number }]
@@ -37,3 +39,23 @@ export class Position extends Component<
 		(this.flyHeight as number) = flyHeight;
 	}
 }
+
+export const getEntityXY = (entity: Entity): Point | undefined => {
+	const position = Position.get(entity);
+	if (position) return { x: position.x, y: position.y };
+
+	if (Sprite.isSprite(entity))
+		return { x: entity.position.x, y: entity.position.y };
+
+	return;
+};
+
+export const getEntityX = (entity: Entity): number | undefined => {
+	const xy = getEntityXY(entity);
+	if (xy) return xy.x;
+};
+
+export const getEntityY = (entity: Entity): number | undefined => {
+	const xy = getEntityXY(entity);
+	if (xy) return xy.y;
+};

@@ -1,7 +1,4 @@
-import {
-	AttackTarget,
-	AttackTargetManager,
-} from "../components/AttackTarget";
+import { AttackTarget, AttackTargetManager } from "../components/AttackTarget";
 import { System } from "../core/System";
 import { Unit } from "../entities/sprites/Unit";
 import { Sprite } from "../entities/sprites/Sprite";
@@ -9,10 +6,7 @@ import { isInAttackRange } from "../entities/sprites/UnitApi";
 import { MoveTargetManager } from "../components/MoveTarget";
 import { DamageComponentManager } from "../components/DamageComponent";
 import { MeshBuilderComponentManager } from "../components/graphics/MeshBuilderComponent";
-import {
-	AnimationManager,
-	Animation,
-} from "../components/graphics/Animation";
+import { AnimationManager, Animation } from "../components/graphics/Animation";
 
 export class AttackSystem extends System<Unit> {
 	static components = [AttackTarget];

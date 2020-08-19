@@ -75,8 +75,7 @@ const center: Action = {
 			);
 		const x = xSum / selection.length;
 		const y = ySum / selection.length;
-		console.log("panTo", player.game.graphics?.panTo, { x, y });
-		player.game.graphics?.panTo({ x, y });
+		player.game.graphics.panTo({ x, y });
 	},
 };
 

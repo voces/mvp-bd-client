@@ -44,7 +44,7 @@ const setMouseAndRender = (direction: Direction) => {
 };
 
 const setZoom = (zoom: number) => {
-	const camera = ((window as any) as { game: Game }).game.graphics?.camera;
+	const camera = Game.manager.context?.graphics.camera;
 	if (camera) camera.position.z = zoom;
 };
 
@@ -102,8 +102,7 @@ export const initCameraListeners = (ui: UI): void => {
 	});
 
 	ui.addEventListener("wheel", ({ deltaY }) => {
-		const camera = ((window as any) as { game: Game }).game.graphics
-			?.camera;
+		const camera = Game.manager.context?.graphics.camera;
 		if (camera) setZoom(camera.position.z + deltaY * ZOOM_SPEED);
 	});
 };
@@ -113,7 +112,7 @@ const renderCamera = (time?: number) => {
 	const delta = (lastRender && time ? time - lastRender : 17) / 1000;
 	lastRender = time;
 
-	const graphics = ((window as any) as { game: Game }).game.graphics;
+	const graphics = Game.manager.context?.graphics;
 
 	if (pan) {
 		const { x, y } = pan.step((delta * pan.distance) / pan.duration);
@@ -195,10 +194,8 @@ export const panTo = ({
 };
 
 const follow = () => {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const selection = ((window as any) as { game: Game }).game.selectionSystem
-		.selection;
-	if (selection.length === 0) return;
+	const selection = Game.manager.context?.selectionSystem.selection;
+	if (!selection?.length) return;
 
 	const { xSum, ySum } = selection.filter(Sprite.isSprite).reduce(
 		({ xSum, ySum }, { position: { x, y } }) => ({

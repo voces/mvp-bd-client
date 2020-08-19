@@ -175,7 +175,7 @@ class Round {
 		// Select + pan to it
 		if (player === this.game.localPlayer) {
 			this.game.selectionSystem.select(unit);
-			this.game.graphics?.panTo(unit.position, 0);
+			this.game.graphics.panTo(unit.position, 0);
 		}
 
 		// Add event listeners
