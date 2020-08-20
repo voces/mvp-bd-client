@@ -5,6 +5,8 @@ import { Unit } from "../entities/sprites/Unit";
 import { emptyElement } from "../util/html";
 import { Sprite } from "../entities/sprites/Sprite";
 import { Entity } from "../core/Entity";
+import { Mechanism } from "../core/Merchanism";
+import { Game } from "../Game";
 
 const container = document.getElementById("hotkeys")!;
 
@@ -84,14 +86,14 @@ const zCharCode = "z".charCodeAt(0);
 
 // dragSelect.addEventListener("selection", (sprites) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const onSelection = (sprites: ReadonlyArray<Entity>) => {
+const onSelection = (entities: ReadonlyArray<Entity>) => {
 	// Clear hotkeys
 	emptyElement(container);
 	activeHotkeys.splice(0);
 	activeHotkeys.push(center);
 
 	// Get actions
-	const units = sprites.filter(Unit.isUnit);
+	const units = entities.filter(Unit.isUnit);
 	if (!units.length) return;
 
 	let activeUnit = units[0];
@@ -116,3 +118,10 @@ const onSelection = (sprites: ReadonlyArray<Entity>) => {
 		container.appendChild(elem);
 	});
 };
+
+export class Hotkeys extends Mechanism {
+	constructor() {
+		super();
+		Game.manager.context?.addEventListener("selection", onSelection);
+	}
+}

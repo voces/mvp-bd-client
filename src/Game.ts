@@ -27,6 +27,8 @@ import { ThreeGraphics } from "./systems/ThreeGraphics";
 import { ObstructionPlacement } from "./mechanisms/ObstructionPlacement";
 import { Context } from "./core/Context";
 import { MovingSelectionCircles } from "./systems/MovingSelectionCircles";
+import { Entity } from "./core/Entity";
+import { Hotkeys } from "./ui/hotkeys";
 
 const tilesElemnt = document.getElementById("tiles")!;
 
@@ -70,6 +72,7 @@ class Game extends App {
 	constructor(network: Network) {
 		super();
 		emitter(this);
+		Game.manager._setContext(this);
 		// this.addSystem(new HTMLGraphics());
 		this.addSystem(new MoveSystem());
 		this.addSystem(new AttackSystem());
@@ -82,6 +85,7 @@ class Game extends App {
 		this.addSystem(new MeshBuilder());
 		this.addSystem(new ThreeGraphics(this));
 		this.addSystem(new MovingSelectionCircles());
+		this.addMechanism(new Hotkeys());
 
 		this.network = network;
 		this.addNetworkListener = this.network.addEventListener.bind(
@@ -244,6 +248,7 @@ class Game extends App {
 
 type GameEvents = {
 	update: (time: number) => void;
+	selection: (selection: Entity[]) => void;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

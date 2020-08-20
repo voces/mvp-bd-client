@@ -20,6 +20,7 @@ import {
 } from "three";
 import { Position } from "../components/Position";
 import { Game } from "../Game";
+import { Selected } from "../components/Selected";
 
 const getCanvas = () => {
 	const canvas = document.createElement("canvas");
@@ -217,6 +218,8 @@ export class ThreeGraphics extends System {
 	): boolean {
 		let position: Position | undefined;
 
+		let stillDirty = false;
+
 		if (Sprite.isSprite(entity)) {
 			const moveTarget = MoveTargetManager.get(entity);
 			if (moveTarget && Unit.isUnit(entity)) {
@@ -227,19 +230,19 @@ export class ThreeGraphics extends System {
 				mesh.position.z =
 					mesh.position.z * 0.9 +
 					entity.game.terrain!.groundHeight(x, y) * 0.1;
-				return true;
+				stillDirty = true;
+			} else {
+				// Otherwise update the rendering position and mark clean
+				mesh.position.x = entity.position.x;
+				mesh.position.y = entity.position.y;
+				mesh.position.z =
+					mesh.position.z * 0.75 +
+					entity.game.terrain!.groundHeight(
+						entity.position.x,
+						entity.position.y,
+					) *
+						0.25;
 			}
-
-			// Otherwise update the rendering position and mark clean
-			mesh.position.x = entity.position.x;
-			mesh.position.y = entity.position.y;
-			mesh.position.z =
-				mesh.position.z * 0.75 +
-				entity.game.terrain!.groundHeight(
-					entity.position.x,
-					entity.position.y,
-				) *
-					0.25;
 		} else if ((position = Position.get(entity))) {
 			mesh.position.x = position.x;
 			mesh.position.y = position.y;
@@ -248,8 +251,16 @@ export class ThreeGraphics extends System {
 				this.game.terrain!.groundHeight(position.x, position.y) * 0.25;
 		}
 
-		data.updatePosition = false;
-		return false;
+		// TODO: we can probably generalize this with a Children component
+		const circle = Selected.get(entity)?.circle;
+		if (circle) {
+			const object = SceneObjectComponent.get(circle)?.object;
+			if (object) object.position.copy(mesh.position);
+		}
+
+		if (!stillDirty) data.updatePosition = false;
+
+		return stillDirty;
 	}
 
 	// private updateHealth(
