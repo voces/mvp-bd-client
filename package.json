@@ -34,7 +34,9 @@
   "type": "module",
   "private": true,
   "dependencies": {
-    "notextures": "^2.0.3",
+    "@types/lodash-es": "^4.17.3",
+    "lodash-es": "^4.17.15",
+    "notextures": "^3.0.1",
     "three": "^0.119.1"
   }
 }

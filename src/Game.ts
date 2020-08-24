@@ -26,9 +26,10 @@ import { Terrain } from "./entities/Terrain";
 import { ThreeGraphics } from "./systems/ThreeGraphics";
 import { ObstructionPlacement } from "./mechanisms/ObstructionPlacement";
 import { Context } from "./core/Context";
-import { MovingSelectionCircles } from "./systems/MovingSelectionCircles";
+import { circleSystems } from "./systems/MovingCircles";
 import { Entity } from "./core/Entity";
 import { Hotkeys } from "./ui/hotkeys";
+import { Mouse } from "./systems/Mouse";
 
 const tilesElemnt = document.getElementById("tiles")!;
 
@@ -53,18 +54,15 @@ class Game extends App {
 	lastRoundEnd?: number;
 	terrain?: Terrain;
 
+	mouse: Mouse;
+
 	settings: Settings = {
 		arenaIndex: -1,
 		crossers: 1,
 		duration: 120,
 		mode: "bulldog",
 		resources: {
-			crossers: {
-				essence: {
-					starting: 100,
-					rate: 1,
-				},
-			},
+			crossers: { essence: { starting: 100, rate: 1 } },
 			defenders: { essence: { starting: 0, rate: 0 } },
 		},
 	};
@@ -81,10 +79,11 @@ class Game extends App {
 		this.addSystem(new GerminateSystem());
 		this.addSystem(new AutoAttackSystem());
 		this.addSystem(new AnimationSystem());
-		this.addSystem(new SelectedSystem());
 		this.addSystem(new MeshBuilder());
 		this.addSystem(new ThreeGraphics(this));
-		this.addSystem(new MovingSelectionCircles());
+		circleSystems.forEach((CircleSystem) =>
+			this.addSystem(new CircleSystem()),
+		);
 		this.addMechanism(new Hotkeys());
 
 		this.network = network;
@@ -97,6 +96,9 @@ class Game extends App {
 
 		this.ui = new UI(this);
 		this.addMechanism(new ObstructionPlacement(this));
+		this.mouse = new Mouse(this.graphics, this.ui);
+		this.addSystem(this.mouse);
+		this.addSystem(new SelectedSystem());
 		initPlayerLogic(this);
 		initSpriteLogicListeners(this);
 

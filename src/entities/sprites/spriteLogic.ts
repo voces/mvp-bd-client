@@ -1,14 +1,13 @@
 import { Unit } from "./Unit";
 import { Crosser } from "./Crosser";
 import { Obstruction } from "./obstructions/Obstruction";
-import { clientToWorld } from "../../players/camera";
 import { Defender } from "./Defender";
-import { SpriteElement, Sprite } from "./Sprite";
+import { Sprite } from "./Sprite";
 import { obstructionMap } from "./obstructions/index";
 import { activeHotkeys } from "../../ui/hotkeys";
-import { UIEvents } from "../../ui/index";
 import { Game } from "../../Game";
 import { Player } from "../../players/Player";
+import { MouseEvents } from "../../systems/Mouse";
 
 export type Action = {
 	description?: string;
@@ -54,13 +53,9 @@ export type Action = {
 	  }
 );
 
-const rightClick: UIEvents["mouseDown"] = ({
-	game,
-	target: htmlTarget,
-	x: clientX,
-	y: clientY,
-}) => {
-	const { x, y } = clientToWorld({ x: clientX, y: clientY });
+const rightClick: MouseEvents["mouseDown"] = ({ mouse }) => {
+	const { x, y } = mouse.ground;
+	const game = Game.manager.context!;
 
 	const ownedSprites = game.selectionSystem.selection.filter(
 		(s) => Sprite.isSprite(s) && s.owner === game.localPlayer,
@@ -69,7 +64,7 @@ const rightClick: UIEvents["mouseDown"] = ({
 	const units = ownedSprites.filter((u) => u instanceof Unit);
 	const toMove: number[] = [];
 	const toAttack: number[] = [];
-	const target = (htmlTarget as SpriteElement | undefined)?.sprite;
+	const target = mouse.entity;
 
 	units.forEach((unit) => {
 		if (unit instanceof Crosser) toMove.push(unit.id);
@@ -98,18 +93,16 @@ const rightClick: UIEvents["mouseDown"] = ({
 		game.selectionSystem.setSelection(units);
 };
 
-const leftClick: UIEvents["mouseDown"] = ({ x: clientX, y: clientY, game }) => {
+const leftClick: MouseEvents["mouseDown"] = ({ mouse }) => {
+	const game = Game.manager.context!;
+
 	const obstructionPlacement = game.obstructionPlacement;
 	if (!obstructionPlacement) return;
 	if (!obstructionPlacement.valid) return;
 	const obstruction = obstructionPlacement.active!;
 
-	const { x: xWorld, y: yWorld } = clientToWorld({
-		x: clientX,
-		y: clientY,
-	});
-	const x = obstructionPlacement.snap(xWorld);
-	const y = obstructionPlacement.snap(yWorld);
+	const x = obstructionPlacement.snap(mouse.ground.x);
+	const y = obstructionPlacement.snap(mouse.ground.y);
 
 	obstructionPlacement.stop();
 
@@ -132,7 +125,7 @@ const leftClick: UIEvents["mouseDown"] = ({ x: clientX, y: clientY, game }) => {
 };
 
 export const initSpriteLogicListeners = (game: Game): void => {
-	game.ui.addEventListener("mouseDown", (e) => {
+	game.mouse.addEventListener("mouseDown", (e) => {
 		if (!game.round) return;
 
 		if (e.button === 2 || e.ctrlDown) return rightClick(e);

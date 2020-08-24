@@ -9,6 +9,7 @@ export class MeshBuilderComponent extends DeprecatedComponent {
 	readonly texture?: string;
 	readonly scale?: number;
 	readonly shadow?: string;
+	readonly opacity: number;
 
 	constructor(
 		entity: Entity,
@@ -19,6 +20,7 @@ export class MeshBuilderComponent extends DeprecatedComponent {
 			texture,
 			scale = 1,
 			shadow,
+			opacity = 1,
 		}: {
 			shape: "square" | "circle";
 			targetable: boolean;
@@ -26,6 +28,7 @@ export class MeshBuilderComponent extends DeprecatedComponent {
 			texture?: string;
 			scale?: number;
 			shadow?: string;
+			opacity?: number;
 		},
 	) {
 		super(entity);
@@ -35,6 +38,7 @@ export class MeshBuilderComponent extends DeprecatedComponent {
 		this.texture = texture;
 		this.scale = scale;
 		this.shadow = shadow;
+		this.opacity = opacity;
 	}
 }
 

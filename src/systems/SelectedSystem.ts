@@ -1,8 +1,9 @@
+import { isEqual } from "lodash-es";
 import { System } from "../core/System";
 import { Selected } from "../components/Selected";
 import { Entity } from "../core/Entity";
-import { App } from "../core/App";
 import { Game } from "../Game";
+import { MouseButton } from "./Mouse";
 
 export class SelectedSystem extends System {
 	static components = [Selected];
@@ -11,6 +12,18 @@ export class SelectedSystem extends System {
 		system instanceof SelectedSystem;
 
 	data = new WeakMap<Entity, Selected>();
+
+	constructor() {
+		super();
+
+		Game.manager.context?.mouse.addEventListener(
+			"mouseDown",
+			({ button, mouse: { entity } }) => {
+				if (button === MouseButton.LEFT && entity)
+					this.setSelection([entity]);
+			},
+		);
+	}
 
 	test(entity: Entity): entity is Entity {
 		return Selected.has(entity);
@@ -26,7 +39,6 @@ export class SelectedSystem extends System {
 	onRemoveEntity(entity: Entity): void {
 		const selected = this.data.get(entity);
 		if (!selected) return;
-		App.manager.context?.remove(selected.circle);
 		Game.manager.context?.dispatchEvent("selection", Array.from(this));
 	}
 
@@ -41,6 +53,12 @@ export class SelectedSystem extends System {
 	}
 
 	setSelection(entities: ReadonlyArray<Entity>): void {
+		const curIds: unknown[] = [];
+		for (const curSelected of this) curIds.push(curSelected.id);
+		const newIds = entities.map((e) => e.id);
+
+		if (isEqual(curIds.sort(), newIds.sort())) return;
+
 		for (const curSelected of this) Selected.clear(curSelected);
 		for (const newSelected of entities) new Selected(newSelected);
 	}

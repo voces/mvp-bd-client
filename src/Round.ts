@@ -78,8 +78,8 @@ class Round {
 		this.players = [...players];
 		this.arena = arenas[settings.arenaIndex];
 		this.pathingMap = new PathingMap({
-			pathing: this.arena.pathing,
-			layers: this.arena.layers,
+			pathing: this.arena.pathing.reverse(),
+			layers: this.arena.layers.reverse(),
 			resolution: 2,
 		});
 		this.expireAt = time + settings.duration;

@@ -4,6 +4,8 @@ import { Position } from "../components/Position";
 import { App } from "../core/App";
 
 export class SelectionCircle {
+	id = "SELECTION_CIRCLE";
+
 	constructor({
 		radius,
 		color,

@@ -7,10 +7,11 @@ export class Blueprint extends Sprite {
 		...Sprite.defaults,
 		selectable: false,
 		id: -1,
-		color: "rgba( 70, 145, 246, 0.5 )",
+		color: "rgba( 70, 145, 246 )",
 		graphic: {
 			...Sprite.defaults.graphic,
 			shape: "square" as "square" | "circle",
+			opacity: 0.5,
 		},
 	};
 

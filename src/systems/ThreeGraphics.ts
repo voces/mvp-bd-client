@@ -21,6 +21,7 @@ import {
 import { Position } from "../components/Position";
 import { Game } from "../Game";
 import { Selected } from "../components/Selected";
+import { Hover } from "../components/Hover";
 
 const getCanvas = () => {
 	const canvas = document.createElement("canvas");
@@ -235,28 +236,28 @@ export class ThreeGraphics extends System {
 				// Otherwise update the rendering position and mark clean
 				mesh.position.x = entity.position.x;
 				mesh.position.y = entity.position.y;
-				mesh.position.z =
-					mesh.position.z * 0.75 +
-					entity.game.terrain!.groundHeight(
-						entity.position.x,
-						entity.position.y,
-					) *
-						0.25;
+				mesh.position.z = entity.game.terrain!.groundHeight(
+					entity.position.x,
+					entity.position.y,
+				);
 			}
 		} else if ((position = Position.get(entity))) {
 			mesh.position.x = position.x;
 			mesh.position.y = position.y;
-			mesh.position.z =
-				mesh.position.z * 0.75 +
-				this.game.terrain!.groundHeight(position.x, position.y) * 0.25;
+			mesh.position.z = this.game.terrain!.groundHeight(
+				position.x,
+				position.y,
+			);
 		}
 
 		// TODO: we can probably generalize this with a Children component
-		const circle = Selected.get(entity)?.circle;
-		if (circle) {
-			const object = SceneObjectComponent.get(circle)?.object;
-			if (object) object.position.copy(mesh.position);
-		}
+		[Selected, Hover].forEach((Circle) => {
+			const circle = Circle.get(entity)?.circle;
+			if (circle) {
+				const object = SceneObjectComponent.get(circle)?.object;
+				if (object) object.position.copy(mesh.position);
+			}
+		});
 
 		if (!stillDirty) data.updatePosition = false;
 

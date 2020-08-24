@@ -18,23 +18,24 @@ enum MouseButton {
 	FORWARD,
 }
 
+export type MouseMoveEvent = {
+	target: EventTarget | null;
+	x: number;
+	y: number;
+};
+
+export type MouseDownEvent = MouseMoveEvent & {
+	button: MouseButton;
+	ctrlDown: boolean;
+	game: Game;
+};
+
 export type UIEvents = {
 	keyDown: (data: { key: string; ctrlDown: boolean; game: Game }) => void;
 	keyUp: (data: { key: string; ctrlDown: boolean; game: Game }) => void;
-	mouseMove: (data: {
-		target: EventTarget | null;
-		x: number;
-		y: number;
-	}) => void;
+	mouseMove: (data: MouseMoveEvent) => void;
 	mouseOut: (data: { relatedTarget: EventTarget | null }) => void;
-	mouseDown: (data: {
-		button: MouseButton;
-		ctrlDown: boolean;
-		game: Game;
-		target: EventTarget | null;
-		x: number;
-		y: number;
-	}) => void;
+	mouseDown: (data: MouseDownEvent) => void;
 	wheel: (data: { deltaY: number }) => void;
 };
 

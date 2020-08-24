@@ -11,23 +11,31 @@ import {
 import { System } from "../core/System";
 import { Sprite } from "../entities/sprites/Sprite";
 import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
+import { EntityMesh } from "../types";
 
 const getColor = (entity: Sprite, graphic: MeshBuilderComponent) =>
 	graphic.color ?? entity.color ?? entity.owner?.color?.hex ?? "white";
 
 const getMat = (entity: Sprite, graphic: MeshBuilderComponent) =>
-	new MeshPhongMaterial({ color: getColor(entity, graphic) });
+	new MeshPhongMaterial({
+		color: getColor(entity, graphic),
+		opacity: graphic.opacity,
+	});
 
 const createSphere = (entity: Sprite, graphic: MeshBuilderComponent): Mesh => {
 	const geometry = new SphereBufferGeometry(entity.radius);
 	geometry.translate(0, 0, entity.radius);
 	return new Mesh(geometry, getMat(entity, graphic));
 };
-const createBox = (entity: Sprite, graphic: MeshBuilderComponent): Mesh =>
-	new Mesh(
-		new BoxBufferGeometry(entity.radius, entity.radius, entity.radius),
-		getMat(entity, graphic),
+const createBox = (entity: Sprite, graphic: MeshBuilderComponent): Mesh => {
+	const geometry = new BoxBufferGeometry(
+		entity.radius * 2,
+		entity.radius * 2,
+		(entity.radius * 3) / 2,
 	);
+	geometry.translate(0, 0, (entity.radius * 3) / 4);
+	return new Mesh(geometry, getMat(entity, graphic));
+};
 
 type EntityData = {
 	onChangePositionListener: () => void;
@@ -55,12 +63,13 @@ export class MeshBuilder extends System {
 
 		// Build/set the mesh
 		const builder = graphic.shape === "circle" ? createSphere : createBox;
-		const mesh = builder(entity, graphic);
+		const mesh: EntityMesh = builder(entity, graphic);
 		mesh.castShadow = true;
 		mesh.receiveShadow = true;
 		mesh.position.x = entity.position.x;
 		mesh.position.y = entity.position.y;
 		mesh.position.z = entity.radius;
+		mesh.entity = entity;
 
 		// Add listeners
 		const data = {

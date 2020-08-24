@@ -8,7 +8,7 @@ import {
 } from "notextures";
 import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
 import { Arena } from "../arenas/types";
-import { Group, Geometry, Vector3 } from "three";
+import { Group, Vector3 } from "three";
 import { orientation } from "../pathing/math";
 
 const isRamp = (x: number, y: number, layers: number[][]) => {
@@ -52,6 +52,7 @@ type TVector = TerrainMesh["vertices"][number][number][number];
 export class Terrain {
 	private group: Group;
 	private height: number;
+	id = "terrain";
 	constructor(arena: Arena) {
 		const tileZeroes = arena.layers.map((r) => r.map(() => 0));
 		const vertexZeroes = Array(arena.layers[0].length + 1).fill(
@@ -107,7 +108,7 @@ export class Terrain {
 		const pt = { x, y };
 		let triangle: [Vector3, Vector3, Vector3];
 		const terrain = SceneObjectComponent.get(this)!.object as TerrainMesh;
-		const geometry = terrain.ground.geometry as Geometry;
+		const geometry = terrain.ground;
 		const faces =
 			terrain.groundFaces[Math.floor(this.height - y)]?.[Math.floor(x)];
 		if (!faces) return 0;

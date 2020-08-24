@@ -6,15 +6,15 @@ type Props = {
 	color: string;
 };
 
-export class Selected extends Circle {
-	protected static map = new WeakMap<Entity, Selected>();
+export class Hover extends Circle {
+	protected static map = new WeakMap<Entity, Hover>();
 
-	static get(entity: Entity): Selected | undefined {
+	static get(entity: Entity): Hover | undefined {
 		return this.map.get(entity);
 	}
 
 	constructor(entity: Entity, props: Partial<Props> = {}) {
-		if (!props.color) props.color = "#00FF00";
+		if (!props.color) props.color = "#FFFF00";
 		super(entity, props);
 	}
 }
