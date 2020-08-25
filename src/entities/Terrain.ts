@@ -54,7 +54,6 @@ export class Terrain {
 	private height: number;
 	id = "terrain";
 	constructor(arena: Arena) {
-		const tileZeroes = arena.layers.map((r) => r.map(() => 0));
 		const vertexZeroes = Array(arena.layers[0].length + 1).fill(
 			new Array(arena.layers.length + 1),
 		);
@@ -71,7 +70,7 @@ export class Terrain {
 				),
 				groundTile: arena.pathing,
 				cliffTile: arena.layers.map((r) => r.map(() => 4)),
-				water: tileZeroes,
+				water: arena.layers.map((r) => r.map(() => 0)),
 				waterHeight: vertexZeroes,
 			},
 			offset: {

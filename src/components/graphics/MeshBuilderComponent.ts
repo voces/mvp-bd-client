@@ -1,12 +1,22 @@
 import { DeprecatedComponent } from "../../core/Component";
 import { DeprecatedComponentManager } from "../../core/DeprecatedComponentManager";
 import { Entity } from "../../core/Entity";
+import { Color } from "three";
+
+export type Props = {
+	shape: "square" | "circle";
+	color?: string;
+	colorFilter?: (color: Color) => Color;
+	scale?: number;
+	shadow?: string;
+	opacity?: number;
+};
 
 export class MeshBuilderComponent extends DeprecatedComponent {
 	readonly shape: "square" | "circle";
 	readonly targetable: boolean;
 	readonly color?: string;
-	readonly texture?: string;
+	readonly colorFilter?: (color: Color) => Color;
 	readonly scale?: number;
 	readonly shadow?: string;
 	readonly opacity: number;
@@ -17,25 +27,19 @@ export class MeshBuilderComponent extends DeprecatedComponent {
 			shape,
 			targetable,
 			color,
-			texture,
+			colorFilter,
 			scale = 1,
 			shadow,
 			opacity = 1,
-		}: {
-			shape: "square" | "circle";
+		}: Props & {
 			targetable: boolean;
-			color?: string;
-			texture?: string;
-			scale?: number;
-			shadow?: string;
-			opacity?: number;
 		},
 	) {
 		super(entity);
 		this.shape = shape;
 		this.targetable = targetable;
 		this.color = color;
-		this.texture = texture;
+		this.colorFilter = colorFilter;
 		this.scale = scale;
 		this.shadow = shadow;
 		this.opacity = opacity;

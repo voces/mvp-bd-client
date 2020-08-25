@@ -1,4 +1,7 @@
 import { Obstruction, ObstructionProps } from "./Obstruction";
+import { Color } from "three";
+
+const darkRed = new Color("#661919");
 
 export class Dense extends Obstruction {
 	static defaults = {
@@ -9,7 +12,7 @@ export class Dense extends Obstruction {
 		buildHotkey: "g" as const,
 		graphic: {
 			...Obstruction.defaults.graphic,
-			shadow: "inset 0 0 16px rgba(0,0,0,0.75)",
+			colorFilter: (color: Color): Color => color.lerp(darkRed, 0.75),
 		},
 	};
 

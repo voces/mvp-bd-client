@@ -21,6 +21,7 @@ import {
 	DamageComponent,
 } from "../../components/DamageComponent";
 import { Entity } from "../../core/Entity";
+import { Color } from "three";
 
 const holdPosition: Action = {
 	name: "Hold Position",
@@ -88,6 +89,8 @@ export type UnitProps = Omit<SpriteProps, "game"> & {
 const revealIllusion = (owner: Player) =>
 	!owner.enemies.includes(owner.game.localPlayer);
 
+const darkBlue = new Color("#191966");
+
 // `Seeing Class extends value undefined is not a constructor or null`? Import
 // Player before Sprite.
 class Unit extends Sprite {
@@ -125,12 +128,10 @@ class Unit extends Sprite {
 			graphic: {
 				...Unit.defaults.graphic,
 				...graphic,
-				...(!graphic?.texture &&
-				isIllusion &&
-				revealIllusion(props.owner)
+				...(isIllusion && revealIllusion(props.owner)
 					? {
-							texture:
-								"radial-gradient(rgba(0, 0, 255, 0.75), rgba(0, 0, 255, 0.75))",
+							colorFilter: (color: Color): Color =>
+								color.lerp(darkBlue, 0.75),
 					  }
 					: undefined),
 			},

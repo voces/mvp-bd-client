@@ -8,6 +8,7 @@ import { Game } from "../../Game";
 import {
 	MeshBuilderComponent,
 	MeshBuilderComponentManager,
+	Props as MeshBuilderComponentProps,
 } from "../../components/graphics/MeshBuilderComponent";
 import { DeprecatedPosition } from "../../components/DeprecatedPosition";
 import { MoveTargetManager } from "../../components/MoveTarget";
@@ -35,11 +36,7 @@ export type SpriteProps = {
 	owner?: Player;
 	facing?: number;
 	game: Game;
-	graphic?: {
-		shape: "square" | "circle";
-		color?: string;
-		texture?: string;
-	};
+	graphic?: MeshBuilderComponentProps;
 };
 
 export type Effect = {

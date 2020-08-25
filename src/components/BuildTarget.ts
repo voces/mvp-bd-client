@@ -25,7 +25,7 @@ export class BuildTarget extends DeprecatedComponent {
 				? new Blueprint({
 						...target,
 						game: entity.game,
-						radius: obstructionClass.defaults.radius,
+						obstruction: obstructionClass,
 				  })
 				: undefined;
 	}

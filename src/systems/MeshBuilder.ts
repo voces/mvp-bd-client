@@ -3,6 +3,7 @@ import {
 	Mesh,
 	SphereBufferGeometry,
 	BoxBufferGeometry,
+	Color,
 } from "three";
 import {
 	MeshBuilderComponent,
@@ -13,8 +14,12 @@ import { Sprite } from "../entities/sprites/Sprite";
 import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
 import { EntityMesh } from "../types";
 
-const getColor = (entity: Sprite, graphic: MeshBuilderComponent) =>
-	graphic.color ?? entity.color ?? entity.owner?.color?.hex ?? "white";
+const getColor = (entity: Sprite, graphic: MeshBuilderComponent) => {
+	const rawColor =
+		graphic.color ?? entity.color ?? entity.owner?.color?.hex ?? "white";
+	if (graphic.colorFilter) return graphic.colorFilter(new Color(rawColor));
+	return rawColor;
+};
 
 const getMat = (entity: Sprite, graphic: MeshBuilderComponent) =>
 	new MeshPhongMaterial({
