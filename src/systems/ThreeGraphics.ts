@@ -47,7 +47,11 @@ const getRenderer = (canvas: HTMLCanvasElement) => {
 };
 
 const sunTilt = new Vector3(-10, -15, 25);
-const updateLight = (camera: PerspectiveCamera, sun: DirectionalLight) => {
+const updateLight = (
+	camera: PerspectiveCamera,
+	sun: DirectionalLight,
+	container?: HTMLElement,
+) => {
 	sun.position.copy(camera.position).add(sunTilt);
 	const height = sun.position.z;
 	sun.shadow.camera.near = 0;
@@ -58,11 +62,15 @@ const updateLight = (camera: PerspectiveCamera, sun: DirectionalLight) => {
 	sun.shadow.camera.top = height * 1;
 	sun.shadow.camera.bottom = -height * 0.4;
 
-	sun.shadow.mapSize.width = 4096;
-	sun.shadow.mapSize.height = 4096;
+	if (container) {
+		sun.shadow.mapSize.width =
+			2 ** Math.floor(Math.log2(container.offsetWidth));
+		sun.shadow.mapSize.height =
+			2 ** Math.floor(Math.log2(container.offsetHeight));
+	}
 };
 
-const getScene = (camera: PerspectiveCamera) => {
+const getScene = (camera: PerspectiveCamera, container?: HTMLElement) => {
 	const scene = new Scene();
 
 	// Basic lighting
@@ -71,7 +79,7 @@ const getScene = (camera: PerspectiveCamera) => {
 	// Sun
 	const sun = new DirectionalLight(0xffffff, 1);
 	sun.target = camera;
-	updateLight(camera, sun);
+	updateLight(camera, sun, container);
 	sun.castShadow = true;
 	scene.add(sun);
 
@@ -123,7 +131,10 @@ export class ThreeGraphics extends System {
 		const canvas = getCanvas();
 		this.renderer = getRenderer(canvas);
 		this.camera = getCamera(this.renderer);
-		const { scene, sun } = getScene(this.camera);
+		const { scene, sun } = getScene(
+			this.camera,
+			this.renderer.domElement.parentElement ?? undefined,
+		);
 		this.scene = scene;
 		this.sun = sun;
 
@@ -302,7 +313,11 @@ export class ThreeGraphics extends System {
 			);
 			this.camera.position.x = x;
 			this.camera.position.y = y;
-			updateLight(this.camera, this.sun);
+			updateLight(
+				this.camera,
+				this.sun,
+				this.renderer.domElement.parentElement ?? undefined,
+			);
 			if (activePan.remaining === 0) this.activePan = undefined;
 		}
 	}

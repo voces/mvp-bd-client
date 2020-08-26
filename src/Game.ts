@@ -95,9 +95,9 @@ class Game extends App {
 		this.addNetworkListener("update", (e) => this.update(e));
 
 		this.ui = new UI(this);
-		this.addMechanism(new ObstructionPlacement(this));
 		this.mouse = new Mouse(this.graphics, this.ui);
 		this.addSystem(this.mouse);
+		this.addMechanism(new ObstructionPlacement(this));
 		this.addSystem(new SelectedSystem());
 		initPlayerLogic(this);
 		initSpriteLogicListeners(this);

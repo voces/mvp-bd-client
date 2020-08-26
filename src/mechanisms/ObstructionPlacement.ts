@@ -6,6 +6,8 @@ import { Obstruction } from "../entities/sprites/obstructions/index";
 import { emptyElement } from "../util/html";
 import { Game } from "../Game";
 import { Mechanism } from "../core/Merchanism";
+import { Mouse } from "../systems/Mouse";
+import { Group, Object3D } from "three";
 
 const edgeSnap = (v: number) => Math.round(v);
 const midSnap = (v: number) => Math.floor(v) + 0.5;
@@ -22,6 +24,27 @@ const createCell = (pathable: boolean) => {
 	return cell;
 };
 
+class Container extends Group {
+	private grid: Object3D[][] = [];
+
+	get(x: number, y: number): Object3D | undefined {
+		return this.grid[y]?.[x];
+	}
+
+	set(x: number, y: number, object: Object3D) {
+		if (!this.grid[y]) this.grid[y] = [];
+		if (this.grid[y][x]) this.remove(this.grid[y][x]);
+		this.grid[y][x] = object;
+		this.add(object);
+	}
+
+	copy(source: this, recursive?: boolean) {
+		super.copy(source, recursive);
+		this.grid = source.grid.map((r) => [...r]);
+		return this;
+	}
+}
+
 export class ObstructionPlacement extends Mechanism {
 	static isObstructionPlacement = (
 		mechanism: Mechanism,
@@ -31,9 +54,9 @@ export class ObstructionPlacement extends Mechanism {
 	private game: Game;
 	private plannedObstruction: typeof Obstruction | undefined;
 	private pathable = false;
-	private readonly mouse = { x: 0, y: 0 };
+	private mouse: Mouse;
 	private readonly arena = document.getElementById("arena")!;
-	private readonly container = document.createElement("div");
+	private container = new Container();
 	private readonly pathableCells: HTMLDivElement[] = [];
 	private readonly unpathableCells: HTMLDivElement[] = [];
 	private requestedAnimationFrame: number | undefined;
@@ -41,14 +64,9 @@ export class ObstructionPlacement extends Mechanism {
 	constructor(game: Game) {
 		super();
 
-		this.container.style.position = "absolute";
-		this.container.style.display = "flex";
-		this.container.style.flexWrap = "wrap";
-
 		this.game = game;
-		game.ui.addEventListener("mouseMove", ({ x, y }) => {
-			Object.assign(this.mouse, clientToWorld({ x, y }));
-
+		this.mouse = game.mouse;
+		game.mouse.addEventListener("mouseMove", () => {
 			if (this.plannedObstruction) this.updatePosition();
 		});
 	}
@@ -69,8 +87,8 @@ export class ObstructionPlacement extends Mechanism {
 
 		const pathing = this.plannedObstruction.defaults.requiresPathing;
 		const radius = this.plannedObstruction.defaults.radius;
-		const xStart = this.snap(this.mouse.x) - radius;
-		const yStart = this.snap(this.mouse.y) - radius;
+		const xStart = this.snap(this.mouse.ground.x) - radius;
+		const yStart = this.snap(this.mouse.ground.y) - radius;
 
 		// We should link cells to grid tiles and update them in this case
 		// if ( radius === updateCells.radiusLast &&
@@ -88,7 +106,8 @@ export class ObstructionPlacement extends Mechanism {
 			const xFinal = xStart + radius * 2;
 			const yFinal = yStart + radius * 2;
 
-			emptyElement(this.container);
+			const old = this.container;
+			this.container = new Container();
 
 			let overallPathable = true;
 			const grid = unit.round.pathingMap.grid;
@@ -147,12 +166,12 @@ export class ObstructionPlacement extends Mechanism {
 		if (!this.plannedObstruction) return;
 
 		this.container.style.left = `${
-			(this.snap(this.mouse.x) -
+			(this.snap(this.mouse.ground.x) -
 				this.plannedObstruction.defaults.radius) *
 			WORLD_TO_GRAPHICS_RATIO
 		}px`;
 		this.container.style.top = `${
-			(this.snap(this.mouse.y) -
+			(this.snap(this.mouse.ground.y) -
 				this.plannedObstruction.defaults.radius) *
 			WORLD_TO_GRAPHICS_RATIO
 		}px`;
