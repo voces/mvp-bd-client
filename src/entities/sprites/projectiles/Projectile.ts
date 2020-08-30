@@ -2,10 +2,7 @@ import { Sprite, SpriteProps } from "../Sprite";
 import { Point } from "../../../pathing/PathingMap";
 import { Player } from "../../../players/Player";
 import { Unit } from "../Unit";
-import {
-	MoveTargetManager,
-	MoveTarget,
-} from "../../../components/MoveTarget";
+import { MoveTargetManager, MoveTarget } from "../../../components/MoveTarget";
 
 type ProjectileProps = Omit<SpriteProps, "x" | "y" | "game"> & {
 	producer: Unit;

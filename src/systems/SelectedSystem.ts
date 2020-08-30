@@ -19,10 +19,16 @@ export class SelectedSystem extends System {
 	constructor() {
 		super();
 
-		Game.manager.context?.mouse.addEventListener(
+		const game = Game.manager.context;
+
+		game?.mouse.addEventListener(
 			"mouseDown",
 			({ button, mouse: { entity } }) => {
-				if (button === MouseButton.LEFT && entity)
+				if (
+					button === MouseButton.LEFT &&
+					entity &&
+					!game.obstructionPlacement.active
+				)
 					this.setSelection([entity]);
 			},
 		);
@@ -52,14 +58,6 @@ export class SelectedSystem extends System {
 	select(entity: Entity): boolean {
 		if (this.test(entity)) return false;
 		const game = Game.manager.context;
-
-		console.log(
-			Unit.isUnit(entity),
-			game,
-			Unit.isUnit(entity) &&
-				game &&
-				entity.owner.isEnemy(game.localPlayer),
-		);
 
 		new Selected(entity, {
 			color:

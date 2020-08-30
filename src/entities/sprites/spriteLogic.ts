@@ -4,7 +4,6 @@ import { Obstruction } from "./obstructions/Obstruction";
 import { Defender } from "./Defender";
 import { Sprite } from "./Sprite";
 import { obstructionMap } from "./obstructions/index";
-import { activeHotkeys } from "../../ui/hotkeys";
 import { Game } from "../../Game";
 import { Player } from "../../players/Player";
 import { MouseEvents } from "../../systems/Mouse";
@@ -135,7 +134,9 @@ export const initSpriteLogicListeners = (game: Game): void => {
 	game.ui.addEventListener("keyDown", (e) => {
 		if (!game.round) return;
 
-		const hotkey = activeHotkeys.find((b) => b.hotkey === e.key);
+		const hotkey = game.actions.activeActions.find(
+			(b) => b.hotkey === e.key,
+		);
 		if (!hotkey) return;
 
 		// if (typeof hotkey === "function") return hotkey();

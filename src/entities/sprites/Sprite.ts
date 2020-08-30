@@ -212,6 +212,7 @@ class Sprite {
 	}
 
 	remove(): void {
+		if (Selected.has(this)) Selected.clear(this);
 		this.dispatchEvent("remove");
 		this.removeEventListeners();
 		this.round.pathingMap.removeEntity(this);

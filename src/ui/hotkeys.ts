@@ -53,8 +53,6 @@ const genNode = (action: Action) => {
 	return elem;
 };
 
-export const activeHotkeys: Action[] = [];
-
 const center: Action = {
 	name: "Center",
 	hotkey: " " as const,
@@ -84,46 +82,49 @@ const center: Action = {
 const aCharCode = "a".charCodeAt(0);
 const zCharCode = "z".charCodeAt(0);
 
-// dragSelect.addEventListener("selection", (sprites) => {
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const onSelection = (entities: ReadonlyArray<Entity>) => {
-	// Clear hotkeys
-	emptyElement(container);
-	activeHotkeys.splice(0);
-	activeHotkeys.push(center);
-
-	// Get actions
-	const units = entities
-		.filter(Unit.isUnit)
-		.filter((u) => u.owner === Game.manager.context?.localPlayer);
-	if (!units.length) return;
-
-	let activeUnit = units[0];
-	for (let i = 1; i < units.length; i++)
-		if (units[i].priority > activeUnit.priority) activeUnit = units[i];
-	const actions = activeUnit.actions;
-	const sortedActions = qwertySort
-		.map((k) => actions.find((b) => b.hotkey === k))
-		.filter(defined);
-	activeHotkeys.push(...sortedActions);
-
-	activeHotkeys.forEach((action) => {
-		const charCode = action.hotkey.charCodeAt(0);
-		if (
-			charCode < aCharCode ||
-			charCode > zCharCode ||
-			action.hotkey.length > 1
-		)
-			return;
-
-		const elem = action.elem ?? genNode(action);
-		container.appendChild(elem);
-	});
-};
-
 export class Hotkeys extends Mechanism {
+	activeActions: Action[] = [];
+
 	constructor() {
 		super();
-		Game.manager.context?.addEventListener("selection", onSelection);
+		Game.manager.context?.addEventListener(
+			"selection",
+			(entities: ReadonlyArray<Entity>) => this.onSelection(entities),
+		);
+	}
+
+	private onSelection(entities: ReadonlyArray<Entity>) {
+		// Clear actions
+		emptyElement(container);
+		this.activeActions.splice(0);
+		this.activeActions.push(center);
+
+		// Get actions
+		const units = entities
+			.filter(Unit.isUnit)
+			.filter((u) => u.owner === Game.manager.context?.localPlayer);
+		if (!units.length) return;
+
+		let activeUnit = units[0];
+		for (let i = 1; i < units.length; i++)
+			if (units[i].priority > activeUnit.priority) activeUnit = units[i];
+		const actions = activeUnit.actions;
+		const sortedActions = qwertySort
+			.map((k) => actions.find((b) => b.hotkey === k))
+			.filter(defined);
+		this.activeActions.push(...sortedActions);
+
+		this.activeActions.forEach((action) => {
+			const charCode = action.hotkey.charCodeAt(0);
+			if (
+				charCode < aCharCode ||
+				charCode > zCharCode ||
+				action.hotkey.length > 1
+			)
+				return;
+
+			const elem = action.elem ?? genNode(action);
+			container.appendChild(elem);
+		});
 	}
 }

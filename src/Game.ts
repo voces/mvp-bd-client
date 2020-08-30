@@ -55,6 +55,7 @@ class Game extends App {
 	terrain?: Terrain;
 
 	mouse: Mouse;
+	actions: Hotkeys;
 
 	settings: Settings = {
 		arenaIndex: -1,
@@ -84,7 +85,8 @@ class Game extends App {
 		circleSystems.forEach((CircleSystem) =>
 			this.addSystem(new CircleSystem()),
 		);
-		this.addMechanism(new Hotkeys());
+		this.actions = new Hotkeys();
+		this.addMechanism(this.actions);
 
 		this.network = network;
 		this.addNetworkListener = this.network.addEventListener.bind(
