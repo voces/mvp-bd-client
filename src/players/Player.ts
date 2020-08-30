@@ -66,6 +66,13 @@ export class Player {
 		return isCrosser ? this.game.round.defenders : this.game.round.crossers;
 	}
 
+	isEnemy(player: Player): boolean {
+		if (!this.game.round) throw new Error("round not active!");
+		const selfIsCrosser = this.game.round.crossers.includes(this);
+		const otherIsCrosser = this.game.round.crossers.includes(player);
+		return selfIsCrosser !== otherIsCrosser;
+	}
+
 	getEnemySprites(): Sprite[] {
 		return this.enemies.map((p) => p.sprites).flat();
 	}

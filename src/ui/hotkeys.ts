@@ -93,7 +93,9 @@ const onSelection = (entities: ReadonlyArray<Entity>) => {
 	activeHotkeys.push(center);
 
 	// Get actions
-	const units = entities.filter(Unit.isUnit);
+	const units = entities
+		.filter(Unit.isUnit)
+		.filter((u) => u.owner === Game.manager.context?.localPlayer);
 	if (!units.length) return;
 
 	let activeUnit = units[0];

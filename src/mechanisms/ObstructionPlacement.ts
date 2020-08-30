@@ -1,49 +1,15 @@
-import { WORLD_TO_GRAPHICS_RATIO } from "../constants";
-import { document } from "../util/globals";
-import { clientToWorld } from "../players/camera";
 import { appendErrorMessage } from "../ui/chat";
 import { Obstruction } from "../entities/sprites/obstructions/index";
-import { emptyElement } from "../util/html";
 import { Game } from "../Game";
 import { Mechanism } from "../core/Merchanism";
 import { Mouse } from "../systems/Mouse";
-import { Group, Object3D } from "three";
+import { Grid } from "notextures";
+import { Entity } from "../core/Entity";
+import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
+import { MeshPhongMaterial } from "three";
 
 const edgeSnap = (v: number) => Math.round(v);
 const midSnap = (v: number) => Math.floor(v) + 0.5;
-
-const createCell = (pathable: boolean) => {
-	const cell = document.createElement("div");
-	cell.style.width = WORLD_TO_GRAPHICS_RATIO + "px";
-	cell.style.height = WORLD_TO_GRAPHICS_RATIO + "px";
-	cell.style.display = "inline-block";
-	cell.style.backgroundColor = pathable
-		? "rgba( 63, 255, 127, 0.5 )"
-		: "rgba( 255, 63, 63, 0.5 )";
-
-	return cell;
-};
-
-class Container extends Group {
-	private grid: Object3D[][] = [];
-
-	get(x: number, y: number): Object3D | undefined {
-		return this.grid[y]?.[x];
-	}
-
-	set(x: number, y: number, object: Object3D) {
-		if (!this.grid[y]) this.grid[y] = [];
-		if (this.grid[y][x]) this.remove(this.grid[y][x]);
-		this.grid[y][x] = object;
-		this.add(object);
-	}
-
-	copy(source: this, recursive?: boolean) {
-		super.copy(source, recursive);
-		this.grid = source.grid.map((r) => [...r]);
-		return this;
-	}
-}
 
 export class ObstructionPlacement extends Mechanism {
 	static isObstructionPlacement = (
@@ -55,11 +21,10 @@ export class ObstructionPlacement extends Mechanism {
 	private plannedObstruction: typeof Obstruction | undefined;
 	private pathable = false;
 	private mouse: Mouse;
-	private readonly arena = document.getElementById("arena")!;
-	private container = new Container();
-	private readonly pathableCells: HTMLDivElement[] = [];
-	private readonly unpathableCells: HTMLDivElement[] = [];
 	private requestedAnimationFrame: number | undefined;
+	private grids: Grid[][] = [];
+	private lastRadius?: number;
+	private entity: Entity = { id: "OBSTRUCTION_PLACEMENT" };
 
 	constructor(game: Game) {
 		super();
@@ -81,74 +46,81 @@ export class ObstructionPlacement extends Mechanism {
 		return snapFunc(v);
 	}
 
+	private grid(): Grid | undefined {
+		return SceneObjectComponent.get(this.entity)?.object as
+			| Grid
+			| undefined;
+	}
+
+	private newGrid(width: number, height: number) {
+		const grid = new Grid(width, height);
+		grid.material = new MeshPhongMaterial({
+			vertexColors: true,
+			flatShading: true,
+			depthTest: false,
+		});
+		grid.renderOrder = 100;
+		return grid;
+	}
+
 	// We shouldn't just nuke the cells
 	private updateCells() {
 		if (!this.game.round || !this.plannedObstruction) return;
+
+		const unit = this.game.localPlayer.unit;
+		if (!unit) return;
 
 		const pathing = this.plannedObstruction.defaults.requiresPathing;
 		const radius = this.plannedObstruction.defaults.radius;
 		const xStart = this.snap(this.mouse.ground.x) - radius;
 		const yStart = this.snap(this.mouse.ground.y) - radius;
 
-		// We should link cells to grid tiles and update them in this case
-		// if ( radius === updateCells.radiusLast &&
-		//     xStart === updateCells.xStartLast &&
-		//     yStart === updateCells.yStartLast
-		// ) return;
-		// radiusLast = radius;
-		// xStartLast = xStart;
-		// yStartLast = yStart;
+		// Grab a reference to the current Grid
+		const oldGrid = this.grid();
 
-		const unit = this.game.localPlayer.unit;
-		if (!unit) return;
+		// Grab a reference to the new Grid, or create if the size is new
+		if (!this.grids[radius * 2]) this.grids[radius * 2] = [];
+		const grid =
+			this.grids[radius * 2][radius * 2] ??
+			(this.grids[radius * 2][radius * 2] = this.newGrid(
+				radius * 2,
+				radius * 2,
+			));
+
+		// If changing grids, hide the old one and show the new one
+		if (grid !== oldGrid) {
+			if (oldGrid) {
+				oldGrid.visible = false;
+				SceneObjectComponent.clear(this.entity);
+			}
+			new SceneObjectComponent(this.entity, grid);
+			grid.visible = true;
+		}
 
 		this.game.round.pathingMap.withoutEntity(unit, () => {
 			const xFinal = xStart + radius * 2;
 			const yFinal = yStart + radius * 2;
 
-			const old = this.container;
-			this.container = new Container();
-
 			let overallPathable = true;
-			const grid = unit.round.pathingMap.grid;
-			let pathableIndex = 0;
-			let unpathableIndex = 0;
+			const pathingGrid = unit.round.pathingMap.grid;
 			for (let y = yStart; y < yFinal; y += 1)
 				for (let x = xStart; x < xFinal; x += 1) {
 					const pathable =
-						grid[y * 2] &&
-						grid[y * 2][x * 2] &&
-						grid[y * 2][x * 2].pathable(pathing) &&
-						grid[y * 2] &&
-						grid[y * 2][x * 2 + 1] &&
-						grid[y * 2][x * 2 + 1].pathable(pathing) &&
-						grid[y * 2 + 1] &&
-						grid[y * 2 + 1][x * 2] &&
-						grid[y * 2 + 1][x * 2].pathable(pathing) &&
-						grid[y * 2 + 1] &&
-						grid[y * 2 + 1][x * 2 + 1] &&
-						grid[y * 2 + 1][x * 2 + 1].pathable(pathing);
+						pathingGrid[y * 2]?.[x * 2]?.pathable(pathing) &&
+						pathingGrid[y * 2]?.[x * 2 + 1]?.pathable(pathing) &&
+						pathingGrid[y * 2 + 1]?.[x * 2]?.pathable(pathing) &&
+						pathingGrid[y * 2 + 1]?.[x * 2 + 1]?.pathable(pathing);
 
-					if (pathable) {
-						if (!this.pathableCells[pathableIndex])
-							this.pathableCells[pathableIndex] = createCell(
-								true,
-							);
-
-						this.container.appendChild(
-							this.pathableCells[pathableIndex],
+					if (pathable)
+						grid.setColor(x - xStart, yFinal - y - 1, 0.25, 1, 0.5);
+					else {
+						grid.setColor(
+							x - xStart,
+							yFinal - y - 1,
+							1,
+							0.25,
+							0.25,
 						);
-						pathableIndex++;
-					} else {
-						if (!this.unpathableCells[unpathableIndex])
-							this.unpathableCells[unpathableIndex] = createCell(
-								false,
-							);
-
-						this.container.appendChild(
-							this.unpathableCells[unpathableIndex],
-						);
-						unpathableIndex++;
 
 						overallPathable = false;
 					}
@@ -165,32 +137,22 @@ export class ObstructionPlacement extends Mechanism {
 	private updatePosition() {
 		if (!this.plannedObstruction) return;
 
-		this.container.style.left = `${
-			(this.snap(this.mouse.ground.x) -
-				this.plannedObstruction.defaults.radius) *
-			WORLD_TO_GRAPHICS_RATIO
-		}px`;
-		this.container.style.top = `${
-			(this.snap(this.mouse.ground.y) -
-				this.plannedObstruction.defaults.radius) *
-			WORLD_TO_GRAPHICS_RATIO
-		}px`;
-		this.updateCells();
+		const grid = this.grid();
+
+		if (grid) {
+			grid.position.x = this.snap(this.mouse.ground.x);
+			grid.position.y = this.snap(this.mouse.ground.y);
+			grid.position.z = this.game.terrain!.groundHeight(
+				grid.position.x,
+				grid.position.y,
+			);
+		}
 	}
 
 	private updateSize() {
 		if (!this.plannedObstruction) return;
 
-		this.container.style.width = `${
-			this.plannedObstruction.defaults.radius *
-			WORLD_TO_GRAPHICS_RATIO *
-			2
-		}px`;
-		this.container.style.height = `${
-			this.plannedObstruction.defaults.radius *
-			WORLD_TO_GRAPHICS_RATIO *
-			2
-		}px`;
+		this.updateCells();
 		this.updatePosition();
 	}
 
@@ -207,13 +169,17 @@ export class ObstructionPlacement extends Mechanism {
 
 		this.plannedObstruction = obstruction;
 		this.updateSize();
-		this.arena.appendChild(this.container);
+		const grid = this.grid();
+		if (grid) grid.visible = true;
+		this.game.add(this.entity);
 	}
 
 	stop(): void {
 		if (!this.plannedObstruction) return;
 		this.plannedObstruction = undefined;
-		this.arena.removeChild(this.container);
+		const grid = this.grid();
+		if (grid) grid.visible = false;
+		this.game.remove(this.entity);
 	}
 
 	get active(): typeof Obstruction | undefined {

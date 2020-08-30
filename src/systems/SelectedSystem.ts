@@ -4,6 +4,9 @@ import { Selected } from "../components/Selected";
 import { Entity } from "../core/Entity";
 import { Game } from "../Game";
 import { MouseButton } from "./Mouse";
+import { Unit } from "../entities/sprites/Unit";
+
+type SelectedEntity = Entity & { __selected: true };
 
 export class SelectedSystem extends System {
 	static components = [Selected];
@@ -25,7 +28,7 @@ export class SelectedSystem extends System {
 		);
 	}
 
-	test(entity: Entity): entity is Entity {
+	test(entity: Entity): entity is SelectedEntity {
 		return Selected.has(entity);
 	}
 
@@ -48,7 +51,24 @@ export class SelectedSystem extends System {
 
 	select(entity: Entity): boolean {
 		if (this.test(entity)) return false;
-		new Selected(entity);
+		const game = Game.manager.context;
+
+		console.log(
+			Unit.isUnit(entity),
+			game,
+			Unit.isUnit(entity) &&
+				game &&
+				entity.owner.isEnemy(game.localPlayer),
+		);
+
+		new Selected(entity, {
+			color:
+				Unit.isUnit(entity) &&
+				game &&
+				entity.owner.isEnemy(game.localPlayer)
+					? "#FF0000"
+					: "#00FF00",
+		});
 		return true;
 	}
 
@@ -60,6 +80,16 @@ export class SelectedSystem extends System {
 		if (isEqual(curIds.sort(), newIds.sort())) return;
 
 		for (const curSelected of this) Selected.clear(curSelected);
-		for (const newSelected of entities) new Selected(newSelected);
+
+		const game = Game.manager.context;
+		for (const newSelected of entities)
+			new Selected(newSelected, {
+				color:
+					Unit.isUnit(newSelected) &&
+					game &&
+					newSelected.owner.isEnemy(game.localPlayer)
+						? "#FF0000"
+						: "#00FF00",
+			});
 	}
 }
