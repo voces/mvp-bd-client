@@ -240,8 +240,8 @@ export class ThreeGraphics extends System {
 				mesh.position.x = x;
 				mesh.position.y = y;
 				mesh.position.z =
-					mesh.position.z * 0.9 +
-					entity.game.terrain!.groundHeight(x, y) * 0.1;
+					mesh.position.z * 0.8 +
+					entity.game.terrain!.groundHeight(x, y) * 0.2;
 				stillDirty = true;
 			} else {
 				// Otherwise update the rendering position and mark clean

@@ -10,7 +10,7 @@ export class Stack extends Obstruction {
 		cost: { essence: 15 },
 		buildHotkey: "a" as const,
 		buildDescription: "Can be built anywhere",
-		facing: 315,
+		facing: (7 / 4) * Math.PI,
 		graphic: {
 			...Obstruction.defaults.graphic,
 			scale: Math.SQRT1_2,

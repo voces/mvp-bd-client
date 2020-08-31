@@ -110,7 +110,7 @@ class Sprite {
 		priority = 0,
 		maxHealth = 1,
 		health = maxHealth,
-		facing = 270,
+		facing = (3 / 2) * Math.PI,
 		owner,
 		game,
 		graphic = clone(Sprite.defaults.graphic),

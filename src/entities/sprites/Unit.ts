@@ -3,7 +3,7 @@ import { Sprite, SpriteProps } from "./Sprite";
 import { Point } from "../../pathing/PathingMap";
 import { Player } from "../../players/Player";
 import { Action } from "./spriteLogic";
-import { Obstruction, ObstructionSubclass } from "./obstructions/index";
+import { Obstruction } from "./obstructions/index";
 import { MoveTargetManager, MoveTarget } from "../../components/MoveTarget";
 import {
 	AttackTargetManager,
@@ -198,7 +198,7 @@ class Unit extends Sprite {
 		HoldPositionManager.delete(this);
 	}
 
-	buildAt(target: Point, ObstructionClass: ObstructionSubclass): void {
+	buildAt(target: Point, ObstructionClass: typeof Obstruction): void {
 		const moveTarget = new MoveTarget({
 			entity: this,
 			target,

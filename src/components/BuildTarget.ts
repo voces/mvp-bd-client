@@ -1,18 +1,18 @@
 import { Sprite } from "../entities/sprites/Sprite";
 import { DeprecatedComponent } from "../core/Component";
 import { DeprecatedComponentManager } from "../core/DeprecatedComponentManager";
-import { ObstructionSubclass } from "../entities/sprites/obstructions/index";
+import { Obstruction } from "../entities/sprites/obstructions/index";
 import { Blueprint } from "../entities/sprites/obstructions/Blueprint";
 import { Point } from "../pathing/PathingMap";
 
 export class BuildTarget extends DeprecatedComponent {
-	obstructionClass: ObstructionSubclass;
+	obstructionClass: typeof Obstruction;
 	target: Point;
 	blueprint?: Blueprint;
 
 	constructor(
 		entity: Sprite,
-		obstructionClass: ObstructionSubclass,
+		obstructionClass: typeof Obstruction,
 		target: Point,
 	) {
 		super(entity);

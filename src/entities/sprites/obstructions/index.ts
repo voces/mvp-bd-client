@@ -6,7 +6,7 @@ import { Resource } from "./Resource";
 import { Slow } from "./Slow";
 import { Stack } from "./Stack";
 import { Tiny } from "./Tiny";
-import { ValueOf } from "../../../types";
+// import { ValueOf } from "../../../types";
 export { Obstruction } from "./Obstruction";
 
 export const obstructionMap = {
@@ -19,7 +19,5 @@ export const obstructionMap = {
 	Stack,
 	Tiny,
 };
-
-export type ObstructionSubclass = ValueOf<typeof obstructionMap>;
 
 export { Basic, Dense, Huge, Large, Resource, Slow, Stack, Tiny };

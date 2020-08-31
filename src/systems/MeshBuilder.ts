@@ -25,11 +25,15 @@ const getMat = (entity: Sprite, graphic: MeshBuilderComponent) =>
 	new MeshPhongMaterial({
 		color: getColor(entity, graphic),
 		opacity: graphic.opacity,
+		transparent: graphic.opacity < 1,
 	});
 
 const createSphere = (entity: Sprite, graphic: MeshBuilderComponent): Mesh => {
 	const geometry = new SphereBufferGeometry(entity.radius);
 	geometry.translate(0, 0, entity.radius);
+	geometry.rotateZ(entity.facing);
+	if (graphic.scale)
+		geometry.scale(graphic.scale, graphic.scale, graphic.scale);
 	return new Mesh(geometry, getMat(entity, graphic));
 };
 const createBox = (entity: Sprite, graphic: MeshBuilderComponent): Mesh => {
@@ -39,6 +43,9 @@ const createBox = (entity: Sprite, graphic: MeshBuilderComponent): Mesh => {
 		(entity.radius * 3) / 2,
 	);
 	geometry.translate(0, 0, (entity.radius * 3) / 4);
+	geometry.rotateZ(entity.facing);
+	if (graphic.scale)
+		geometry.scale(graphic.scale, graphic.scale, graphic.scale);
 	return new Mesh(geometry, getMat(entity, graphic));
 };
 

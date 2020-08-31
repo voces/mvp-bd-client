@@ -44,7 +44,7 @@ export type ObstructionProps = UnitProps & {
 	owner: Player;
 };
 
-export abstract class Obstruction extends Unit {
+export class Obstruction extends Unit {
 	static defaults = {
 		...Unit.defaults,
 		buildHotkey: undefined as Action["hotkey"] | undefined,

@@ -7,6 +7,7 @@ import { Grid } from "notextures";
 import { Entity } from "../core/Entity";
 import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
 import { MeshPhongMaterial } from "three";
+import { Blueprint } from "../entities/sprites/obstructions/Blueprint";
 
 const edgeSnap = (v: number) => Math.round(v);
 const midSnap = (v: number) => Math.floor(v) + 0.5;
@@ -22,9 +23,10 @@ export class ObstructionPlacement extends Mechanism {
 	private pathable = false;
 	private mouse: Mouse;
 	private requestedAnimationFrame: number | undefined;
-	private grids: Grid[][] = [];
+	private placements: Grid[][] = [];
 	private lastRadius?: number;
-	private entity: Entity = { id: "OBSTRUCTION_PLACEMENT" };
+	private placementEntity: Entity = { id: "ENTITY_PLACEMENT" };
+	private blueprint?: Blueprint;
 
 	constructor(game: Game) {
 		super();
@@ -46,8 +48,8 @@ export class ObstructionPlacement extends Mechanism {
 		return snapFunc(v);
 	}
 
-	private grid(): Grid | undefined {
-		return SceneObjectComponent.get(this.entity)?.object as
+	private placement(): Grid | undefined {
+		return SceneObjectComponent.get(this.placementEntity)?.object as
 			| Grid
 			| undefined;
 	}
@@ -60,6 +62,8 @@ export class ObstructionPlacement extends Mechanism {
 			depthTest: false,
 		});
 		grid.renderOrder = 100;
+		grid.material.opacity = 0.5;
+		grid.material.transparent = true;
 		return grid;
 	}
 
@@ -75,26 +79,26 @@ export class ObstructionPlacement extends Mechanism {
 		const xStart = this.snap(this.mouse.ground.x) - radius;
 		const yStart = this.snap(this.mouse.ground.y) - radius;
 
-		// Grab a reference to the current Grid
-		const oldGrid = this.grid();
+		// Grab a reference to the current Placement
+		const oldPlacement = this.placement();
 
-		// Grab a reference to the new Grid, or create if the size is new
-		if (!this.grids[radius * 2]) this.grids[radius * 2] = [];
-		const grid =
-			this.grids[radius * 2][radius * 2] ??
-			(this.grids[radius * 2][radius * 2] = this.newGrid(
+		// Grab a reference to the new Placement, or create if the size is new
+		if (!this.placements[radius * 2]) this.placements[radius * 2] = [];
+		const placement =
+			this.placements[radius * 2][radius * 2] ??
+			(this.placements[radius * 2][radius * 2] = this.newGrid(
 				radius * 2,
 				radius * 2,
 			));
 
-		// If changing grids, hide the old one and show the new one
-		if (grid !== oldGrid) {
-			if (oldGrid) {
-				oldGrid.visible = false;
-				SceneObjectComponent.clear(this.entity);
+		// If changing placements, hide the old one and show the new one
+		if (placement !== oldPlacement) {
+			if (oldPlacement) {
+				oldPlacement.visible = false;
+				SceneObjectComponent.clear(this.placementEntity);
 			}
-			new SceneObjectComponent(this.entity, grid);
-			grid.visible = true;
+			new SceneObjectComponent(this.placementEntity, placement);
+			placement.visible = true;
 		}
 
 		this.game.round.pathingMap.withoutEntity(unit, () => {
@@ -112,9 +116,15 @@ export class ObstructionPlacement extends Mechanism {
 						pathingGrid[y * 2 + 1]?.[x * 2 + 1]?.pathable(pathing);
 
 					if (pathable)
-						grid.setColor(x - xStart, yFinal - y - 1, 0.25, 1, 0.5);
+						placement.setColor(
+							x - xStart,
+							yFinal - y - 1,
+							0.25,
+							1,
+							0.5,
+						);
 					else {
-						grid.setColor(
+						placement.setColor(
 							x - xStart,
 							yFinal - y - 1,
 							1,
@@ -134,18 +144,34 @@ export class ObstructionPlacement extends Mechanism {
 		this.updateCells();
 	}
 
+	private x() {
+		return this.snap(this.mouse.ground.x);
+	}
+
+	private y() {
+		return this.snap(this.mouse.ground.y);
+	}
+
 	private updatePosition() {
 		if (!this.plannedObstruction) return;
 
-		const grid = this.grid();
+		const placement = this.placement();
 
-		if (grid) {
-			grid.position.x = this.snap(this.mouse.ground.x);
-			grid.position.y = this.snap(this.mouse.ground.y);
-			grid.position.z = this.game.terrain!.groundHeight(
-				grid.position.x,
-				grid.position.y,
+		const x = this.x();
+		const y = this.y();
+
+		if (placement) {
+			placement.position.x = x;
+			placement.position.y = y;
+			placement.position.z = this.game.terrain!.groundHeight(
+				placement.position.x,
+				placement.position.y,
 			);
+		}
+
+		if (this.blueprint) {
+			this.blueprint.position.x = x;
+			this.blueprint.position.y = y;
 		}
 	}
 
@@ -168,18 +194,39 @@ export class ObstructionPlacement extends Mechanism {
 		}
 
 		this.plannedObstruction = obstruction;
+
 		this.updateSize();
-		const grid = this.grid();
-		if (grid) grid.visible = true;
-		this.game.add(this.entity);
+
+		const placement = this.placement();
+		if (placement) placement.visible = true;
+
+		this.game.add(this.placementEntity);
+
+		if (this.blueprint) this.blueprint.remove();
+
+		const blueprint = new Blueprint({
+			obstruction,
+			x: this.x(),
+			y: this.y(),
+			game: this.game,
+		});
+		this.blueprint = blueprint;
+		this.game.add(blueprint);
 	}
 
 	stop(): void {
 		if (!this.plannedObstruction) return;
 		this.plannedObstruction = undefined;
-		const grid = this.grid();
-		if (grid) grid.visible = false;
-		this.game.remove(this.entity);
+
+		const placement = this.placement();
+		if (placement) placement.visible = false;
+
+		this.game.remove(this.placementEntity);
+
+		if (this.blueprint) {
+			this.blueprint.remove();
+			this.game.remove(this.blueprint);
+		}
 	}
 
 	get active(): typeof Obstruction | undefined {

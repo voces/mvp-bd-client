@@ -33,8 +33,8 @@ export class Projectile extends Sprite {
 		requiresPathing: 0,
 		graphic: {
 			...Sprite.defaults.graphic,
-			color: "transparent",
-			texture: "radial-gradient(rgba(0, 0, 255, 0.25), transparent)",
+			color: "#0000ff",
+			opacity: 0.25,
 		},
 	};
 
