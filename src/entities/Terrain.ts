@@ -3,7 +3,6 @@ import {
 	LordaeronSummerDarkGrass,
 	LordaeronSummerRock,
 	LordaeronSummerGrass,
-	LordaeronSummerDirt,
 	LordaeronSummerDirtCliff,
 } from "notextures";
 import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
@@ -37,10 +36,9 @@ export class Terrain {
 	id = "terrain";
 	constructor(arena: Arena) {
 		const vertexZeroes = Array(arena.height + 1).fill(
-			new Array(arena.width + 1),
+			new Array(arena.width + 1).fill(0),
 		);
 		this.height = arena.height;
-		console.log(arena.cliffs);
 		const mesh = new TerrainMesh({
 			masks: {
 				height: vertexZeroes,
@@ -59,7 +57,7 @@ export class Terrain {
 				LordaeronSummerDarkGrass,
 				LordaeronSummerGrass,
 				LordaeronSummerRock,
-				LordaeronSummerDirt,
+				LordaeronSummerGrass,
 				LordaeronSummerDirtCliff,
 			],
 			size: {

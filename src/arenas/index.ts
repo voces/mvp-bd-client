@@ -9,15 +9,17 @@ import { theWoods } from "./theWoods";
 
 import { PATHING_TYPES } from "../pathing/constants";
 import { Arena, InternalArena } from "./types";
+import { Point } from "../pathing/PathingMap";
 
 const UNPATHABLE = PATHING_TYPES.WALKABLE + PATHING_TYPES.BUILDABLE;
 
-const getHeight = (arena: InternalArena) => arena.cliffs.length;
+const getHeight = (arena: InternalArena) =>
+	Math.max(arena.cliffs.length, arena.tiles.length) * 2;
 const getWidth = (arena: InternalArena) =>
 	Math.max(
 		...arena.cliffs.map((l) => l.length),
 		...arena.tiles.map((t) => t.length),
-	);
+	) * 2;
 
 const _asMaxNum = (v: number | "r") => (typeof v === "number" ? v : -Infinity);
 const cliffHeight = (cliffs: (number | "r")[][], x: number, y: number) => {
@@ -44,36 +46,82 @@ const neighbors = [
 	{ x: 1, y: 1 },
 ];
 
+// Turns [[x]] into [[x, x], [x, x]]
+const double = <T>(arr: T[][]): T[][] => {
+	const newArr: T[][] = [];
+
+	for (const row of arr) {
+		const newRow: T[] = [];
+		for (const value of row) newRow.push(value, value);
+		newArr.push(newRow, [...newRow]);
+	}
+
+	return newArr;
+};
+
 const processArena = (arena: InternalArena): Arena => {
 	const height = getHeight(arena);
 	const width = getWidth(arena);
 
-	const cliffs = arena.cliffs.map((row) => row.map((v) => v ?? 0));
+	const cliffs = double(arena.cliffs.map((row) => row.map((v) => v ?? 0)));
 
-	const pathing = Array(height)
+	const tiles = double(arena.tiles);
+
+	const pathing: number[][] = Array(height)
 		.fill(0)
 		.map((_, y) =>
 			Array(width)
 				.fill(0)
 				.map((_, x) => {
+					if (
+						y === 0 ||
+						y === height - 1 ||
+						x === 0 ||
+						x === width - 1
+					)
+						return UNPATHABLE;
+
 					const cur = cliffs[y][x];
-					// Ramps are pathable
-					if (cur === "r") return 0;
-
 					let rampNeighbors = 0;
-					let cliffChange = false;
+					let firstNonRampNeighrborHeight;
+					let firstDiagRamp: Point;
 
-					// Cliff changes are not pathable
 					for (const neighbor of neighbors) {
 						const tile = cliffs[y + neighbor.y]?.[x + neighbor.x];
-						if (tile === "r") rampNeighbors++;
-						else if (tile !== cur) cliffChange = true;
+						if (tile !== "r")
+							if (firstNonRampNeighrborHeight !== undefined) {
+								// Cliff changes are not pathable
+								if (firstNonRampNeighrborHeight !== tile)
+									return UNPATHABLE;
+							} else firstNonRampNeighrborHeight = tile;
+						else {
+							rampNeighbors++;
+							// diag
+							if (neighbor.x !== 0 && neighbor.y !== 0)
+								firstDiagRamp = neighbor;
+						}
 					}
 
-					if (rampNeighbors <= 1 && cliffChange) return UNPATHABLE;
+					if (
+						// 1 ramp means we're flat and a ramp is diag
+						rampNeighbors === 1 ||
+						// 2 ramps mean we're flat and a ramp is adj+diag
+						rampNeighbors === 2 ||
+						// 3 ramps + we're ramp means we're a corner ramp
+						(cur === "r" && rampNeighbors === 3)
+					)
+						if (
+							cliffs[y + firstDiagRamp!.y]?.[
+								x + firstDiagRamp!.x * 3
+							] !== "r" ||
+							cliffs[y + firstDiagRamp!.y * 3]?.[
+								x + firstDiagRamp!.x
+							] !== "r"
+						)
+							return UNPATHABLE;
 
 					// Tiles 1 and 2 are unbuildable
-					if (arena.tiles[y][x] === 1 || arena.tiles[y][x] === 2)
+					if (tiles[y][x] === 1 || tiles[y][x] === 2)
 						return PATHING_TYPES.BUILDABLE;
 
 					// Otherwise it is pathable
@@ -86,27 +134,19 @@ const processArena = (arena: InternalArena): Arena => {
 		height,
 		name: arena.name,
 		pathing,
-		tiles: arena.tiles,
+		tiles,
 		width,
 		pathingCliffs: getPathingCliffs(cliffs),
 	};
-
-	// return Object.assign(arena, {
-	// 	cliffs: arena.cliffs.map((row) => row.map((v) => v ?? 0)),
-	// 	pathing,
-	// 	width,
-	// 	height,
-	// 	pathingCliffs: arena.cliffs.map((row) => row.map((v) => )),
-	// });
 };
 
 export const arenas = [
-	// theDump,
+	theDump,
 	theFarm,
-	// theGap,
-	// theRock,
-	// theTamedWoods,
-	// theTarget,
-	// theTinyRectangle,
-	// theWoods,
+	theGap,
+	theRock,
+	theTamedWoods,
+	theTarget,
+	theTinyRectangle,
+	theWoods,
 ].map(processArena);

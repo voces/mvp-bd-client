@@ -24,7 +24,10 @@ export const stringMap = (map: string): number[][] => {
 	);
 };
 
-export const stringMapWithRamps = (map: string): (number | "r")[][] => {
+export const stringMapWithRamps = (
+	map: string,
+	floor = 0,
+): (number | "r")[][] => {
 	const rows = map.split("\n").filter((v) => v.trim());
 
 	const minLeftTrim = commonLeftTrim(rows);
@@ -37,7 +40,7 @@ export const stringMapWithRamps = (map: string): (number | "r")[][] => {
 			.map((v) => {
 				if (v === "r") return "r";
 				const num = parseInt(v);
-				if (isNaN(num)) return 0;
+				if (isNaN(num)) return floor;
 				return num;
 			}),
 	);
