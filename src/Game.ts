@@ -46,8 +46,7 @@ class Game extends App {
 		return App.context.with(game, () => Game.context.with(game, fn));
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static wrap<Args extends any[], Return extends any>(
+	static wrap<Args extends unknown[], Return extends unknown>(
 		game: Game,
 		fn: (...args: Args) => Return,
 	): (...args: Args) => Return {
@@ -283,7 +282,6 @@ type GameEvents = {
 	selection: (selection: Entity[]) => void;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Game extends Emitter<GameEvents>, App {}
 
 export { Game };

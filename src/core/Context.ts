@@ -25,8 +25,7 @@ export class Context<T> {
 		return ret;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	wrap<Passed extends T, Args extends any[], Return extends any>(
+	wrap<Passed extends T, Args extends unknown[], Return extends unknown>(
 		context: Passed,
 		fn: (...args: Args) => Return,
 	): (...args: Args) => Return {

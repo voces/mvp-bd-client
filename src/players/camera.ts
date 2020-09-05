@@ -55,6 +55,7 @@ export const initCameraListeners = (ui: UI): void => {
 				clearInterval(followInterval);
 				followInterval = undefined;
 			}
+			// Pulling Node.js's type of setInterval instead of generic API
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			else followInterval = <any>setInterval(follow, 500);
 

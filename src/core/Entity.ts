@@ -1,9 +1,3 @@
-import { App } from "./App";
-
-export class Entity {
+export type Entity = {
 	id: unknown;
-
-	constructor() {
-		App.current;
-	}
-}
+};
