@@ -1,27 +1,35 @@
 export class Context<T> {
-	private _context: T;
+	private _current: T;
 
 	constructor(context: T) {
-		this._context = context;
+		this._current = context;
 	}
 
-	get context(): T {
-		return this._context;
+	get current(): T {
+		return this._current;
 	}
 
 	/** This should not be used. Just here for initial development. Instead use
 	 * Context#with.
 	 */
-	_setContext(context: T): T {
-		this._context = context;
+	_setCurrent(context: T): T {
+		this._current = context;
 		return context;
 	}
 
-	with<A>(context: T, fn: (context: T) => A): A {
-		const old = this._context;
-		this._context = context;
+	with<A, B extends T>(context: B, fn: (context: B) => A): A {
+		const old = this._current;
+		this._current = context;
 		const ret = fn(context);
-		this._context = old;
+		this._current = old;
 		return ret;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	wrap<Passed extends T, Args extends any[], Return extends any>(
+		context: Passed,
+		fn: (...args: Args) => Return,
+	): (...args: Args) => Return {
+		return (...args: Args) => this.with(context, () => fn(...args));
 	}
 }

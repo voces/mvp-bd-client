@@ -44,7 +44,7 @@ const setMouseAndRender = (direction: Direction) => {
 };
 
 const setZoom = (zoom: number) => {
-	const camera = Game.manager.context?.graphics.camera;
+	const camera = Game.current.graphics.camera;
 	if (camera) camera.position.z = zoom;
 };
 
@@ -102,7 +102,7 @@ export const initCameraListeners = (ui: UI): void => {
 	});
 
 	ui.addEventListener("wheel", ({ deltaY }) => {
-		const camera = Game.manager.context?.graphics.camera;
+		const camera = Game.current.graphics.camera;
 		if (camera) setZoom(camera.position.z + deltaY * ZOOM_SPEED);
 	});
 };
@@ -112,7 +112,8 @@ const renderCamera = (time?: number) => {
 	const delta = (lastRender && time ? time - lastRender : 17) / 1000;
 	lastRender = time;
 
-	const graphics = Game.manager.context?.graphics;
+	const game = Game.current;
+	const graphics = game.graphics;
 
 	if (pan) {
 		const { x, y } = pan.step((delta * pan.distance) / pan.duration);
@@ -121,30 +122,30 @@ const renderCamera = (time?: number) => {
 		arena.style.left = (arena.x = x) + "px";
 
 		if (x !== pan.target.x || y !== pan.target.y)
-			requestedAnimationFrame = requestAnimationFrame(renderCamera);
+			requestedAnimationFrame = requestAnimationFrame(
+				Game.wrap(game, renderCamera),
+			);
 		else requestedAnimationFrame = undefined;
 	} else {
-		if (graphics) {
-			let y = 0;
-			let x = 0;
-			if (keyboard.ArrowDown) y -= delta * CAMERA_SPEED;
-			if (keyboard.ArrowUp) y += delta * CAMERA_SPEED;
-			if (keyboard.ArrowRight) x += delta * CAMERA_SPEED;
-			if (keyboard.ArrowLeft) x -= delta * CAMERA_SPEED;
+		let y = 0;
+		let x = 0;
+		if (keyboard.ArrowDown) y -= delta * CAMERA_SPEED;
+		if (keyboard.ArrowUp) y += delta * CAMERA_SPEED;
+		if (keyboard.ArrowRight) x += delta * CAMERA_SPEED;
+		if (keyboard.ArrowLeft) x -= delta * CAMERA_SPEED;
 
-			if (mouse.up) y += delta * CAMERA_SPEED;
-			if (mouse.down) y -= delta * CAMERA_SPEED;
-			if (mouse.left) x -= delta * CAMERA_SPEED;
-			if (mouse.right) x += delta * CAMERA_SPEED;
+		if (mouse.up) y += delta * CAMERA_SPEED;
+		if (mouse.down) y -= delta * CAMERA_SPEED;
+		if (mouse.left) x -= delta * CAMERA_SPEED;
+		if (mouse.right) x += delta * CAMERA_SPEED;
 
-			graphics.panTo(
-				{
-					x: graphics.camera.position.x + x,
-					y: graphics.camera.position.y + 7 + y,
-				},
-				0,
-			);
-		}
+		graphics.panTo(
+			{
+				x: graphics.camera.position.x + x,
+				y: graphics.camera.position.y + 7 + y,
+			},
+			0,
+		);
 
 		if (mouse.up)
 			if (mouse.left) document.body.style.cursor = "nw-resize";
@@ -162,7 +163,9 @@ const renderCamera = (time?: number) => {
 			Object.values(keyboard).some(Boolean) ||
 			Object.values(mouse).some(Boolean)
 		)
-			requestedAnimationFrame = requestAnimationFrame(renderCamera);
+			requestedAnimationFrame = requestAnimationFrame(
+				Game.wrap(game, renderCamera),
+			);
 		else requestedAnimationFrame = undefined;
 	}
 };
@@ -194,7 +197,7 @@ export const panTo = ({
 };
 
 const follow = () => {
-	const selection = Game.manager.context?.selectionSystem.selection;
+	const selection = Game.current.selectionSystem.selection;
 	if (!selection?.length) return;
 
 	const { xSum, ySum } = selection.filter(Sprite.isSprite).reduce(
