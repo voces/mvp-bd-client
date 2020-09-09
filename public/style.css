@@ -129,7 +129,7 @@ button:hover {
     color: silver;
 }
 
-#login {
+form {
     background-color: var(--bluebg);
     position: absolute;
     top: 50%;
@@ -138,7 +138,7 @@ button:hover {
     text-align: center;
 }
 
-#login input, #login button {
+form input, form button {
     background: none;
     box-shadow: none;
     text-align: center;

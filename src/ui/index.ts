@@ -8,8 +8,9 @@ import { initChatListeners } from "./chat";
 import { initSplashListeners } from "./waitingSplash";
 import { initEssenceListeners } from "./essence";
 import { initClockListeners } from "./clock";
-import { initLogin } from "./login";
+// import { initLogin } from "./login";
 import { currentGame, wrapGame } from "../gameContext";
+import "./preact/app";
 
 enum MouseButton {
 	LEFT = 0,
@@ -119,7 +120,7 @@ class UI {
 		initSplashListeners(game);
 		initEssenceListeners(game);
 		initClockListeners(game);
-		initLogin(game);
+		// initLogin(game);
 	}
 }
 

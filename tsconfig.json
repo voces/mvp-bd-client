@@ -16,7 +16,10 @@
 			"@types/jest",
 			"@types/node"
 		],
-		"noEmit": true
+		"noEmit": true,
+		"jsx": "react",
+		"jsxFactory": "h",
+		"jsxFragmentFactory": "Fragment"
 	},
 	"include": ["src", "test"]
 }
