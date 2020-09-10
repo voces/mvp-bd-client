@@ -6,9 +6,6 @@ import { initCameraListeners } from "../players/camera";
 import { initListeners } from "./listeners";
 import { initChatListeners } from "./chat";
 import { initSplashListeners } from "./waitingSplash";
-import { initEssenceListeners } from "./essence";
-import { initClockListeners } from "./clock";
-// import { initLogin } from "./login";
 import { currentGame, wrapGame } from "../gameContext";
 
 enum MouseButton {
@@ -123,8 +120,6 @@ class UI {
 		initListeners(this);
 		initChatListeners(game, this);
 		initSplashListeners(game);
-		initEssenceListeners(game);
-		initClockListeners(game);
 
 		if (
 			document.readyState === "complete" ||
@@ -135,8 +130,6 @@ class UI {
 			window.addEventListener("DOMContentLoaded", () =>
 				import("./preact/App").then((i) => i.initialize(game)),
 			);
-
-		// initLogin(game);
 	}
 }
 

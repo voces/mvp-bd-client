@@ -71,6 +71,7 @@ export const Login = (): JSX.Element => {
 						: undefined
 				}
 				disabled={login.isPending}
+				autoFocus
 			/>
 			{mode === "init" && (
 				<button
