@@ -136,6 +136,7 @@ form {
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
     text-align: center;
+    padding: 1em;
 }
 
 form input, form button {
@@ -145,13 +146,8 @@ form input, form button {
     display: block;
 }
 
-#login-register {
+form button {
     margin: auto;
-}
-
-#login #login-password, #login #login-verify-password {
-    display: none;
-    text-align: center;
 }
 
 .margin8 { margin: 8px; }

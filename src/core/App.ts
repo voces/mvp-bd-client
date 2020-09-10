@@ -94,9 +94,9 @@ export class App {
 	}
 
 	protected _render(): void {
-		// this.requestedAnimationFrame = requestAnimationFrame(() =>
-		// 	this.render(),
-		// );
+		this.requestedAnimationFrame = requestAnimationFrame(() =>
+			this.render(),
+		);
 
 		const thisRender = Date.now() / 1000;
 		const delta = thisRender - this.lastRender;

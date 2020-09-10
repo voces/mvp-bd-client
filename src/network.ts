@@ -191,7 +191,7 @@ interface Network extends Emitter<NetworkEventCallback> {}
 
 export { Network };
 
-const wrappedFetch = <T>(
+const wrappedFetch = async <T>(
 	url: string,
 	body: T,
 	options: {
@@ -199,8 +199,12 @@ const wrappedFetch = <T>(
 		body?: string;
 		method?: "POST";
 	} = {},
+): Promise<{
+	status: number;
+	ok: boolean;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any> => {
+	body: any;
+}> => {
 	if (!url.match(/^\w+:\/\//))
 		url = `//${activeHost}/${url.replace(/^\//, "")}`;
 
@@ -212,7 +216,13 @@ const wrappedFetch = <T>(
 
 	if (options.body && options.method === undefined) options.method = "POST";
 
-	return fetch(url, options).then((r) => r.json());
+	const result = await fetch(url, options);
+
+	return {
+		status: result.status,
+		ok: result.ok,
+		body: await result.json(),
+	};
 };
 
 export { wrappedFetch as fetch };
