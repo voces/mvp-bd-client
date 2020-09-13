@@ -121,15 +121,17 @@ class UI {
 		initChatListeners(game, this);
 		initSplashListeners(game);
 
+		const loadApp = async () => {
+			const { initialize } = await import("./preact/App");
+			initialize(game);
+		};
+
 		if (
 			document.readyState === "complete" ||
 			document.readyState === "interactive"
 		)
-			import("./preact/App").then((i) => i.initialize(game));
-		else
-			window.addEventListener("DOMContentLoaded", () =>
-				import("./preact/App").then((i) => i.initialize(game)),
-			);
+			loadApp();
+		else window.addEventListener("DOMContentLoaded", loadApp);
 	}
 }
 

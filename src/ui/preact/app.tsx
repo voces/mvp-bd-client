@@ -5,6 +5,7 @@ import { Game } from "../../Game";
 import { Game as GameContext } from "./contexts/Game";
 import { Clock } from "./views/Clock";
 import { Essense } from "./views/Essence";
+import { Ping } from "./views/Ping";
 
 const App = ({ game }: { game: Game }) => (
 	<GameContext.Provider value={game}>
@@ -14,6 +15,9 @@ const App = ({ game }: { game: Game }) => (
 				<Essense />
 				<Clock />
 				<span id="scores"></span>
+			</div>
+			<div id="bottom-left" className="h-spacing-8">
+				<Ping />
 			</div>
 		</div>
 	</GameContext.Provider>

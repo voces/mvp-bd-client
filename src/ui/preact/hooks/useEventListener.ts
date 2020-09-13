@@ -17,13 +17,9 @@ export const useEventListener = <
 	}, [callback]);
 
 	useEffect(() => {
-		const eventListener = ((...args) =>
-			savedHandler.current(...args)) as Events[EventName];
+		eventTarget.addEventListener(eventName, savedHandler.current);
 
-		eventTarget.addEventListener(eventName, eventListener);
-
-		return () => {
-			eventTarget.removeEventListener(eventName, eventListener);
-		};
+		return () =>
+			eventTarget.removeEventListener(eventName, savedHandler.current);
 	}, [eventName, eventTarget]);
 };

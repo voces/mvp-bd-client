@@ -1,5 +1,4 @@
 import { emitter, Emitter } from "./emitter";
-import { newPingMessage } from "./ui/ping";
 import { location } from "./util/globals";
 import { obstructionMap } from "./entities/sprites/obstructions/index";
 import { Game } from "./Game";
@@ -95,6 +94,12 @@ type ConnectionEvent = PlayerEvent & {
 	username: string;
 };
 
+type PingEvent = {
+	type: "ping";
+	eventType: Exclude<keyof typeof networkEvents, "ping">;
+	ping: number;
+};
+
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function */
 const networkEvents = {
 	init: (data: InitEvent) => {},
@@ -110,6 +115,7 @@ const networkEvents = {
 	chat: (data: ChatEvent) => {},
 	disconnection: (data: DisconnectionEvent) => {},
 	connection: (data: ConnectionEvent) => {},
+	ping: (data: PingEvent) => {},
 } as const;
 /* eslint-enable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function */
 
@@ -165,8 +171,9 @@ class Network {
 				this.localPlayerId === event.connection &&
 				typeof event.sent === "number"
 			)
-				newPingMessage({
-					type: event.type,
+				this.dispatchEvent("ping", {
+					type: "ping",
+					eventType: event.type,
 					ping: performance.now() - event.sent,
 				});
 

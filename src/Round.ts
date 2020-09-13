@@ -150,7 +150,7 @@ class Round {
 			const yRand = this.game.random() * this.pathingMap.heightWorld;
 
 			if (
-				this.arena.tiles[Math.floor(this.arena.tiles.length - yRand)][
+				this.arena.tiles[this.arena.tiles.length - Math.ceil(yRand)][
 					Math.floor(xRand)
 				] !== targetTile
 			)
@@ -163,7 +163,7 @@ class Round {
 			);
 
 			if (
-				this.arena.tiles[this.arena.tiles.length - Math.floor(y)][
+				this.arena.tiles[this.arena.tiles.length - Math.ceil(y)][
 					Math.floor(x)
 				] === targetTile
 			) {
