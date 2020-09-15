@@ -113,37 +113,38 @@ export const useFetch = <Body, Result, Error>({
 	);
 
 	const performFetch = useCallback(
-		({
+		async ({
 			url: finalUrl = url,
 			body: finalBody = body,
 			options: finalOptions = options,
 		}) => {
 			setFetchState(pending);
-			return rawFetch(finalUrl, finalBody, finalOptions)
-				.then(
-					(
-						result:
-							| { ok: true; body: Result }
-							| { ok: false; body: Error },
-					) => {
-						if (!result.ok) {
-							const newFetchState = errored(result.body);
-							setFetchState(newFetchState);
-							return newFetchState;
-						}
-						const newFetchState = completed(result.body);
-						setFetchState(newFetchState);
-						return newFetchState;
-					},
-				)
-				.catch((error) => {
-					const newFetchState = errored({
-						code: -1 as const,
-						message: String(error.message),
-					});
+
+			debugger;
+			try {
+				const result = await rawFetch(
+					finalUrl,
+					finalBody,
+					finalOptions,
+				);
+
+				if (!result.ok) {
+					const newFetchState = errored(result.body);
 					setFetchState(newFetchState);
 					return newFetchState;
+				}
+
+				const newFetchState = completed(result.body);
+				setFetchState(newFetchState);
+				return newFetchState;
+			} catch (error) {
+				const newFetchState = errored({
+					code: -1 as const,
+					message: String(error.message),
 				});
+				setFetchState(newFetchState);
+				return newFetchState;
+			}
 		},
 		[url, body, options],
 	);

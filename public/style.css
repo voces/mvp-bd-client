@@ -1,4 +1,8 @@
 
+* {
+    box-sizing: border-box;
+}
+
 :root {
     --blue: 70, 145, 246;
     --bluecolor: rgb(var(--blue));
@@ -97,6 +101,7 @@ input, button {
     font-size: 100%;
     outline: none;
     background-color: var(--bluebg);
+    border-radius: 0.125em;
 }
 
 input:disabled, button:disabled {
@@ -150,10 +155,15 @@ form input, form button {
     box-shadow: none;
     text-align: center;
     display: block;
+    width: 100%;
 }
 
-form button {
-    margin: auto;
+form input:hover, form button:hover {
+    box-shadow: 0 0 0.0625em 0.0625em var(--blueshadow);
+}
+
+form input:focus, form button:focus {
+    box-shadow: 0 0 0.125em 0.125em var(--blueshadow);
 }
 
 .margin8 { margin: 8px; }
@@ -224,3 +234,6 @@ form button {
 #hotkeys .highlight { color: gold; }
 
 #hotkeys .description { font-size: 75% }
+
+.group { display: flex; }
+.group-direction-horizontal { flex-direction: column; }
