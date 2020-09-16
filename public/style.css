@@ -146,11 +146,11 @@ form input, form button {
     width: 100%;
 }
 
-form input:hover, form button:hover {
+form input:hover {
     box-shadow: 0 0 0.0625em 0.0625em var(--blueshadow);
 }
 
-form input:focus, form button:focus {
+form input:focus {
     box-shadow: 0 0 0.125em 0.125em var(--blueshadow);
 }
 
@@ -219,16 +219,18 @@ form input:focus, form button:focus {
 
 #hotkeys .description { font-size: 75% }
 
-.button--rank-primary {
+button { border: 2px solid white; }
+button[type="submit"] {
     background: white;
     color: var(--blue);
     text-shadow: none;
-    border: 2px solid white;
 }
-.button--rank-secondary { border: 2px solid white; }
-button:hover.button {
+button:hover, button[type="submit"]:hover {
     cursor: pointer;
     box-shadow: 0 0 0.5em 0 black;
+}
+button:focus {
+    box-shadow: 0 0 0.5em 0.125em var(--blueshadow);
 }
 
 .group { display: flex; }
