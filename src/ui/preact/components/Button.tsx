@@ -3,7 +3,7 @@ import { classNames } from "../util";
 
 export const Button = ({
 	buttonRef,
-	color,
+	rank = "primary",
 	type,
 	className,
 	children,
@@ -11,11 +11,15 @@ export const Button = ({
 }: JSX.HTMLAttributes<HTMLButtonElement> & {
 	error?: string;
 	buttonRef?: { current: HTMLButtonElement };
-	color?: "primary" | "secondary";
+	rank?: "primary" | "secondary";
 }): JSX.Element => (
 	<button
 		{...props}
-		className={classNames(className, color && `color--${color}`)}
+		className={classNames(
+			className,
+			"button",
+			rank && `button--rank-${rank}`,
+		)}
 		ref={buttonRef}
 		type={type ?? "button"}
 	>

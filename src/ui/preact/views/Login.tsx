@@ -7,9 +7,7 @@ import { Button } from "../components/Button";
 import { Group } from "../components/Group";
 
 const RegisterButton = (props: Parameters<typeof Button>[0]) => (
-	<Button {...props} color="secondary">
-		Reserve username
-	</Button>
+	<Button {...props}>Reserve username</Button>
 );
 
 export const Login = ({
@@ -114,7 +112,7 @@ export const Login = ({
 						data-test="login"
 						type="submit"
 						disabled={login.isPending}
-						color="primary"
+						rank="primary"
 					>
 						Login
 					</Button>
@@ -122,6 +120,7 @@ export const Login = ({
 				{mode !== "register" && (
 					<RegisterButton
 						data-test="register-1"
+						rank="secondary"
 						onClick={() => {
 							setMode("register");
 							if (username.trim().length > 0)
@@ -151,6 +150,7 @@ export const Login = ({
 						/>
 						<RegisterButton
 							data-test="register-2"
+							rank="primary"
 							type="submit"
 							disabled={login.isPending}
 						/>
@@ -159,6 +159,7 @@ export const Login = ({
 				{mode !== "init" && (
 					<Button
 						data-test="cancel"
+						rank="secondary"
 						disabled={login.isPending}
 						onClick={() => {
 							setMode("init");

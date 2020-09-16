@@ -48,7 +48,7 @@ export const Group = ({
 			className={classNames(
 				className,
 				"group",
-				`group-direction-${direction}`,
+				`group--direction-${direction}`,
 			)}
 			style={styles(style, {
 				"margin-left": -spacing,

@@ -4,10 +4,9 @@
 }
 
 :root {
-    --blue: 70, 145, 246;
-    --bluecolor: rgb(var(--blue));
-    --bluebg: rgba(var(--blue), 0.5);
-    --blueshadow: rgba(var(--blue), 0.9);
+    --blue: #19547f;
+    --bluebg: rgba(70, 145, 246, 0.5);
+    --blueshadow: rgba(70, 145, 246, 0.9);
     --red: 255, 0, 0;
     --redcolor: rgb(var(--red));
 }
@@ -87,7 +86,6 @@ canvas {
     margin: 0.25em 0;
 }
 
-#chat-log > .server { color: var(--bluecolor); }
 #chat-log > .error { color: var(--redcolor); }
 
 input, button {
@@ -115,15 +113,7 @@ input::placeholder {
     opacity: 0.7;
 }
 
-button:hover {
-    cursor: pointer;
-    text-shadow: black 1px 1px 0.25em;
-    margin: auto;
-}
-
-#chat-input-container {
-    visibility: hidden;
-}
+#chat-input-container { visibility: hidden; }
 #chat-input, #chat-input-suggestion {
     position: absolute;
     bottom: 4em;
@@ -136,9 +126,7 @@ button:hover {
     background: transparent;
     box-shadow: none;
 }
-#chat-input-suggestion {
-    color: silver;
-}
+#chat-input-suggestion { color: silver; }
 
 form {
     background-color: var(--bluebg);
@@ -212,13 +200,9 @@ form input:focus, form button:focus {
     cursor: pointer;
 }
 
-#hotkeys .hotkey:hover .tooltip {
-    display: block;
-}
+#hotkeys .hotkey:hover .tooltip { display: block; }
 
-#hotkeys .key {
-    line-height: 3em;
-}
+#hotkeys .key { line-height: 3em; }
 
 #hotkeys .tooltip {
     text-align: left;
@@ -235,5 +219,17 @@ form input:focus, form button:focus {
 
 #hotkeys .description { font-size: 75% }
 
+.button--rank-primary {
+    background: white;
+    color: var(--blue);
+    text-shadow: none;
+    border: 2px solid white;
+}
+.button--rank-secondary { border: 2px solid white; }
+button:hover.button {
+    cursor: pointer;
+    box-shadow: 0 0 0.5em 0 black;
+}
+
 .group { display: flex; }
-.group-direction-horizontal { flex-direction: column; }
+.group--direction-horizontal { flex-direction: column; }
