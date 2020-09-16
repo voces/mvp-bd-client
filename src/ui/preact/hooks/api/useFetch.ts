@@ -1,5 +1,5 @@
 import { useCallback, useState } from "preact/hooks";
-import { fetch as rawFetch } from "../../../../network";
+import { fetch, Options } from "../../../util/fetch";
 
 type Initial = {
 	status: "initial";
@@ -92,11 +92,7 @@ export type FetchState<Result, Error> =
 type UseFetchProps<T> = {
 	url: string;
 	body?: T;
-	options?: {
-		headers?: Record<string, string>;
-		body?: string;
-		method?: "POST";
-	};
+	options?: Options;
 };
 
 export const useFetch = <Body, Result, Error>({
@@ -120,13 +116,17 @@ export const useFetch = <Body, Result, Error>({
 		}) => {
 			setFetchState(pending);
 
-			debugger;
 			try {
-				const result = await rawFetch(
+				// Makes tests cleaner to test for
+				const args: [string, Body | undefined, Options | undefined] = [
 					finalUrl,
 					finalBody,
 					finalOptions,
-				);
+				];
+				for (let i = args.length - 1; i >= 0 && !args[i]; i--)
+					args.length--;
+
+				const result = await fetch(...args);
 
 				if (!result.ok) {
 					const newFetchState = errored(result.body);

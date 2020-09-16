@@ -12,7 +12,11 @@ const RegisterButton = (props: Parameters<typeof Button>[0]) => (
 	</Button>
 );
 
-export const Login = (): JSX.Element => {
+export const Login = ({
+	onSuccess,
+}: {
+	onSuccess: () => void;
+}): JSX.Element => {
 	const game = useContext(Game);
 	const [mode, setMode] = useState<"init" | "login" | "register" | "done">(
 		"init",
@@ -33,7 +37,6 @@ export const Login = (): JSX.Element => {
 		<form
 			style={{ visibility: mode === "done" ? "hidden" : "default" }}
 			onSubmit={async (e) => {
-				debugger;
 				e.preventDefault();
 
 				if (login.isPending) return;
@@ -54,10 +57,10 @@ export const Login = (): JSX.Element => {
 				if (result.isCompleted) {
 					game.connect(result.data.token);
 					setMode("done");
+					onSuccess();
 					return;
 				}
 
-				debugger;
 				if (result.isErrored)
 					if (result.error.code === 0 && mode === "init") {
 						setMode("login");
