@@ -169,10 +169,7 @@ export class ObstructionPlacement extends Mechanism {
 			);
 		}
 
-		if (this.blueprint) {
-			this.blueprint.position.x = x;
-			this.blueprint.position.y = y;
-		}
+		if (this.blueprint) this.blueprint.position.setXY(x, y);
 	}
 
 	private updateSize() {

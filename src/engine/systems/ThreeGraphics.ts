@@ -17,7 +17,7 @@ import {
 	PerspectiveCamera,
 	PCFSoftShadowMap,
 } from "three";
-import { Position } from "../components/Position";
+import { getEntityXY, Position } from "../components/Position";
 import { Game } from "../Game";
 import { Selected } from "../components/Selected";
 import { Hover } from "../components/Hover";
@@ -169,19 +169,11 @@ export class ThreeGraphics extends System {
 			knownObject: object,
 		};
 		if (isSprite(entity)) {
-			data.onChangePositionListener = () => {
-				this.dirty.add(entity);
-				data.updatePosition = true;
-			};
-			(data.onHealthChangeListener = (prop: string) => {
+			data.onHealthChangeListener = (prop: string) => {
 				if (prop !== "health") return;
 				this.dirty.add(entity);
 				data.updateHealth = true;
-			}),
-				entity.position.addEventListener(
-					"change",
-					data.onChangePositionListener,
-				);
+			};
 			entity.addEventListener("change", data.onHealthChangeListener);
 		}
 		this.entityData.set(entity, data);
@@ -193,18 +185,12 @@ export class ThreeGraphics extends System {
 
 		if (isSprite(entity)) {
 			const data = this.entityData.get(entity);
-			if (data) {
-				if (data.onChangePositionListener)
-					entity.position.removeEventListener(
-						"change",
-						data.onChangePositionListener,
-					);
+			if (data)
 				if (data.onHealthChangeListener)
 					entity.removeEventListener(
 						"change",
 						data.onHealthChangeListener,
 					);
-			}
 		}
 
 		this.entityData.delete(entity);
@@ -224,10 +210,22 @@ export class ThreeGraphics extends System {
 	private updatePosition(
 		mesh: Object3D,
 		entity: Entity,
-		delta: number,
-		time: number,
-		data: EntityData,
+		delta?: number,
+		time?: number,
+		data?: EntityData,
 	): boolean {
+		if (delta === undefined) {
+			const position = getEntityXY(entity);
+			mesh.position.x = position.x;
+			mesh.position.y = position.y;
+			mesh.position.z = this.game.terrain!.groundHeight(
+				position.x,
+				position.y,
+			);
+			// Return value doesn't matter here
+			return false;
+		}
+
 		let position: Position | undefined;
 
 		let stillDirty = false;
@@ -270,7 +268,7 @@ export class ThreeGraphics extends System {
 			}
 		});
 
-		if (!stillDirty) data.updatePosition = false;
+		if (!stillDirty) data!.updatePosition = false;
 
 		return stillDirty;
 	}
@@ -290,6 +288,14 @@ export class ThreeGraphics extends System {
 	// 	// data.updateHealth = false;
 	// 	return false;
 	// }
+
+	modified(entity: Entity): void {
+		this.updatePosition(
+			entity.get(SceneObjectComponent)[0]!.object,
+			entity,
+		);
+		h;
+	}
 
 	render(entity: Entity, delta: number, time: number): void {
 		const object = entity.get(SceneObjectComponent)[0]!.object;

@@ -1,7 +1,9 @@
 import { Component, ComponentConstructor } from "./Component";
 
 export class Entity {
+	isEntity = true;
 	id: unknown;
+
 	private map = new Map<ComponentConstructor<Component>, Component[]>();
 
 	constructor(id?: unknown) {
