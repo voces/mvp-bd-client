@@ -1,4 +1,4 @@
-import { activeHost } from "../../network";
+import { activeHost } from "../../engine/network";
 
 export type Options = {
 	headers?: Record<string, string>;
