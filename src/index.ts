@@ -1,4 +1,4 @@
-import { Network, activeHost } from "./engine/network";
+import { Network, activeHost } from "./engine/Network";
 import { Game } from "./engine/Game";
 import { window } from "./core/util/globals";
 
