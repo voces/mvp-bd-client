@@ -242,7 +242,7 @@ class Sprite extends Entity {
 			constructor: this.constructor.name,
 			health: this.health,
 			owner: this.owner && this.owner.id,
-			position: this.get(Position)[0]!,
+			position: this.position,
 		};
 	}
 }

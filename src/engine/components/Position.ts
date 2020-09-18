@@ -21,6 +21,8 @@ export class Position extends Component<
 		}: { zOffset?: number; flyHeight?: number } = {},
 	) {
 		super(entity, x, y, { zOffset, flyHeight });
+		if (this.entity.constructor.name === "Blueprint")
+			console.warn("creating position", this.entity.id);
 	}
 
 	protected initialize(
@@ -32,6 +34,13 @@ export class Position extends Component<
 		(this.y as number) = y;
 		(this.zOffset as number) = zOffset;
 		(this.flyHeight as number) = flyHeight;
+	}
+
+	dispose(): void {
+		if (this.entity.constructor.name === "Blueprint")
+			console.warn("removing position", this.entity.id);
+
+		super.dispose();
 	}
 
 	setXY(x: number, y: number): Position {

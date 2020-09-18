@@ -8,9 +8,17 @@ import { Entity } from "../../core/Entity";
 import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
 import { MeshPhongMaterial } from "three";
 import { Blueprint } from "../../entities/sprites/obstructions/Blueprint";
+import { Position } from "../components/Position";
 
 const edgeSnap = (v: number) => Math.round(v);
 const midSnap = (v: number) => Math.floor(v) + 0.5;
+
+class PlacementEntity extends Entity {
+	constructor() {
+		super("ENTITY_PLACEMENT");
+		new Position(this, 0, 0);
+	}
+}
 
 export class ObstructionPlacement extends Mechanism {
 	static isObstructionPlacement = (
@@ -23,9 +31,10 @@ export class ObstructionPlacement extends Mechanism {
 	private pathable = false;
 	private mouse: Mouse;
 	private requestedAnimationFrame: number | undefined;
+	// Cached placements, so we don't create new ones each time
 	private placements: Grid[][] = [];
 	private lastRadius?: number;
-	private placementEntity: Entity = new Entity("ENTITY_PLACEMENT");
+	private placementEntity = new PlacementEntity();
 	private blueprint?: Blueprint;
 
 	constructor(game: Game) {
@@ -155,19 +164,11 @@ export class ObstructionPlacement extends Mechanism {
 	private updatePosition() {
 		if (!this.plannedObstruction) return;
 
-		const placement = this.placement();
-
 		const x = this.x();
 		const y = this.y();
 
-		if (placement) {
-			placement.position.x = x;
-			placement.position.y = y;
-			placement.position.z = this.game.terrain!.groundHeight(
-				placement.position.x,
-				placement.position.y,
-			);
-		}
+		if (this.placementEntity)
+			this.placementEntity.get(Position)[0]?.setXY(x, y);
 
 		if (this.blueprint) this.blueprint.position.setXY(x, y);
 	}
