@@ -582,7 +582,7 @@ describe("PathingMap#nearestSpiralPathing", () => {
 				pathing: passedPathing || pathing,
 			});
 			pathingMap.addEntity({
-				radius: 0.5,
+				collisionRadius: 0.5,
 				x: 1.5,
 				y: 1.5,
 				pathing: PATHING_TYPES.WALKABLE | PATHING_TYPES.BUILDABLE,
@@ -673,7 +673,7 @@ describe("PathingMap#nearestSpiralPathing", () => {
 				pathing: passedPathing || pathing,
 			});
 			pathingMap.addEntity({
-				radius: 1,
+				collisionRadius: 1,
 				x: 3,
 				y: 3,
 				pathing: PATHING_TYPES.WALKABLE | PATHING_TYPES.BUILDABLE,
@@ -1294,7 +1294,7 @@ describe("PathingMap#recheck", () => {
 		expect(pathingMap.recheck(path, entity, 100)).toBeTruthy();
 
 		pathingMap.addEntity({
-			radius: 0.5,
+			collisionRadius: 0.5,
 			x: 1.5,
 			y: 2.5,
 			pathing: PATHING_TYPES.WALKABLE + PATHING_TYPES.BUILDABLE,
