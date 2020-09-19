@@ -1,11 +1,23 @@
 import { Component } from "../../core/Component";
 import { Entity } from "../../core/Entity";
+import { whileReplacingComponent } from "../../core/util/flags";
 import { Point } from "../pathing/PathingMap";
 import { isEntity } from "../typeguards";
 
 export class Position extends Component<
 	[number, number, { zOffset: number; flyHeight: number }]
 > {
+	static setXY(entity: Entity, x: number, y: number): Position {
+		return whileReplacingComponent(() => {
+			const component = entity.get(Position)[0];
+			if (component) entity.clear(this);
+			return new Position(entity, x, y, {
+				zOffset: component?.zOffset,
+				flyHeight: component?.flyHeight,
+			});
+		});
+	}
+
 	readonly x!: number;
 	readonly y!: number;
 	readonly zOffset!: number;
@@ -21,8 +33,6 @@ export class Position extends Component<
 		}: { zOffset?: number; flyHeight?: number } = {},
 	) {
 		super(entity, x, y, { zOffset, flyHeight });
-		if (this.entity.constructor.name === "Blueprint")
-			console.warn("creating position", this.entity.id);
 	}
 
 	protected initialize(
@@ -37,20 +47,11 @@ export class Position extends Component<
 	}
 
 	dispose(): void {
-		if (this.entity.constructor.name === "Blueprint")
-			console.warn("removing position", this.entity.id);
-
 		super.dispose();
 	}
 
 	setXY(x: number, y: number): Position {
-		return Component.whileReplacing(() => {
-			this.entity.clear(this);
-			return new Position(this.entity, x, y, {
-				zOffset: this.zOffset,
-				flyHeight: this.flyHeight,
-			});
-		});
+		return Position.setXY(this.entity, x, y);
 	}
 }
 

@@ -1,6 +1,6 @@
 import { Entity } from "../../core/Entity";
 import { System } from "../../core/System";
-import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
+import { ThreeObjectComponent } from "../components/graphics/ThreeObjectComponent";
 import { Hover } from "../components/Hover";
 import { Position } from "../components/Position";
 import { Selected } from "../components/Selected";
@@ -11,15 +11,15 @@ import { currentGame } from "../gameContext";
  * update the rendered position.
  */
 export class GraphicTrackPosition extends System {
-	static components = [SceneObjectComponent, Position];
+	static components = [ThreeObjectComponent, Position];
 
 	test(entity: Entity): entity is Entity {
-		return SceneObjectComponent.has(entity) && Position.has(entity);
+		return ThreeObjectComponent.has(entity) && Position.has(entity);
 	}
 
 	private updatePosition(entity: Entity) {
 		const position = entity.get(Position)[0]!;
-		const object = entity.get(SceneObjectComponent)[0]!.object;
+		const object = entity.get(ThreeObjectComponent)[0]!.object;
 		const game = currentGame();
 
 		object.position.x = position.x;

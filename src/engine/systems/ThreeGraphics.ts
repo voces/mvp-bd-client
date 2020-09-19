@@ -2,7 +2,7 @@ import { System } from "../../core/System";
 import { document, window } from "../../core/util/globals";
 import { Point } from "../pathing/PathingMap";
 import { tweenPoints, PathTweener } from "../util/tweenPoints";
-import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
+import { ThreeObjectComponent } from "../components/graphics/ThreeObjectComponent";
 import { Entity } from "../../core/Entity";
 import {
 	Object3D,
@@ -94,7 +94,7 @@ const getCamera = (renderer: WebGLRenderer) => {
 type EntityData = { knownObject: Object3D };
 
 export class ThreeGraphics extends System {
-	static components = [SceneObjectComponent];
+	static components = [ThreeObjectComponent];
 
 	static isThreeGraphics = (system: System): system is ThreeGraphics =>
 		system instanceof ThreeGraphics;
@@ -143,11 +143,11 @@ export class ThreeGraphics extends System {
 	}
 
 	test(entity: Entity): entity is Entity {
-		return SceneObjectComponent.has(entity);
+		return ThreeObjectComponent.has(entity);
 	}
 
 	onAddEntity(entity: Entity): void {
-		const object = entity.get(SceneObjectComponent)[0]!.object;
+		const object = entity.get(ThreeObjectComponent)[0]!.object;
 		this.scene.add(object);
 
 		// Add listeners

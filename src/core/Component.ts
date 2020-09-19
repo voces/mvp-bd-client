@@ -1,7 +1,6 @@
 import { currentApp } from "./appContext";
 import { Entity } from "./Entity";
-
-let replacing = false;
+import { isReplacingComponent, whileReplacingComponent } from "./util/flags";
 
 export class Component<
 	InitializationParameters extends unknown[] = [],
@@ -13,17 +12,6 @@ export class Component<
 
 	static clear(entity: Entity): boolean {
 		return entity.clear(this);
-	}
-
-	/**
-	 * Helper for when replacing a component with another. Reduces calls to
-	 * App#entityComponentUpdated.
-	 */
-	static whileReplacing<T>(fn: () => T): T {
-		const oldReplacing = replacing;
-		const ret = fn();
-		replacing = oldReplacing;
-		return ret;
 	}
 
 	readonly entity: E;
@@ -48,7 +36,7 @@ export class Component<
 	protected initialize?(...rest: InitializationParameters): void;
 
 	dispose(): void {
-		if (!replacing)
+		if (!isReplacingComponent())
 			currentApp().entityComponentUpdated(
 				this.entity,
 				this.constructor as ComponentConstructor<Component>,
@@ -63,7 +51,7 @@ export class Component<
 	replace(
 		...args: InitializationParameters
 	): Component<InitializationParameters, E> {
-		return Component.whileReplacing(() => {
+		return whileReplacingComponent(() => {
 			this.entity.clear(this);
 			return new (this.constructor as new (
 				entity: E,

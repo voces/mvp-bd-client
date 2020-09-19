@@ -1,4 +1,5 @@
 import { Component, ComponentConstructor } from "./Component";
+// import { whileReplacingComponent } from "./util/flags";
 
 export class Entity {
 	isEntity = true;

@@ -1,6 +1,6 @@
 import { Entity } from "../../core/Entity";
 import { System } from "../../core/System";
-import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
+import { ThreeObjectComponent } from "../components/graphics/ThreeObjectComponent";
 import { Hover } from "../components/Hover";
 import { MoveTarget } from "../components/MoveTarget";
 import { Position } from "../components/Position";
@@ -18,18 +18,18 @@ const hasSpeed = (
  * For rendered moving objects, will tween the Three Object and their circles.
  */
 export class GraphicMoveSystem extends System {
-	static components = [SceneObjectComponent, Position, MoveTarget];
+	static components = [ThreeObjectComponent, Position, MoveTarget];
 
 	test(entity: Entity): entity is Entity {
 		return (
-			SceneObjectComponent.has(entity) &&
+			ThreeObjectComponent.has(entity) &&
 			Position.has(entity) &&
 			MoveTarget.has(entity)
 		);
 	}
 
 	render(entity: Entity, delta: number): void {
-		const object = entity.get(SceneObjectComponent)[0]!.object;
+		const object = entity.get(ThreeObjectComponent)[0]!.object;
 		const moveTarget = entity.get(MoveTarget)[0];
 		const game = currentGame();
 
@@ -55,7 +55,7 @@ export class GraphicMoveSystem extends System {
 		[Selected, Hover].forEach((Circle) => {
 			const circle = entity.get(Circle)[0]?.circle;
 			if (circle) {
-				const circleObject = circle.get(SceneObjectComponent)[0]
+				const circleObject = circle.get(ThreeObjectComponent)[0]
 					?.object;
 				if (circleObject) circleObject.position.copy(object.position);
 			}

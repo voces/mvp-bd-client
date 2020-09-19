@@ -8,7 +8,7 @@ import {
 import { MeshBuilderComponent } from "../components/graphics/MeshBuilderComponent";
 import { System } from "../../core/System";
 import { Sprite } from "../../entities/sprites/Sprite";
-import { SceneObjectComponent } from "../components/graphics/SceneObjectComponent";
+import { ThreeObjectComponent } from "../components/graphics/ThreeObjectComponent";
 import { EntityMesh } from "../types";
 
 const getColor = (entity: Sprite, graphic: MeshBuilderComponent) => {
@@ -73,10 +73,10 @@ export class MeshBuilder extends System {
 		mesh.entity = entity;
 
 		// Attach the mesh to the entity
-		new SceneObjectComponent(entity, mesh);
+		new ThreeObjectComponent(entity, mesh);
 	}
 
 	onRemoveEntity(entity: Sprite): void {
-		SceneObjectComponent.clear(entity);
+		ThreeObjectComponent.clear(entity);
 	}
 }
