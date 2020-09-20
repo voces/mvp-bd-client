@@ -1,11 +1,11 @@
-import { EntityID } from "../../../../core/Entity";
-import { DamageComponent } from "../../../components/DamageComponent";
-import { Unit } from "./Unit";
-import { Obstruction } from "./units/Obstruction";
-import { Game } from "../../../Game";
-import { currentGame } from "../../../gameContext";
-import { MouseEvents } from "../../../systems/Mouse";
-import { isSprite, isUnit } from "../../../typeguards";
+import { EntityID } from "../../core/Entity";
+import { DamageComponent } from "../components/DamageComponent";
+import { Unit } from "../entities/widgets/sprites/Unit";
+import { Obstruction } from "../entities/widgets/sprites/units/Obstruction";
+import { Game } from "../Game";
+import { currentGame } from "../gameContext";
+import { MouseEvents } from "../systems/Mouse";
+import { isSprite, isUnit } from "../typeguards";
 
 const rightClick: MouseEvents["mouseDown"] = ({ mouse }) => {
 	const { x, y } = mouse.ground;

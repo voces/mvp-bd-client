@@ -1,11 +1,11 @@
 import { App } from "../core/App";
 import { emitter, Emitter } from "../core/emitter";
 import { Entity } from "../core/Entity";
-import { initSpriteLogicListeners } from "./entities/widgets/sprites/spriteLogic";
 import { Hotkeys } from "../ui/hotkeys";
 import { UI } from "../ui/index";
 import { holdPositionAction } from "./actions/holdPosition";
 import { mirrorAction } from "./actions/mirror";
+import { initSpriteLogicListeners } from "./actions/spriteLogic";
 import { stopAction } from "./actions/stop";
 import { Terrain } from "./entities/Terrain";
 import { withGame, wrapGame } from "./gameContext";
