@@ -2,7 +2,7 @@ import { Component } from "../../../core/Component";
 import { Color } from "three";
 import { Mutable } from "../../types";
 
-export type Props = {
+export type MeshBuilderComponentProps = {
 	shape: "square" | "circle";
 	color?: string;
 	colorFilter?: (color: Color) => Color;
@@ -12,7 +12,7 @@ export type Props = {
 	shadows?: boolean;
 };
 
-type InnerProps = Props & { targetable: boolean };
+type InnerProps = MeshBuilderComponentProps & { targetable: boolean };
 
 export class MeshBuilderComponent extends Component<[InnerProps]> {
 	readonly shape!: "square" | "circle";

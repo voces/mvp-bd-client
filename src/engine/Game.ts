@@ -1,35 +1,38 @@
-import { emitter, Emitter } from "../core/emitter";
-import { Player } from "./players/Player";
-import { alea } from "./lib/alea";
-import { Settings } from "./types";
-import { Network } from "./network";
-import { UI } from "../ui/index";
-import { initPlayerLogic } from "./players/playerLogic";
-import { initSpriteLogicListeners } from "../entities/sprites/spriteLogic";
 import { App } from "../core/App";
-import { MoveSystem } from "./systems/MoveSystem";
-import { AttackSystem } from "./systems/AttackSystem";
-import { BlueprintSystem } from "./systems/BlueprintSystem";
-import { ProjectileSystem } from "./systems/ProjectileSystem";
-import { GerminateSystem } from "./systems/GerminateSystem";
-import { AutoAttackSystem } from "./systems/AutoAttackSystem";
-import { AnimationSystem } from "./systems/AnimationSystem";
-import { SelectedSystem } from "./systems/SelectedSystem";
-import { MeshBuilder } from "./systems/MeshBuilder";
-import { Terrain } from "./entities/Terrain";
-import { ThreeGraphics } from "./systems/ThreeGraphics";
-import { ObstructionPlacement } from "./mechanisms/ObstructionPlacement";
-import { circleSystems } from "./systems/MovingCircles";
+import { emitter, Emitter } from "../core/emitter";
 import { Entity } from "../core/Entity";
+import { initSpriteLogicListeners } from "./entities/widgets/sprites/spriteLogic";
 import { Hotkeys } from "../ui/hotkeys";
-import { Mouse } from "./systems/Mouse";
+import { UI } from "../ui/index";
+import { holdPositionAction } from "./actions/holdPosition";
+import { mirrorAction } from "./actions/mirror";
+import { stopAction } from "./actions/stop";
+import { Terrain } from "./entities/Terrain";
 import { withGame, wrapGame } from "./gameContext";
-import { isSprite } from "./typeguards";
-import { GraphicMoveSystem } from "./systems/GraphicMoveSystem";
-import { GraphicTrackPosition } from "./systems/GraphicTrackPosition";
+import { alea } from "./lib/alea";
+import { ObstructionPlacement } from "./mechanisms/ObstructionPlacement";
+import { Network } from "./network";
 import { PathingMap } from "./pathing/PathingMap";
 import { release as releaseColor } from "./players/colors";
 import { updateDisplay } from "./players/elo";
+import { Player } from "./players/Player";
+import { initPlayerLogic } from "./players/playerLogic";
+import { AnimationSystem } from "./systems/AnimationSystem";
+import { AttackSystem } from "./systems/AttackSystem";
+import { AutoAttackSystem } from "./systems/AutoAttackSystem";
+import { BlueprintSystem } from "./systems/BlueprintSystem";
+import { GerminateSystem } from "./systems/GerminateSystem";
+import { GraphicMoveSystem } from "./systems/GraphicMoveSystem";
+import { GraphicTrackPosition } from "./systems/GraphicTrackPosition";
+import { MeshBuilder } from "./systems/MeshBuilder";
+import { Mouse } from "./systems/Mouse";
+import { MoveSystem } from "./systems/MoveSystem";
+import { circleSystems } from "./systems/MovingCircles";
+import { ProjectileSystem } from "./systems/ProjectileSystem";
+import { SelectedSystem } from "./systems/SelectedSystem";
+import { ThreeGraphics } from "./systems/ThreeGraphics";
+import { isSprite } from "./typeguards";
+import { Settings } from "./types";
 
 type IntervalId = number;
 type TimeoutId = number;
@@ -67,8 +70,12 @@ class Game extends App {
 	lastUpdate = 0;
 	terrain?: Terrain;
 
+	// Systems/mechanisms
 	mouse!: Mouse;
 	actions!: Hotkeys;
+	obstructionPlacement!: ObstructionPlacement;
+	graphics!: ThreeGraphics;
+	selectionSystem!: SelectedSystem;
 
 	// Replace with a heap
 	intervals: Interval[] = [];
@@ -102,12 +109,16 @@ class Game extends App {
 			this.addSystem(new AutoAttackSystem());
 			this.addSystem(new AnimationSystem());
 			this.addSystem(new MeshBuilder());
-			this.addSystem(new ThreeGraphics(this));
+
+			this.graphics = new ThreeGraphics(this);
+			this.addSystem(this.graphics);
+
 			this.addSystem(new GraphicMoveSystem());
 			this.addSystem(new GraphicTrackPosition());
 			circleSystems.forEach((CircleSystem) =>
 				this.addSystem(new CircleSystem()),
 			);
+
 			this.actions = new Hotkeys();
 			this.addMechanism(this.actions);
 
@@ -129,10 +140,23 @@ class Game extends App {
 			this.addNetworkListener("update", (e) => this.update(e));
 
 			this.ui = new UI();
+
 			this.mouse = new Mouse(this.graphics, this.ui);
 			this.addSystem(this.mouse);
-			this.addMechanism(new ObstructionPlacement(this));
-			this.addSystem(new SelectedSystem());
+
+			this.obstructionPlacement = new ObstructionPlacement(this);
+			this.addMechanism(this.obstructionPlacement);
+
+			this.selectionSystem = new SelectedSystem();
+			this.addSystem(this.selectionSystem);
+
+			this.addNetworkListener("stop", stopAction.syncHandler!);
+			this.addNetworkListener("mirror", mirrorAction.syncHandler!);
+			this.addNetworkListener(
+				"holdPosition",
+				holdPositionAction.syncHandler!,
+			);
+
 			initPlayerLogic(this);
 			initSpriteLogicListeners(this);
 		});
@@ -158,28 +182,6 @@ class Game extends App {
 	///////////////////////
 	// System getters
 	///////////////////////
-
-	get graphics(): ThreeGraphics {
-		const sys = this.systems.find((s) => ThreeGraphics.isThreeGraphics(s));
-		if (!sys) throw new Error("expected a ThreeGraphics");
-		return sys as ThreeGraphics;
-	}
-
-	get obstructionPlacement(): ObstructionPlacement {
-		const mech = this.mechanisms.find((m) =>
-			ObstructionPlacement.isObstructionPlacement(m),
-		);
-		if (!mech) throw new Error("expected a ObstructionPlacement");
-		return mech as ObstructionPlacement;
-	}
-
-	get selectionSystem(): SelectedSystem {
-		const sys = this.systems.find((s) =>
-			SelectedSystem.isSelectedSystem(s),
-		);
-		if (!sys) throw new Error("expected a SelectedSystem");
-		return sys as SelectedSystem;
-	}
 
 	get pathingMap(): PathingMap {
 		if (!this._pathingMap) throw new Error("expected a PathingMap");

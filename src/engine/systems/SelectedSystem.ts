@@ -3,17 +3,14 @@ import { isEqual } from "lodash-es";
 import { Entity } from "../../core/Entity";
 import { System } from "../../core/System";
 import { Selected } from "../components/Selected";
-import { Unit } from "../entities/widgets/sprites/Unit";
 import { currentGame } from "../gameContext";
+import { isUnit } from "../typeguards";
 import { MouseButton } from "./Mouse";
 
 type SelectedEntity = Entity & { __selected: true };
 
 export class SelectedSystem extends System {
 	static components = [Selected];
-
-	static isSelectedSystem = (system: System): system is SelectedSystem =>
-		system instanceof SelectedSystem;
 
 	data = new WeakMap<Entity, Selected>();
 
@@ -63,9 +60,7 @@ export class SelectedSystem extends System {
 
 		new Selected(entity, {
 			color:
-				Unit.isUnit(entity) &&
-				game &&
-				entity.owner.isEnemy(game.localPlayer)
+				isUnit(entity) && game && entity.owner.isEnemy(game.localPlayer)
 					? "#FF0000"
 					: "#00FF00",
 		});
@@ -85,7 +80,7 @@ export class SelectedSystem extends System {
 		for (const newSelected of entities)
 			new Selected(newSelected, {
 				color:
-					Unit.isUnit(newSelected) &&
+					isUnit(newSelected) &&
 					game &&
 					newSelected.owner.isEnemy(game.localPlayer)
 						? "#FF0000"

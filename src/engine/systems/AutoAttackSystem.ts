@@ -8,6 +8,7 @@ import { MoveTarget } from "../components/MoveTarget";
 import { Sprite } from "../entities/widgets/Sprite";
 import { Unit } from "../entities/widgets/sprites/Unit";
 import { currentGame } from "../gameContext";
+import { isUnit } from "../typeguards";
 
 export class AutoAttackSystem extends System<Unit> {
 	static components = [
@@ -23,7 +24,7 @@ export class AutoAttackSystem extends System<Unit> {
 		return (
 			!!damageComponent &&
 			damageComponent.autoAttack &&
-			Unit.isUnit(entity) &&
+			isUnit(entity) &&
 			entity.idle
 		);
 	}

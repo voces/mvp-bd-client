@@ -7,11 +7,11 @@ import { colors } from "../engine/players/colors";
 import { elo, updateDisplay } from "../engine/players/elo";
 import { Player } from "../engine/players/Player";
 import { resourceKeys, Settings, teamKeys } from "../engine/types";
-import { Resource } from "./entities/obstructions/index";
 import { arenas } from "./arenas/index";
 import { Arena } from "./arenas/types";
 import { Crosser } from "./entities/Crosser";
 import { Defender } from "./entities/Defender";
+import { Resource } from "./entities/obstructions/Resource";
 import { currentKatma } from "./katmaContext";
 import { TileSystem } from "./systems/TileSystem";
 

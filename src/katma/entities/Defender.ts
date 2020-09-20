@@ -1,46 +1,12 @@
-import { MIRROR_SEPARATION } from "../../engine/constants";
-import { Point } from "../../engine/pathing/PathingMap";
-import { currentGame } from "../../engine/gameContext";
-import { Action } from "../../entities/sprites/spriteLogic";
+import { mirrorAction } from "../../engine/actions/mirror";
+import { Action } from "../../engine/actions/types";
 import { Unit, UnitProps } from "../../engine/entities/widgets/sprites/Unit";
-import { Sprite } from "../../engine/entities/widgets/Sprite";
-
-const mirror: Action = {
-	name: "Mirror Image",
-	hotkey: "r" as const,
-	type: "custom" as const,
-	handler: ({ player }): void => {
-		const ownUnits = player.game.selectionSystem.selection.filter(
-			(u): u is Unit => Unit.isUnit(u) && u.owner === player,
-		);
-		const realDefenders = ownUnits.filter(
-			(u) => Unit.isUnit(u) && !u.isIllusion,
-		);
-		if (realDefenders.length)
-			player.game.transmit({
-				type: "mirror",
-				sprites: realDefenders.map((u) => u.id),
-			});
-	},
-};
-
-const getMirroringPosition = (pos: Point, entity: Sprite, layer?: number) => {
-	const pathingMap = currentGame().pathingMap;
-	const nearest = pathingMap.nearestSpiralPathing(pos.x, pos.y, entity);
-
-	if (pathingMap.layer(nearest.x, nearest.y) === layer) return nearest;
-
-	return pathingMap.nearestSpiralPathing(nearest.x, nearest.y, entity, layer);
-};
 
 type DefenderProps = UnitProps & {
 	autoAttack?: boolean;
 };
 
 export class Defender extends Unit {
-	static isDefender = (sprite: Sprite): sprite is Defender =>
-		sprite instanceof Defender;
-
 	static defaults = {
 		...Unit.defaults,
 		maxHealth: Number.MAX_VALUE,
@@ -57,6 +23,7 @@ export class Defender extends Unit {
 		autoAttack: true,
 	};
 
+	readonly isDefender = true;
 	autoAttack: boolean;
 
 	constructor({
@@ -67,53 +34,9 @@ export class Defender extends Unit {
 		this.autoAttack = autoAttack;
 	}
 
-	mirror(): void {
-		const game = currentGame();
-		if (this.mirrors) this.mirrors.forEach((u) => u.kill());
-		this.stop();
-
-		const angle1 = this.facing + Math.PI / 2;
-		const angle2 = this.facing - Math.PI / 2;
-		let pos1 = {
-			x: this.position.x + Math.cos(angle1) * MIRROR_SEPARATION,
-			y: this.position.y + Math.sin(angle1) * MIRROR_SEPARATION,
-		};
-		let pos2 = {
-			x: this.position.x + Math.cos(angle2) * MIRROR_SEPARATION,
-			y: this.position.y + Math.sin(angle2) * MIRROR_SEPARATION,
-		};
-
-		if (game.random() < 0.5) {
-			const temp = pos1;
-			pos1 = pos2;
-			pos2 = temp;
-		}
-
-		const pathingMap = game.pathingMap;
-
-		const layer = pathingMap.layer(this.position.x, this.position.y);
-
-		const realPosition = pathingMap.withoutEntity(this, () =>
-			getMirroringPosition(pos1, this, layer),
-		);
-		this.position.setXY(realPosition.x, realPosition.y);
-
-		const mirror = new Defender({
-			x: this.position.x,
-			y: this.position.y,
-			owner: this.owner,
-			isIllusion: true,
-			facing: this.facing,
-		});
-		const mirrorPos = getMirroringPosition(pos2, mirror, layer);
-		mirror.position.setXY(mirrorPos.x, mirrorPos.y);
-		pathingMap.addEntity(mirror);
-		this.mirrors = [mirror];
-	}
-
 	get actions(): Action[] {
 		const actions = super.actions;
-		if (!this.isIllusion) actions.push(mirror);
+		if (!this.isIllusion) actions.push(mirrorAction);
 		return actions;
 	}
 }

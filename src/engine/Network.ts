@@ -1,8 +1,6 @@
 import { emitter, Emitter } from "../core/emitter";
 import { EntityID } from "../core/Entity";
 import { location } from "../core/util/globals";
-// eslint-disable-next-line no-restricted-imports
-import { obstructionMap } from "../katma/entities/obstructions/index";
 import { Game } from "./Game";
 import { ValueOf } from "./types";
 
@@ -39,7 +37,7 @@ type BuildEvent = PlayerEvent & {
 	builder: number;
 	x: number;
 	y: number;
-	obstruction: keyof typeof obstructionMap;
+	obstruction: string;
 };
 
 type MoveEvent = PlayerEvent & {
@@ -48,35 +46,37 @@ type MoveEvent = PlayerEvent & {
 	sprites: EntityID[];
 	x: number;
 	y: number;
-	obstruction: keyof typeof obstructionMap;
+	obstruction: string;
 };
 
 type AttackEvent = PlayerEvent & {
 	type: "move";
 	connection: number;
 	attackers: EntityID[];
-	target: EntityID;
+	target: EntityID | undefined;
+	x: number;
+	y: number;
 };
 
-type KillEvent = PlayerEvent & {
-	type: "kill";
+export type SelfDestructEvent = PlayerEvent & {
+	type: "selfDestruct";
 	connection: number;
 	sprites: EntityID[];
 };
 
-type HoldPositionEvent = PlayerEvent & {
-	type: "kill";
+export type HoldPositionEvent = PlayerEvent & {
+	type: "holdPosition";
 	connection: number;
 	sprites: EntityID[];
 };
 
-type StopEvent = PlayerEvent & {
+export type StopEvent = PlayerEvent & {
 	type: "stop";
 	connection: number;
 	sprites: EntityID[];
 };
 
-type MirrorEvent = PlayerEvent & {
+export type MirrorEvent = PlayerEvent & {
 	type: "mirror";
 	connection: number;
 	sprites: EntityID[];
@@ -110,7 +110,7 @@ const networkEvents = {
 	build: (data: BuildEvent) => {},
 	move: (data: MoveEvent) => {},
 	attack: (data: AttackEvent) => {},
-	kill: (data: KillEvent) => {},
+	selfDestruct: (data: SelfDestructEvent) => {},
 	holdPosition: (data: HoldPositionEvent) => {},
 	stop: (data: StopEvent) => {},
 	mirror: (data: MirrorEvent) => {},

@@ -52,9 +52,6 @@ const createBox = (entity: Sprite, meshBuilder: MeshBuilderComponent): Mesh => {
 export class MeshBuilder extends System {
 	static components = [MeshBuilderComponent];
 
-	static isMeshBuilder = (system: System): system is MeshBuilder =>
-		system instanceof MeshBuilder;
-
 	test(entity: Sprite): entity is Sprite {
 		return MeshBuilderComponent.has(entity);
 	}

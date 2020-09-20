@@ -18,11 +18,6 @@ const midSnap = (v: number) => Math.floor(v) + 0.5;
 class PlacementEntity extends Widget {}
 
 export class ObstructionPlacement extends Mechanism {
-	static isObstructionPlacement = (
-		mechanism: Mechanism,
-	): mechanism is ObstructionPlacement =>
-		mechanism instanceof ObstructionPlacement;
-
 	private game: Game;
 	private plannedObstruction: typeof Obstruction | undefined;
 	private pathable = false;

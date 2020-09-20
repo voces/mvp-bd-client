@@ -1,5 +1,5 @@
-import { Entity } from "../../../../../core/Entity";
-import { Action } from "../../../../../entities/sprites/spriteLogic";
+import { destroySelf } from "../../../../actions/selfDestruct";
+import { Action } from "../../../../actions/types";
 import { toFootprint } from "../../../../api/toFootprint";
 import { GerminateComponent } from "../../../../components/GerminateComponent";
 import {
@@ -9,31 +9,6 @@ import {
 import { Player } from "../../../../players/Player";
 import { ResourceMap } from "../../../../types";
 import { Unit, UnitProps } from "../Unit";
-
-const destroySelf: Action = {
-	name: "Destroy box",
-	description: "Destroys selected boxes",
-	hotkey: "x" as const,
-	type: "custom" as const,
-	handler: ({ player }): void => {
-		// Get currently selected boxes
-		const obstructions = player.game.selectionSystem.selection.filter(
-			(s): s is Obstruction =>
-				Obstruction.isObstruction(s) && s.owner === player,
-		);
-
-		// Select the main unit
-		const playerCrosser = player.unit;
-		if (playerCrosser)
-			player.game.selectionSystem.setSelection([playerCrosser]);
-
-		// Kill selected obstructions
-		player.game.transmit({
-			type: "kill",
-			sprites: obstructions.map((u) => u.id),
-		});
-	},
-};
 
 export type ObstructionProps = UnitProps & {
 	buildTime?: number;
@@ -54,9 +29,6 @@ export class Obstruction extends Unit {
 			shape: "square" as "square" | "circle",
 		},
 	};
-
-	static isObstruction = (entity: Entity): entity is Obstruction =>
-		entity instanceof Obstruction;
 
 	readonly isObstruction = true;
 	requiresTilemap = toFootprint(this.collisionRadius, this.requiresPathing);

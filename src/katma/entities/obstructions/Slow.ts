@@ -3,21 +3,22 @@ import {
 	Weapon,
 } from "../../../engine/components/DamageComponent";
 import { Effect, Sprite } from "../../../engine/entities/widgets/Sprite";
-import { Unit } from "../../../engine/entities/widgets/sprites/Unit";
-import { currentGame } from "../../../engine/gameContext";
-import { clone } from "../../../engine/util/clone";
 import { Projectile } from "../../../engine/entities/widgets/sprites/Projectile";
 import {
 	Obstruction,
 	ObstructionProps,
 } from "../../../engine/entities/widgets/sprites/units/Obstruction";
+import { currentGame } from "../../../engine/gameContext";
+import { isUnit } from "../../../engine/typeguards";
+import { clone } from "../../../engine/util/clone";
+import { isSlow } from "../../typeguards";
 
 const slowTimeout = (target: Sprite) =>
 	currentGame().setTimeout(() => {
 		const effectIndex = target.effects.findIndex((e) => e.type === "slow");
 		const effect = target.effects[effectIndex];
 
-		if (Unit.isUnit(target)) target.speed = effect.oldSpeed;
+		if (isUnit(target)) target.speed = effect.oldSpeed;
 
 		target.effects.splice(effectIndex, 1);
 	}, 5);
@@ -28,8 +29,6 @@ type SlowProps = ObstructionProps & {
 };
 
 export class Slow extends Obstruction {
-	static isSlow = (sprite: Sprite): sprite is Slow => sprite instanceof Slow;
-
 	static defaults = {
 		...Obstruction.defaults,
 		maxHealth: 200,
@@ -43,7 +42,7 @@ export class Slow extends Obstruction {
 			last: 0,
 			range: 10,
 			onDamage: (target: Sprite): void => {
-				if (!Unit.isUnit(target)) return;
+				if (!isUnit(target)) return;
 
 				const existingEffect = target.effects.find(
 					(e) => e.type === "slow",
@@ -67,7 +66,7 @@ export class Slow extends Obstruction {
 				target.effects.push(effect);
 			},
 			projectile: (target: Sprite, attacker: Sprite): void => {
-				if (!Slow.isSlow(attacker)) return;
+				if (!isSlow(attacker)) return;
 				const damageComponent = attacker.get(DamageComponent)[0];
 				if (!damageComponent) return;
 
@@ -82,6 +81,8 @@ export class Slow extends Obstruction {
 		},
 		buildHotkey: "q" as const,
 	};
+
+	readonly isSlow = true;
 
 	constructor({
 		weapon = clone(Slow.defaults.weapon),

@@ -1,61 +1,20 @@
+import { Color } from "three";
+
+import { cancel } from "../../../actions/cancel";
+import { holdPositionAction } from "../../../actions/holdPosition";
+import { stopAction } from "../../../actions/stop";
+import { Action } from "../../../actions/types";
+import { isInAttackRange } from "../../../api/UnitApi";
+import { AttackTarget } from "../../../components/AttackTarget";
+import { BuildTarget } from "../../../components/BuildTarget";
+import { DamageComponent, Weapon } from "../../../components/DamageComponent";
+import { HoldPositionComponent } from "../../../components/HoldPositionComponent";
+import { MoveTarget } from "../../../components/MoveTarget";
 import { BUILD_DISTANCE } from "../../../constants";
-import { Sprite, SpriteProps } from "../Sprite";
 import { Point } from "../../../pathing/PathingMap";
 import { Player } from "../../../players/Player";
-import { Action } from "../../../../entities/sprites/spriteLogic";
-import { MoveTarget } from "../../../components/MoveTarget";
-import { AttackTarget } from "../../../components/AttackTarget";
-import { isInAttackRange } from "../../../api/UnitApi";
-import { HoldPositionComponent } from "../../../components/HoldPositionComponent";
-import { BuildTarget } from "../../../components/BuildTarget";
-import { Weapon, DamageComponent } from "../../../components/DamageComponent";
-import { Entity } from "../../../../core/Entity";
-import { Color } from "three";
+import { Sprite, SpriteProps } from "../Sprite";
 import { Obstruction } from "./units/Obstruction";
-
-const holdPosition: Action = {
-	name: "Hold Position",
-	hotkey: "h" as const,
-	type: "custom" as const,
-	handler: ({ player }): void => {
-		const ownedUnits = player.game.selectionSystem.selection.filter(
-			(u): u is Unit =>
-				Unit.isUnit(u) && u.owner === player && u.speed > 0,
-		);
-
-		if (ownedUnits.length > 0)
-			player.game.transmit({
-				type: "holdPosition",
-				sprites: ownedUnits.map((u) => u.id),
-			});
-	},
-};
-
-const stop: Action = {
-	name: "Stop",
-	hotkey: "s" as const,
-	type: "custom" as const,
-	handler: ({ player }): void => {
-		const ownedUnits = player.game.selectionSystem.selection.filter(
-			(u): u is Unit => Unit.isUnit(u) && u.owner === player,
-		);
-
-		if (ownedUnits.length > 0)
-			player.game.transmit({
-				type: "stop",
-				sprites: ownedUnits.map((u) => u.id),
-			});
-	},
-};
-
-const cancel: Action = {
-	name: "Cancel",
-	hotkey: "Escape" as const,
-	type: "custom" as const,
-	handler: ({ player }): void => {
-		player.game.obstructionPlacement?.stop();
-	},
-};
 
 class NoWeaponError extends Error {
 	message = "No weapon";
@@ -82,8 +41,6 @@ const darkBlue = new Color("#191966");
 // `Seeing Class extends value undefined is not a constructor or null`? Import
 // Player before Sprite.
 class Unit extends Sprite {
-	static isUnit = (entity: Entity): entity is Unit => entity instanceof Unit;
-
 	static defaults = {
 		...Sprite.clonedDefaults,
 		isIllusion: false,
@@ -92,6 +49,7 @@ class Unit extends Sprite {
 		autoAttack: false,
 	};
 
+	readonly isUnit = true;
 	isIllusion: boolean;
 	mirrors?: Unit[];
 	owner!: Player;
@@ -133,13 +91,13 @@ class Unit extends Sprite {
 	}
 
 	attack(target: Sprite): void {
-		BuildTarget.clear(this);
-		HoldPositionComponent.clear(this);
-
 		const damageComponent = this.get(DamageComponent)[0];
 
 		// We can't attack without a weapon
 		if (!damageComponent) throw new NoWeaponError();
+
+		BuildTarget.clear(this);
+		HoldPositionComponent.clear(this);
 
 		// Attacker can't move and target is not in range; do nothing
 		if (!this.speed && !isInAttackRange(this, target))
@@ -192,7 +150,7 @@ class Unit extends Sprite {
 
 		const actions: Action[] = buildList;
 
-		if (this.speed > 0) actions.push(holdPosition, stop);
+		if (this.speed > 0) actions.push(holdPositionAction, stopAction);
 
 		return actions;
 	}

@@ -65,7 +65,6 @@ export class Player {
 
 	get enemies(): Player[] {
 		const round = currentRound();
-		if (!round) return [];
 		const isCrosser = round.crossers.includes(this);
 		return isCrosser ? round.defenders : round.crossers;
 	}
