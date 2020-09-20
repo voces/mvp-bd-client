@@ -1,13 +1,16 @@
-import { Sprite, Effect } from "../Sprite";
-import { Obstruction, ObstructionProps } from "./Obstruction";
-import { Unit } from "../Unit";
-import { clone } from "../../../engine/util/clone";
-import { Projectile } from "../projectiles/Projectile";
 import {
 	DamageComponent,
 	Weapon,
 } from "../../../engine/components/DamageComponent";
+import { Effect, Sprite } from "../../../engine/entities/widgets/Sprite";
+import { Unit } from "../../../engine/entities/widgets/sprites/Unit";
 import { currentGame } from "../../../engine/gameContext";
+import { clone } from "../../../engine/util/clone";
+import { Projectile } from "../../../engine/entities/widgets/sprites/Projectile";
+import {
+	Obstruction,
+	ObstructionProps,
+} from "../../../engine/entities/widgets/sprites/units/Obstruction";
 
 const slowTimeout = (target: Sprite) =>
 	currentGame().setTimeout(() => {

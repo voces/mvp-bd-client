@@ -1,10 +1,11 @@
 import { isEqual } from "lodash-es";
+
+import { Entity } from "../../core/Entity";
 import { System } from "../../core/System";
 import { Selected } from "../components/Selected";
-import { Entity } from "../../core/Entity";
-import { MouseButton } from "./Mouse";
-import { Unit } from "../../entities/sprites/Unit";
+import { Unit } from "../entities/widgets/sprites/Unit";
 import { currentGame } from "../gameContext";
+import { MouseButton } from "./Mouse";
 
 type SelectedEntity = Entity & { __selected: true };
 

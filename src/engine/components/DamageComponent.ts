@@ -1,5 +1,5 @@
-import { Sprite } from "../../entities/sprites/Sprite";
 import { Component } from "../../core/Component";
+import { Sprite } from "../entities/widgets/Sprite";
 import { Mutable, NonEmptyArray } from "../types";
 
 export type Weapon = {

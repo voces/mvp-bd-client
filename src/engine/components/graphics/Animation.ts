@@ -1,5 +1,5 @@
 import { Component } from "../../../core/Component";
-import { Sprite } from "../../../entities/sprites/Sprite";
+import { Sprite } from "../../entities/widgets/Sprite";
 import { currentGame, wrapGame } from "../../gameContext";
 import { Mutable } from "../../types";
 

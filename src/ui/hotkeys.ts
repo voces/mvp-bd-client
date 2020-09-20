@@ -1,12 +1,12 @@
-import { Action } from "../entities/sprites/spriteLogic";
-import { document } from "../core/util/globals";
-import { defined } from "../engine/types";
-import { Unit } from "../entities/sprites/Unit";
-import { emptyElement } from "../engine/util/html";
 import { Entity } from "../core/Entity";
 import { Mechanism } from "../core/Merchanism";
-import { isSprite } from "../engine/typeguards";
+import { document } from "../core/util/globals";
+import { Unit } from "../engine/entities/widgets/sprites/Unit";
 import { currentGame } from "../engine/gameContext";
+import { isSprite } from "../engine/typeguards";
+import { defined } from "../engine/types";
+import { emptyElement } from "../engine/util/html";
+import { Action } from "../entities/sprites/spriteLogic";
 
 const container = document.getElementById("hotkeys")!;
 

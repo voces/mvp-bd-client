@@ -1,14 +1,15 @@
 import {
-	MeshPhongMaterial,
-	Mesh,
-	SphereBufferGeometry,
 	BoxBufferGeometry,
 	Color,
+	Mesh,
+	MeshPhongMaterial,
+	SphereBufferGeometry,
 } from "three";
-import { MeshBuilderComponent } from "../components/graphics/MeshBuilderComponent";
+
 import { System } from "../../core/System";
-import { Sprite } from "../../entities/sprites/Sprite";
+import { MeshBuilderComponent } from "../components/graphics/MeshBuilderComponent";
 import { ThreeObjectComponent } from "../components/graphics/ThreeObjectComponent";
+import { Sprite } from "../entities/widgets/Sprite";
 import { EntityMesh } from "../types";
 
 const getColor = (entity: Sprite, meshBuilder: MeshBuilderComponent) => {

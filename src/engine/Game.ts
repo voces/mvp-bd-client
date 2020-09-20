@@ -16,7 +16,7 @@ import { AutoAttackSystem } from "./systems/AutoAttackSystem";
 import { AnimationSystem } from "./systems/AnimationSystem";
 import { SelectedSystem } from "./systems/SelectedSystem";
 import { MeshBuilder } from "./systems/MeshBuilder";
-import { Terrain } from "../entities/Terrain";
+import { Terrain } from "./entities/Terrain";
 import { ThreeGraphics } from "./systems/ThreeGraphics";
 import { ObstructionPlacement } from "./mechanisms/ObstructionPlacement";
 import { circleSystems } from "./systems/MovingCircles";

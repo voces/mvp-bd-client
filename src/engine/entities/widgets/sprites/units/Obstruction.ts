@@ -1,14 +1,14 @@
+import { Entity } from "../../../../../core/Entity";
+import { Action } from "../../../../../entities/sprites/spriteLogic";
+import { toFootprint } from "../../../../api/toFootprint";
+import { GerminateComponent } from "../../../../components/GerminateComponent";
 import {
 	INITIAL_OBSTRUCTION_PROGRESS,
 	PATHING_TYPES,
-} from "../../../engine/constants";
-import { toFootprint } from "./toFootprint";
-import { ResourceMap } from "../../../engine/types";
-import { Player } from "../../../engine/players/Player";
+} from "../../../../constants";
+import { Player } from "../../../../players/Player";
+import { ResourceMap } from "../../../../types";
 import { Unit, UnitProps } from "../Unit";
-import { Action } from "../spriteLogic";
-import { GerminateComponent } from "../../../engine/components/GerminateComponent";
-import { Entity } from "../../../core/Entity";
 
 const destroySelf: Action = {
 	name: "Destroy box",

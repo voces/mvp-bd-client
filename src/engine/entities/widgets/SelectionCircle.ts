@@ -1,7 +1,7 @@
 import { TorusBufferGeometry, MeshBasicMaterial, Mesh } from "three";
-import { ThreeObjectComponent } from "../engine/components/graphics/ThreeObjectComponent";
-import { currentGame } from "../engine/gameContext";
-import { Widget } from "../engine/entities/Widget";
+import { ThreeObjectComponent } from "../../components/graphics/ThreeObjectComponent";
+import { currentGame } from "../../gameContext";
+import { Widget } from "../Widget";
 
 export class SelectionCircle extends Widget {
 	constructor({

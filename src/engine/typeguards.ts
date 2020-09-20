@@ -1,5 +1,5 @@
 import { Entity } from "../core/Entity";
-import { Sprite } from "../entities/sprites/Sprite";
+import { Sprite } from "./entities/widgets/Sprite";
 import { Game } from "./Game";
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any

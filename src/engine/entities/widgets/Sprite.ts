@@ -1,22 +1,22 @@
-import { PATHING_TYPES } from "../../engine/constants";
-import { emitter, Emitter } from "../../core/emitter";
-import { Player } from "../../engine/players/Player";
-import { clone } from "../../engine/util/clone";
-import { Action } from "./spriteLogic";
+import { PATHING_TYPES } from "../../constants";
+import { emitter, Emitter } from "../../../core/emitter";
+import { Player } from "../../players/Player";
+import { clone } from "../../util/clone";
+import { Action } from "../../../entities/sprites/spriteLogic";
 import {
 	MeshBuilderComponent,
 	Props as MeshBuilderComponentProps,
-} from "../../engine/components/graphics/MeshBuilderComponent";
-import { MoveTarget } from "../../engine/components/MoveTarget";
-import { AttackTarget } from "../../engine/components/AttackTarget";
-import { HoldPositionComponent } from "../../engine/components/HoldPositionComponent";
-import { GerminateComponent } from "../../engine/components/GerminateComponent";
-import { Selected } from "../../engine/components/Selected";
-import { currentGame } from "../../engine/gameContext";
-import { Hover } from "../../engine/components/Hover";
-import { Position } from "../../engine/components/Position";
-import { Widget, WidgetProps } from "../../engine/entities/Widget";
-import { EntityID } from "../../core/Entity";
+} from "../../components/graphics/MeshBuilderComponent";
+import { MoveTarget } from "../../components/MoveTarget";
+import { AttackTarget } from "../../components/AttackTarget";
+import { HoldPositionComponent } from "../../components/HoldPositionComponent";
+import { GerminateComponent } from "../../components/GerminateComponent";
+import { Selected } from "../../components/Selected";
+import { currentGame } from "../../gameContext";
+import { Hover } from "../../components/Hover";
+import { Position } from "../../components/Position";
+import { Widget, WidgetProps } from "../Widget";
+import { EntityID } from "../../../core/Entity";
 
 export type SpriteElement = HTMLDivElement & { sprite: Sprite };
 

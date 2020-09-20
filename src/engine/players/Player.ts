@@ -5,8 +5,8 @@ import {
 	Color,
 } from "./colors";
 import { ResourceMap, resourceKeys, Resource } from "../types";
-import { Unit } from "../../entities/sprites/Unit";
-import { Sprite } from "../../entities/sprites/Sprite";
+import { Unit } from "../entities/widgets/sprites/Unit";
+import { Sprite } from "../entities/widgets/Sprite";
 import { Game } from "../Game";
 // https://github.com/voces/mvp-bd-client/issues/33
 // eslint-disable-next-line no-restricted-imports

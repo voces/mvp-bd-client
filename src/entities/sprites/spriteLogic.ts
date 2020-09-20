@@ -1,14 +1,14 @@
-import { Unit } from "./Unit";
-import { Crosser } from "./Crosser";
-import { Obstruction } from "./obstructions/Obstruction";
-import { Defender } from "./Defender";
-import { obstructionMap } from "./obstructions/index";
+import { EntityID } from "../../core/Entity";
+import { Unit } from "../../engine/entities/widgets/sprites/Unit";
+import { Obstruction } from "../../engine/entities/widgets/sprites/units/Obstruction";
 import { Game } from "../../engine/Game";
+import { currentGame } from "../../engine/gameContext";
 import { Player } from "../../engine/players/Player";
 import { MouseEvents } from "../../engine/systems/Mouse";
 import { isSprite } from "../../engine/typeguards";
-import { currentGame } from "../../engine/gameContext";
-import { EntityID } from "../../core/Entity";
+import { Crosser } from "../../katma/entities/Crosser";
+import { Defender } from "../../katma/entities/Defender";
+import { obstructionMap } from "../../katma/entities/obstructions/index";
 
 export type Action = {
 	description?: string;

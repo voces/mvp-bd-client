@@ -5,11 +5,11 @@ import {
 	LordaeronSummerGrass,
 	LordaeronSummerDirtCliff,
 } from "notextures";
-import { ThreeObjectComponent } from "../engine/components/graphics/ThreeObjectComponent";
-import { Arena } from "../katma/arenas/types";
+import { ThreeObjectComponent } from "../components/graphics/ThreeObjectComponent";
 import { Group, Vector3 } from "three";
-import { orientation } from "../engine/pathing/math";
-import { Entity } from "../core/Entity";
+import { orientation } from "../pathing/math";
+import { Entity } from "../../core/Entity";
+import { CliffMask } from "notextures/dist/objects/Terrain/Terrain";
 
 /**
  * Returns the z coordinate of point (x, y) on the plane defined by (a, b, c)
@@ -32,7 +32,12 @@ export const interpolateZ = (
 export class Terrain extends Entity {
 	private group: Group;
 	private height: number;
-	constructor(arena: Arena) {
+	constructor(arena: {
+		width: number;
+		height: number;
+		cliffs: CliffMask;
+		pathing: number[][];
+	}) {
 		super("TERRAIN");
 		const vertexZeroes = Array(arena.height + 1).fill(
 			new Array(arena.width + 1).fill(0),

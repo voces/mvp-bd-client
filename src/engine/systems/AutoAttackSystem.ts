@@ -1,12 +1,12 @@
 import { System } from "../../core/System";
-import { Sprite } from "../../entities/sprites/Sprite";
-import { GerminateComponent } from "../components/GerminateComponent";
-import { Unit } from "../../entities/sprites/Unit";
-import { MoveTarget } from "../components/MoveTarget";
+import { isInAttackRange } from "../api/UnitApi";
 import { AttackTarget } from "../components/AttackTarget";
-import { HoldPositionComponent } from "../components/HoldPositionComponent";
-import { isInAttackRange } from "../../entities/sprites/UnitApi";
 import { DamageComponent } from "../components/DamageComponent";
+import { GerminateComponent } from "../components/GerminateComponent";
+import { HoldPositionComponent } from "../components/HoldPositionComponent";
+import { MoveTarget } from "../components/MoveTarget";
+import { Sprite } from "../entities/widgets/Sprite";
+import { Unit } from "../entities/widgets/sprites/Unit";
 import { currentGame } from "../gameContext";
 
 export class AutoAttackSystem extends System<Unit> {

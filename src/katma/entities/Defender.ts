@@ -1,9 +1,9 @@
 import { MIRROR_SEPARATION } from "../../engine/constants";
-import { Unit, UnitProps } from "./Unit";
-import { Sprite } from "./Sprite";
 import { Point } from "../../engine/pathing/PathingMap";
-import { Action } from "./spriteLogic";
 import { currentGame } from "../../engine/gameContext";
+import { Action } from "../../entities/sprites/spriteLogic";
+import { Unit, UnitProps } from "../../engine/entities/widgets/sprites/Unit";
+import { Sprite } from "../../engine/entities/widgets/Sprite";
 
 const mirror: Action = {
 	name: "Mirror Image",

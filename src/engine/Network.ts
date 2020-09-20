@@ -1,7 +1,8 @@
 import { emitter, Emitter } from "../core/emitter";
 import { EntityID } from "../core/Entity";
 import { location } from "../core/util/globals";
-import { obstructionMap } from "../entities/sprites/obstructions/index";
+// eslint-disable-next-line no-restricted-imports
+import { obstructionMap } from "../katma/entities/obstructions/index";
 import { Game } from "./Game";
 import { ValueOf } from "./types";
 

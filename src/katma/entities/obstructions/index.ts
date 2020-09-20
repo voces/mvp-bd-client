@@ -6,8 +6,6 @@ import { Resource } from "./Resource";
 import { Slow } from "./Slow";
 import { Stack } from "./Stack";
 import { Tiny } from "./Tiny";
-// import { ValueOf } from "../../../types";
-export { Obstruction } from "./Obstruction";
 
 export const obstructionMap = {
 	Basic,

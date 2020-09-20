@@ -1,7 +1,13 @@
-import { Unit, UnitProps } from "./Unit";
-import { Sprite } from "./Sprite";
+import { Animation } from "../../engine/components/graphics/Animation";
+import { MeshBuilderComponent } from "../../engine/components/graphics/MeshBuilderComponent";
+import { Hover } from "../../engine/components/Hover";
+import { Selected } from "../../engine/components/Selected";
+import { Sprite } from "../../engine/entities/widgets/Sprite";
+import { Unit, UnitProps } from "../../engine/entities/widgets/sprites/Unit";
+import { Obstruction } from "../../engine/entities/widgets/sprites/units/Obstruction";
+import { currentGame } from "../../engine/gameContext";
+import { Action } from "../../entities/sprites/spriteLogic";
 import {
-	Obstruction,
 	Basic,
 	Dense,
 	Huge,
@@ -11,12 +17,6 @@ import {
 	Stack,
 	Tiny,
 } from "./obstructions/index";
-import { Action } from "./spriteLogic";
-import { MeshBuilderComponent } from "../../engine/components/graphics/MeshBuilderComponent";
-import { Animation } from "../../engine/components/graphics/Animation";
-import { Selected } from "../../engine/components/Selected";
-import { Hover } from "../../engine/components/Hover";
-import { currentGame } from "../../engine/gameContext";
 
 const destroyLastBox: Action = {
 	name: "Destroy box",

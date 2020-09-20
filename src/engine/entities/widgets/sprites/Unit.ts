@@ -1,20 +1,17 @@
-import { BUILD_DISTANCE } from "../../engine/constants";
-import { Sprite, SpriteProps } from "./Sprite";
-import { Point } from "../../engine/pathing/PathingMap";
-import { Player } from "../../engine/players/Player";
-import { Action } from "./spriteLogic";
-import { Obstruction } from "./obstructions/index";
-import { MoveTarget } from "../../engine/components/MoveTarget";
-import { AttackTarget } from "../../engine/components/AttackTarget";
-import { isInAttackRange } from "./UnitApi";
-import { HoldPositionComponent } from "../../engine/components/HoldPositionComponent";
-import { BuildTarget } from "../../engine/components/BuildTarget";
-import {
-	Weapon,
-	DamageComponent,
-} from "../../engine/components/DamageComponent";
-import { Entity } from "../../core/Entity";
+import { BUILD_DISTANCE } from "../../../constants";
+import { Sprite, SpriteProps } from "../Sprite";
+import { Point } from "../../../pathing/PathingMap";
+import { Player } from "../../../players/Player";
+import { Action } from "../../../../entities/sprites/spriteLogic";
+import { MoveTarget } from "../../../components/MoveTarget";
+import { AttackTarget } from "../../../components/AttackTarget";
+import { isInAttackRange } from "../../../api/UnitApi";
+import { HoldPositionComponent } from "../../../components/HoldPositionComponent";
+import { BuildTarget } from "../../../components/BuildTarget";
+import { Weapon, DamageComponent } from "../../../components/DamageComponent";
+import { Entity } from "../../../../core/Entity";
 import { Color } from "three";
+import { Obstruction } from "./units/Obstruction";
 
 const holdPosition: Action = {
 	name: "Hold Position",

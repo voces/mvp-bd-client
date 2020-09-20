@@ -1,4 +1,7 @@
-import { Obstruction, ObstructionProps } from "./Obstruction";
+import {
+	Obstruction,
+	ObstructionProps,
+} from "../../../engine/entities/widgets/sprites/units/Obstruction";
 
 export class Tiny extends Obstruction {
 	static defaults = {
