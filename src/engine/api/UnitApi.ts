@@ -1,8 +1,9 @@
-import { Unit } from "../entities/widgets/sprites/Unit";
-import { Sprite } from "../entities/widgets/Sprite";
 import { DamageComponent } from "../components/DamageComponent";
+import { Widget } from "../entities/Widget";
+import { Unit } from "../entities/widgets/sprites/Unit";
+import { isUnit } from "../typeguards";
 
-export const isInAttackRange = (attacker: Unit, target: Sprite): boolean => {
+export const isInAttackRange = (attacker: Unit, target: Widget): boolean => {
 	const damageComponent = attacker.get(DamageComponent)[0];
 	if (!damageComponent) return false;
 	const weapon = damageComponent.weapons[0];
@@ -14,6 +15,8 @@ export const isInAttackRange = (attacker: Unit, target: Sprite): boolean => {
 
 	return (
 		distanceToTarget <=
-		weapon.range + attacker.collisionRadius + target.collisionRadius
+		weapon.range +
+			attacker.collisionRadius +
+			(isUnit(target) ? target.collisionRadius : 0)
 	);
 };

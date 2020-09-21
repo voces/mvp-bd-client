@@ -1,55 +1,53 @@
-// import { EntityID } from "../../core/Entity";
-// import { currentGame } from "../gameContext";
-// import { isSprite, isUnit } from "../typeguards";
-// import { TargetOrPointActionProps } from "./types";
+import { isInAttackRange } from "../api/UnitApi";
+import { DamageComponent } from "../components/DamageComponent";
+import { Unit } from "../entities/widgets/sprites/Unit";
+import { currentGame } from "../gameContext";
+import { AttackEvent } from "../Network";
+import { isSprite, isUnit } from "../typeguards";
+import { TargetActionProps } from "./types";
 
-// export const cancelAction = {
-// 	name: "Attack",
-// 	hotkey: "a" as const,
-// 	type: "targetOrPoint" as const,
-// 	localHandler: ({
-// 		player,
-// 		target,
-// 		point: { x, y },
-// 	}: TargetOrPointActionProps): void => {
-// 		const game = currentGame();
+export const attackAction = {
+	name: "Attack",
+	hotkey: "a" as const,
+	type: "target" as const,
+	localHandler: ({ target }: TargetActionProps): void => {
+		const game = currentGame();
 
-// 		const ownedSprites = game.selectionSystem.selection.filter(
-// 			(s) => isSprite(s) && s.owner === game.localPlayer,
-// 		);
+		const units = game.selectionSystem.selection.filter(
+			(s): s is Unit => isUnit(s) && s.owner === game.localPlayer,
+		);
 
-// 		const units = ownedSprites.filter(isUnit);
-// 		const toMove: EntityID[] = [];
-// 		const toAttack: EntityID[] = [];
+		const attackers = units.filter(
+			(u) =>
+				u.has(DamageComponent) &&
+				(isInAttackRange(u, target) || u.speed > 0),
+		);
 
-// 		units.forEach((unit) => {
-// 			if (unit instanceof Crosser) toMove.push(unit.id);
-// 			else if (unit instanceof Defender)
-// 				if (
-// 					(target && target instanceof Crosser) ||
-// 					target instanceof Obstruction
-// 				)
-// 					toAttack.push(unit.id);
-// 				else toMove.push(unit.id);
-// 		});
+		if (attackers.length)
+			game.transmit({
+				type: "attack",
+				attackers: attackers.map((u) => u.id),
+				target: target.id,
+			});
+	},
+	syncHandler: ({
+		time,
+		connection,
+		attackers,
+		target: targetId,
+	}: AttackEvent): void => {
+		const game = currentGame();
+		game.update({ time });
 
-// 		if (toMove.length)
-// 			game.transmit({ type: "move", sprites: toMove, x, y });
+		const player = game.players.find((p) => p.id === connection);
+		if (!player) return;
 
-// 		if (toAttack.length)
-// 			game.transmit({
-// 				type: "attack",
-// 				attackers: toAttack,
-// 				x,
-// 				y,
-// 				target: target?.id,
-// 			});
+		const target = game.entities.find((s) => s.id === targetId);
+		if (!target || !isSprite(target)) return;
 
-// 		// Filter out obstructions when ordering to move
-// 		if (
-// 			toMove.length > 0 &&
-// 			ownedSprites.some((u) => u instanceof Obstruction)
-// 		)
-// 			game.selectionSystem.setSelection(units);
-// 	},
-// };
+		player.sprites
+			.filter((s) => attackers.includes(s.id))
+			.filter(isUnit)
+			.forEach((s) => s.attack(target));
+	},
+};

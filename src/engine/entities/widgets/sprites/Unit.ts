@@ -1,6 +1,6 @@
 import { Color } from "three";
 
-import { cancel } from "../../../actions/cancel";
+import { cancelAction } from "../../../actions/cancel";
 import { holdPositionAction } from "../../../actions/holdPosition";
 import { stopAction } from "../../../actions/stop";
 import { Action } from "../../../actions/types";
@@ -146,7 +146,7 @@ class Unit extends Sprite {
 
 	get actions(): Action[] {
 		const buildList = this.builds.map((klass) => klass.buildAction);
-		if (buildList.length > 0) buildList.push(cancel);
+		if (buildList.length > 0) buildList.push(cancelAction);
 
 		const actions: Action[] = buildList;
 

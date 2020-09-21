@@ -14,9 +14,8 @@ export class Animation extends Component<[string, number]> {
 	}
 
 	initialize(animation: string, duration: number): void {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const that: Mutable<Animation> = this;
-		that.animation = animation;
+		const mutable: Mutable<Animation> = this;
+		mutable.animation = animation;
 
 		setTimeout(
 			wrapGame(currentGame(), () => this.entity.clear(this)),

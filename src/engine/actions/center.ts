@@ -1,7 +1,7 @@
 import { isSprite } from "../typeguards";
 import { ImmediateActionProps } from "./types";
 
-export const center = {
+export const centerAction = {
 	name: "Center",
 	hotkey: " " as const,
 	type: "custom" as const,

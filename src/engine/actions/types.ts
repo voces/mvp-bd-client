@@ -53,16 +53,24 @@ export type Action<
 			localHandler: (data: ImmediateActionProps) => void;
 	  }
 	| {
+			type: "target";
+			localHandler: (data: TargetActionProps) => void;
+	  }
+	| {
+			type: "point";
+			localHandler: (data: PointActionProps) => void;
+	  }
+	| {
 			type: "targetOrPoint";
 			localHandler: (data: TargetOrPointActionProps) => void;
 	  }
 );
 
 export type ImmediateActionProps = { player: Player };
-export type TargetActionProps = {
-	player: Player;
-	target: Widget;
-	point?: Point;
-};
+export type TargetActionProps = { player: Player; target: Widget };
 export type PointActionProps = { player: Player; point: Point };
-export type TargetOrPointActionProps = TargetActionProps | PointActionProps;
+export type TargetOrPointActionProps = {
+	player: Player;
+	target: Widget | undefined;
+	point: Point | undefined;
+};

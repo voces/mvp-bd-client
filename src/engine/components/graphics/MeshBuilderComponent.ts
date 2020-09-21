@@ -34,15 +34,14 @@ export class MeshBuilderComponent extends Component<[InnerProps]> {
 		opacity = 1,
 		shadows = true,
 	}: InnerProps): void {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const that: Mutable<MeshBuilderComponent> = this;
-		that.shape = shape;
-		that.targetable = targetable;
-		that.color = color;
-		that.colorFilter = colorFilter;
-		that.scale = scale;
-		that.shadow = shadow;
-		that.opacity = opacity;
-		that.shadows = shadows;
+		const mutable: Mutable<MeshBuilderComponent> = this;
+		mutable.shape = shape;
+		mutable.targetable = targetable;
+		mutable.color = color;
+		mutable.colorFilter = colorFilter;
+		mutable.scale = scale;
+		mutable.shadow = shadow;
+		mutable.opacity = opacity;
+		mutable.shadows = shadows;
 	}
 }

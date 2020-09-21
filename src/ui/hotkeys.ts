@@ -1,7 +1,7 @@
 import { Entity } from "../core/Entity";
 import { Mechanism } from "../core/Merchanism";
 import { document } from "../core/util/globals";
-import { center } from "../engine/actions/center";
+import { centerAction } from "../engine/actions/center";
 import { Action } from "../engine/actions/types";
 import { currentGame } from "../engine/gameContext";
 import { isUnit } from "../engine/typeguards";
@@ -71,7 +71,7 @@ export class Hotkeys extends Mechanism {
 		// Clear actions
 		emptyElement(container);
 		this.activeActions.splice(0);
-		this.activeActions.push(center);
+		this.activeActions.push(centerAction);
 
 		// Get actions
 		const game = currentGame();

@@ -1,4 +1,4 @@
-import { destroySelf } from "../../../../actions/selfDestruct";
+import { selfDestructAction } from "../../../../actions/selfDestruct";
 import { Action } from "../../../../actions/types";
 import { toFootprint } from "../../../../api/toFootprint";
 import { GerminateComponent } from "../../../../components/GerminateComponent";
@@ -64,7 +64,7 @@ export class Obstruction extends Unit {
 
 	get actions(): Action[] {
 		const actions = super.actions;
-		actions.push(destroySelf);
+		actions.push(selfDestructAction);
 		return actions;
 	}
 }

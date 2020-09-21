@@ -32,7 +32,7 @@ type PlayerEvent = Event & {
 	sent?: number;
 };
 
-type BuildEvent = PlayerEvent & {
+export type BuildEvent = PlayerEvent & {
 	type: "build";
 	builder: number;
 	x: number;
@@ -40,7 +40,7 @@ type BuildEvent = PlayerEvent & {
 	obstruction: string;
 };
 
-type MoveEvent = PlayerEvent & {
+export type MoveEvent = PlayerEvent & {
 	type: "move";
 	connection: number;
 	sprites: EntityID[];
@@ -49,7 +49,7 @@ type MoveEvent = PlayerEvent & {
 	obstruction: string;
 };
 
-type AttackEvent = PlayerEvent & {
+export type AttackEvent = PlayerEvent & {
 	type: "move";
 	connection: number;
 	attackers: EntityID[];

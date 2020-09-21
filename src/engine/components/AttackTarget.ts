@@ -6,8 +6,7 @@ export class AttackTarget extends Component<[Sprite]> {
 	readonly target!: Sprite;
 
 	initialize(target: Sprite): void {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const that: Mutable<AttackTarget> = this;
-		that.target = target;
+		const mutable: Mutable<AttackTarget> = this;
+		mutable.target = target;
 	}
 }

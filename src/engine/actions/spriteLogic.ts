@@ -1,51 +1,25 @@
-import { EntityID } from "../../core/Entity";
-import { DamageComponent } from "../components/DamageComponent";
-import { Unit } from "../entities/widgets/sprites/Unit";
-import { Obstruction } from "../entities/widgets/sprites/units/Obstruction";
 import { Game } from "../Game";
 import { currentGame } from "../gameContext";
 import { MouseEvents } from "../systems/Mouse";
-import { isSprite, isUnit } from "../typeguards";
+import { isUnit, isWidget } from "../typeguards";
+import { attackAction } from "./attack";
+import { attackMoveAction } from "./attackMove";
+import { buildAction } from "./build";
+import { holdPositionAction } from "./holdPosition";
+import { mirrorAction } from "./mirror";
+import { moveAction } from "./move";
+import { stopAction } from "./stop";
 
 const rightClick: MouseEvents["mouseDown"] = ({ mouse }) => {
 	const { x, y } = mouse.ground;
 	const game = currentGame();
 
-	const ownedSprites = game.selectionSystem.selection.filter(
-		(s) => isSprite(s) && s.owner === game.localPlayer,
-	);
-
-	const units = ownedSprites.filter(isUnit);
-	const toMove: EntityID[] = [];
-	const toAttack: EntityID[] = [];
-	const target = mouse.entity;
-
-	units.forEach((unit) => {
-		if (
-			unit.has(DamageComponent) &&
-			target &&
-			isUnit(target) &&
-			target.owner.isEnemy(unit.owner)
-		)
-			return toAttack.push(unit.id);
-
-		toMove.push(unit.id);
-	});
-
-	if (toMove.length) game.transmit({ type: "move", sprites: toMove, x, y });
-
-	if (toAttack.length)
-		game.transmit({
-			type: "attack",
-			attackers: toAttack,
-			x,
-			y,
-			target: target?.id,
+	if (isWidget(mouse.entity) || !mouse.entity)
+		attackMoveAction.localHandler({
+			player: game.localPlayer,
+			target: mouse.entity,
+			point: { x, y },
 		});
-
-	// Filter out obstructions when ordering to move
-	if (toMove.length > 0 && ownedSprites.some((u) => u instanceof Obstruction))
-		game.selectionSystem.setSelection(units);
 };
 
 const leftClick: MouseEvents["mouseDown"] = ({ mouse }) => {
@@ -54,28 +28,10 @@ const leftClick: MouseEvents["mouseDown"] = ({ mouse }) => {
 	const obstructionPlacement = game.obstructionPlacement;
 	if (!obstructionPlacement) return;
 	if (!obstructionPlacement.valid) return;
-	const obstruction = obstructionPlacement.active!;
 
-	const x = obstructionPlacement.snap(mouse.ground.x);
-	const y = obstructionPlacement.snap(mouse.ground.y);
-
-	obstructionPlacement.stop();
-
-	const builder = game.selectionSystem.selection.find(
-		(s) =>
-			isUnit(s) &&
-			s.owner === game.localPlayer &&
-			s.builds.includes(obstruction),
-	);
-
-	if (!builder) return;
-
-	game.transmit({
-		type: "build",
-		builder: builder.id,
-		x,
-		y,
-		obstruction: obstruction.name,
+	buildAction.localHandler({
+		player: game.localPlayer,
+		point: { x: mouse.ground.x, y: mouse.ground.y },
 	});
 };
 
@@ -91,7 +47,6 @@ export const initSpriteLogicListeners = (game: Game): void => {
 		);
 		if (!hotkey) return;
 
-		// if (typeof hotkey === "function") return hotkey();
 		if (hotkey.type === "custom")
 			return hotkey.localHandler({ player: game.localPlayer });
 
@@ -111,57 +66,10 @@ export const initSpriteLogicListeners = (game: Game): void => {
 		}
 	});
 
-	game.addNetworkListener("build", (e) => {
-		const { x, y, time, connection, obstruction, builder } = e;
-
-		game.update({ time });
-
-		const player = game.players.find((p) => p.id === connection);
-		if (!player) return;
-
-		const unit = player.sprites.find(
-			(s): s is Unit =>
-				s.id === builder &&
-				isUnit(s) &&
-				s.builds.some((b) => b.name === obstruction),
-		);
-		if (!unit) return;
-
-		const obstructionClass = unit.builds.find(
-			(o) => o.name === obstruction,
-		);
-		if (!obstructionClass) return;
-
-		unit.buildAt({ x, y }, obstructionClass);
-	});
-
-	game.addNetworkListener("move", ({ time, connection, sprites, x, y }) => {
-		game.update({ time });
-
-		const player = game.players.find((p) => p.id === connection);
-		if (!player) return;
-
-		player.sprites
-			.filter((s) => sprites.includes(s.id))
-			.filter(isUnit)
-			.forEach((s) => s.walkTo({ x, y }));
-	});
-
-	game.addNetworkListener(
-		"attack",
-		({ time, connection, attackers, target: targetId }) => {
-			game.update({ time });
-
-			const player = game.players.find((p) => p.id === connection);
-			if (!player) return;
-
-			const target = game.entities.find((s) => s.id === targetId);
-			if (!target || !isSprite(target)) return;
-
-			player.sprites
-				.filter((s) => attackers.includes(s.id))
-				.filter(isUnit)
-				.forEach((s) => s.attack(target));
-		},
-	);
+	game.addNetworkListener("stop", stopAction.syncHandler);
+	game.addNetworkListener("mirror", mirrorAction.syncHandler);
+	game.addNetworkListener("holdPosition", holdPositionAction.syncHandler);
+	game.addNetworkListener("attack", attackAction.syncHandler);
+	game.addNetworkListener("move", moveAction.syncHandler);
+	game.addNetworkListener("build", buildAction.syncHandler);
 };

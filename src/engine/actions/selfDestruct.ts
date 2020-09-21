@@ -4,7 +4,7 @@ import { SelfDestructEvent } from "../Network";
 import { isObstruction } from "../typeguards";
 import { ImmediateActionProps } from "./types";
 
-export const destroySelf = {
+export const selfDestructAction = {
 	name: "Destroy box",
 	description: "Destroys selected boxes",
 	hotkey: "x" as const,
