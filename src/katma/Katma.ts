@@ -1,5 +1,6 @@
 import { Entity } from "../core/Entity";
 import { Terrain } from "../engine/entities/Terrain";
+// eslint-disable-next-line no-restricted-imports
 import { Game } from "../engine/Game";
 import { patchInState, Player } from "../engine/players/Player";
 import { isSprite } from "../engine/typeguards";

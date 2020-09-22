@@ -1,27 +1,21 @@
 import { Emitter } from "../core/emitter";
-import { Network } from "../engine/Network";
+// eslint-disable-next-line no-restricted-imports
+import { InitEvent, Network, StateEvent } from "../engine/Network";
 import { Katma } from "./Katma";
 
-type Event = {
-	time: number;
-};
-
-type InitEvent = Event & {
-	type: "init";
-	connections: number;
+type KatmaInitEvent = InitEvent & {
 	state: ReturnType<Katma["toJSON"]>;
 };
 
-type StateEvent = Event & {
-	type: "state";
+type KatmaStateEvent = StateEvent & {
 	state: ReturnType<Katma["toJSON"]>;
 };
 
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function */
 const networkEvents = {
 	...Network.networkEvents,
-	init: (data: InitEvent) => {},
-	state: (data: StateEvent) => {},
+	init: (data: KatmaInitEvent) => {},
+	state: (data: KatmaStateEvent) => {},
 } as const;
 /* eslint-enable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function */
 

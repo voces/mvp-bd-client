@@ -12,13 +12,13 @@ type Event = {
 	time: number;
 };
 
-type InitEvent = Event & {
+export type InitEvent = Event & {
 	type: "init";
 	connections: number;
 	state: ReturnType<Game["toJSON"]>;
 };
 
-type StateEvent = Event & {
+export type StateEvent = Event & {
 	type: "state";
 	state: ReturnType<Game["toJSON"]>;
 };
