@@ -1,7 +1,7 @@
 import { mount } from "enzyme";
 import { h } from "preact";
 
-import { Network } from "../../../engine/Network";
+import { Network } from "../../../Network";
 import { Game as GameC } from "../contexts/Game";
 import { fakeGame } from "../tests/fake/FakeGame";
 import { Ping } from "./Ping";

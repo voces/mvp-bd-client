@@ -19,6 +19,7 @@ const passwordTest = (wrapper: ReactWrapper, visible: boolean) => {
 };
 
 beforeEach(() => {
+	mockFetch.mockClear();
 	mockFetch.mockImplementation((url, { username }) => {
 		if (url === "auth/anon")
 			if (username === "verit") return { ok: false, body: { code: 0 } };
@@ -99,7 +100,7 @@ it("switches to login on failure", async () => {
 	expect(onSuccess).toHaveBeenCalled();
 });
 
-it.only("can register", async () => {
+it("can register", async () => {
 	const onSuccess = jest.fn();
 	const wrapper = mount(
 		<GameC.Provider value={fakeGame()}>
