@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "preact/hooks";
-import { Emitter, EventMap } from "../../../core/emitter";
+
+import { Emitter, EventMap } from "../../../../core/emitter";
 
 export const useEventListener = <
 	Events extends EventMap,

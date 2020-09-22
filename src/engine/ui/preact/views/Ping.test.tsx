@@ -1,10 +1,9 @@
-import { h } from "preact";
 import { mount } from "enzyme";
+import { h } from "preact";
 
-import { fakeGame } from "../tests/fake/FakeGame";
 import { Network } from "../../../engine/Network";
 import { Game as GameC } from "../contexts/Game";
-
+import { fakeGame } from "../tests/fake/FakeGame";
 import { Ping } from "./Ping";
 
 it("works", () => {

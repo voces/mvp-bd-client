@@ -1,5 +1,6 @@
 import { h, JSX } from "preact";
 import { useContext, useState } from "preact/hooks";
+
 import { Game } from "../contexts/Game";
 import { useEventListener } from "../hooks/useEventListener";
 

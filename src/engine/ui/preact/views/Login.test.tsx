@@ -1,16 +1,15 @@
-import { h } from "preact";
 import { mount, ReactWrapper } from "enzyme";
+import { h } from "preact";
 
-import { fakeGame } from "../tests/fake/FakeGame";
 import { Game as GameC } from "../contexts/Game";
+import { fakeGame } from "../tests/fake/FakeGame";
+import { mockFetch } from "../tests/fetch";
 import {
 	findButton,
 	findInput,
 	simulateInput,
 	submitForm,
 } from "../tests/forms";
-import { mockFetch } from "../tests/fetch";
-
 import { Login } from "./Login";
 
 const passwordTest = (wrapper: ReactWrapper, visible: boolean) => {

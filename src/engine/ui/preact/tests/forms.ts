@@ -1,5 +1,6 @@
 import { ReactWrapper } from "enzyme";
 import { act } from "preact/test-utils";
+
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 

@@ -1,10 +1,11 @@
 import { h, JSX } from "preact";
 import { useContext, useEffect, useRef, useState } from "preact/hooks";
-import { Input } from "../components/Input";
-import { useLogin } from "../hooks/api/useLogin";
-import { Game } from "../contexts/Game";
+
 import { Button } from "../components/Button";
 import { Group } from "../components/Group";
+import { Input } from "../components/Input";
+import { Game } from "../contexts/Game";
+import { useLogin } from "../hooks/api/useLogin";
 
 const RegisterButton = (props: Parameters<typeof Button>[0]) => (
 	<Button {...props}>Reserve username</Button>

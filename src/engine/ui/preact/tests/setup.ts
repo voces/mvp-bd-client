@@ -1,6 +1,6 @@
-import { JSDOM } from "jsdom";
 import { configure } from "enzyme";
 import Adapter from "enzyme-adapter-preact-pure";
+import { JSDOM } from "jsdom";
 
 // Setup JSDOM
 const dom = new JSDOM("", {

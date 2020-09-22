@@ -1,12 +1,13 @@
 import { h, render } from "preact";
-import { Login } from "./views/Login";
-import { document } from "../../core/util/globals";
-import { Game } from "../../engine/Game";
+import { useState } from "preact/hooks";
+
+import { document } from "../../../core/util/globals";
+import { Game } from "../../Game";
 import { Game as GameContext } from "./contexts/Game";
 import { Clock } from "./views/Clock";
 import { Essense } from "./views/Essence";
+import { Login } from "./views/Login";
 import { Ping } from "./views/Ping";
-import { useState } from "preact/hooks";
 
 const App = ({ game }: { game: Game }) => {
 	const [loggingIn, setLoggingIn] = useState(true);

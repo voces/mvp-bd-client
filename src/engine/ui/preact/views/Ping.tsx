@@ -1,5 +1,6 @@
 import { h, JSX } from "preact";
 import { useCallback, useRef } from "preact/hooks";
+
 import { useForceRender } from "../hooks/useForceRender";
 import { useGameNetworkListener } from "../hooks/useGameNetworkListener";
 

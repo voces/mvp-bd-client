@@ -1,8 +1,10 @@
 import { createContext } from "preact";
-import { App } from "../../../core/App";
-import { Emitter } from "../../../core/emitter";
-import { Game as WCGame, GameEvents } from "../../../engine/Game";
-import { Round } from "../../../katma/Round";
+
+import { App } from "../../../../core/App";
+import { Emitter } from "../../../../core/emitter";
+import { Game as WCGame, GameEvents } from "../../../../engine/Game";
+// eslint-disable-next-line no-restricted-imports
+import { Round } from "../../../../katma/Round";
 
 type GameType = Emitter<GameEvents> &
 	App & {
