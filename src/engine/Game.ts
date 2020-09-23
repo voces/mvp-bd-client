@@ -48,7 +48,7 @@ type Timeout = {
 };
 
 class Game extends App {
-	readonly isGame = true;
+	static readonly isGame = true;
 
 	private network!: Network;
 	addNetworkListener!: Network["addEventListener"];
