@@ -1,6 +1,7 @@
 import { h, JSX } from "preact";
 import { useContext, useEffect, useRef, useState } from "preact/hooks";
 
+import { localStorage } from "../../../../core/util/globals";
 import { Button } from "../components/Button";
 import { Group } from "../components/Group";
 import { Input } from "../components/Input";
