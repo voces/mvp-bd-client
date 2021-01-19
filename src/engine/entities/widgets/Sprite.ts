@@ -186,6 +186,7 @@ class Sprite extends Widget {
 
 	remove(initializedFromApp = false): void {
 		const game = currentGame();
+		this.isAlive = false;
 		this.dispatchEvent("remove");
 		if (!initializedFromApp) game.remove(this);
 		this.removeEventListeners();

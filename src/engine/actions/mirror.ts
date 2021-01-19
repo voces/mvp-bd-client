@@ -38,6 +38,7 @@ const mirror = (unit: Unit) => {
 
 	game.setTimeout(() => {
 		unit.clear(activity);
+		if (!unit.isAlive) return;
 
 		const angle1 = unit.facing + Math.PI / 2;
 		const angle2 = unit.facing - Math.PI / 2;
