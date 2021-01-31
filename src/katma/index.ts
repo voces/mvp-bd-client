@@ -1,9 +1,9 @@
-import { window } from "./core/util/globals";
-import { activeHost, Network } from "./engine/Network";
-import { Katma } from "./katma/Katma";
+import { window } from "../core/util/globals";
+import { Katma } from "./Katma";
+import { activeHost, KatmaNetwork } from "./KatmaNetwork";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const network = ((globalThis as any).network = new Network());
+const network = ((globalThis as any).network = new KatmaNetwork());
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (globalThis as any).game = new Katma(network);

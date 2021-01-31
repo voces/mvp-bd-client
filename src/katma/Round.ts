@@ -1,4 +1,5 @@
 import { Emitter, emitter } from "../core/emitter";
+import { logLine } from "../core/logger";
 import { TILE_TYPES, TileType } from "../engine/constants";
 import { Sprite } from "../engine/entities/widgets/Sprite";
 import { Unit } from "../engine/entities/widgets/sprites/Unit";
@@ -217,7 +218,8 @@ class Round {
 
 		if (katma.newPlayers) {
 			katma.newPlayers = false;
-			katma.receivedState = false;
+			logLine("synchronizing");
+			katma.synchronizationState = "synchronizing";
 
 			if (katma.isHost)
 				katma.transmit({

@@ -15,7 +15,7 @@ module.exports = {
 			rules: {
 				"no-restricted-imports": [
 					"error",
-					{ patterns: ["**/engine/*", "**/katma/*"] },
+					{ patterns: ["**/engine/*", "**/katma/*", "**/mazingcontest/*"] },
 				],
 			},
 		},
@@ -24,7 +24,7 @@ module.exports = {
 			rules: {
 				"no-restricted-imports": [
 					"error",
-					{ patterns: ["**/katma/*"] },
+					{ patterns: ["**/katma/*", "**/mazingcontest/*"] },
 				],
 			},
 		},
@@ -38,6 +38,20 @@ module.exports = {
 							"**/engine/Game",
 							"**/engine/Network",
 							"**/engine/players/Player",
+						],
+					},
+				],
+			},
+		},
+		{
+			files: ["./src/mazingcontest/**"],
+			rules: {
+				"no-restricted-imports": [
+					"error",
+					{
+						patterns: [
+							"**/engine/Game",
+							"**/engine/Network",
 						],
 					},
 				],

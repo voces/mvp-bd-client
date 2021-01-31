@@ -11,7 +11,7 @@ export class Entity {
 	private map = new Map<ComponentConstructor, Component[]>();
 
 	constructor(id?: EntityID) {
-		this.id = id ?? currentApp().consumeEntityId();
+		this.id = id ?? currentApp().entityId++;
 	}
 
 	/**

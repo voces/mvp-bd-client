@@ -12,11 +12,13 @@ export type PlayerState = EnginePlayerState & {
 };
 
 export class Player extends EnginePlayer {
-	crosserPlays = 0;
-	score = { bulldog: 1000 };
+	crosserPlays;
+	score: { bulldog: number };
 
 	constructor(props: Partial<Player> & { game: Katma }) {
 		super(props);
+		this.crosserPlays ??= 0;
+		this.score ??= { bulldog: 1000 };
 	}
 
 	toJSON(): PlayerState {

@@ -58,7 +58,13 @@ export class Player {
 	}
 
 	getEnemySprites(): Sprite[] {
-		return this.enemies.map((p) => p.sprites).flat();
+		return this.enemies
+			.map((p) => p.sprites.filter((s) => s.isAlive))
+			.flat();
+	}
+
+	get uid(): string {
+		return `${this.username}#${this.id}`;
 	}
 
 	toJSON(): PlayerState {

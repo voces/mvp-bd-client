@@ -60,7 +60,7 @@ class Game extends App {
 	localPlayer!: Player;
 	host?: Player;
 	players: Player[] = [];
-	receivedState: false | "init" | "state" | "host" = false;
+	synchronizationState: "synchronizing" | "synchronized" = "synchronizing";
 	newPlayers = false;
 	random = alea("");
 	lastUpdate = 0;
@@ -306,10 +306,12 @@ class Game extends App {
 	toJSON(): {
 		lastUpdate: number;
 		players: ReturnType<typeof Player.prototype.toJSON>[];
+		entityId: number;
 	} {
 		return {
 			lastUpdate: this.lastUpdate,
 			players: this.players.map((p) => p.toJSON()),
+			entityId: this.entityId,
 		};
 	}
 }

@@ -191,6 +191,11 @@ class Sprite extends Widget {
 		if (!initializedFromApp) game.remove(this);
 		this.removeEventListeners();
 		game.pathingMap.removeEntity(this);
+
+		if (this.owner) {
+			const index = this.owner.sprites.indexOf(this);
+			if (index >= 0) this.owner.sprites.splice(index, 1);
+		}
 	}
 
 	get actions(): Action[] {

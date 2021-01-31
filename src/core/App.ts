@@ -18,7 +18,7 @@ export class App {
 	private components: typeof Component[] = [];
 	// TODO: make this private!
 	lastUpdate = 0;
-	private entityId = 0;
+	entityId = 0;
 
 	constructor() {
 		this.requestedAnimationFrame = requestAnimationFrame(() =>
@@ -83,10 +83,6 @@ export class App {
 		entity.clear();
 
 		return true;
-	}
-
-	consumeEntityId(): number {
-		return this.entityId++;
 	}
 
 	/**

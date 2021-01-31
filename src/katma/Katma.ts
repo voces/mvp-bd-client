@@ -1,4 +1,5 @@
 import { Entity } from "../core/Entity";
+import { logLine } from "../core/logger";
 import { Terrain } from "../engine/entities/Terrain";
 // eslint-disable-next-line no-restricted-imports
 import { Game } from "../engine/Game";
@@ -43,12 +44,13 @@ export class Katma extends Game {
 
 	constructor(network: KatmaNetwork) {
 		super(network);
+		logLine("Creating Katma");
 		withKatma(this, () => {
 			this.addNetworkListener("init", (e) => this.onInit(e));
 			this.setArena(Math.floor(this.random() * arenas.length));
 
 			// Received by the the upon someone connecting after the round ends
-			this.addNetworkListener("state", (e) => this.onPlayerState(e));
+			this.addNetworkListener("state", (e) => this.onState(e));
 		});
 	}
 
@@ -56,7 +58,7 @@ export class Katma extends Game {
 		connections,
 		state: { players: inputPlayers, arena },
 	}) => {
-		if (connections === 0) this.receivedState = "init";
+		if (connections === 0) this.synchronizationState = "synchronized";
 
 		this.setArena(arena);
 
@@ -68,6 +70,7 @@ export class Katma extends Game {
 	///////////////////////
 
 	onPlayerJoin(data: ConnectionEvent): Player {
+		logLine("Player joined", data.connection, data.username);
 		const player = new Player({
 			color: nextColor(),
 			game: this,
@@ -75,7 +78,7 @@ export class Katma extends Game {
 			username: data.username,
 			crosserPlays: Math.max(
 				0,
-				...this.players.map((p) => p.crosserPlays),
+				...this.players.map((p) => (p.id >= 0 ? p.crosserPlays : 0)),
 			),
 		});
 
@@ -84,17 +87,19 @@ export class Katma extends Game {
 		return player;
 	}
 
-	private onPlayerState: NetworkEventCallback["state"] = ({
+	private onState: NetworkEventCallback["state"] = ({
 		time,
-		state: { arena, players: inputPlayers },
+		state: { arena, players: inputPlayers, entityId },
 	}) => {
 		this.update({ time });
 
 		patchInState(this, inputPlayers);
 
 		this.setArena(arena);
-		this.receivedState = "state";
+		logLine("synchronized");
+		this.synchronizationState = "synchronized";
 		this.lastRoundEnd = time / 1000;
+		this.entityId = entityId;
 		// game.random = new Random( time );
 
 		updateDisplay(this);
@@ -168,6 +173,10 @@ export class Katma extends Game {
 				? 1 // hardcode 1v2
 				: Math.ceil(this.players.length / 2); // otherwise just do 1v0, 1v1, 1v2, 2v2, 3v2, 3v3, 4v3, etc
 
+		logLine(
+			"Starting round",
+			...this.players.map((p) => `${p.username}#${p.id}`),
+		);
 		new Round({
 			time,
 			settings: this.settings,
@@ -193,7 +202,7 @@ export class Katma extends Game {
 
 		if (
 			this.players.length &&
-			this.receivedState &&
+			this.synchronizationState === "synchronized" &&
 			(!this.lastRoundEnd || time > this.lastRoundEnd + 2)
 		)
 			this.start({ time });
@@ -207,10 +216,9 @@ export class Katma extends Game {
 		withKatma(this, () => this._update(e));
 	}
 
-	toJSON(): {
+	toJSON(): ReturnType<Game["toJSON"]> & {
 		arena: number;
 		lastRoundEnd: number | undefined;
-		lastUpdate: number;
 		players: ReturnType<typeof Player.prototype.toJSON>[];
 		round: ReturnType<typeof Round.prototype.toJSON> | undefined;
 	} {
