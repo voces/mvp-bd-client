@@ -47,7 +47,7 @@
   "private": true,
   "dependencies": {
     "lodash-es": "^4.17.20",
-    "marked": "^1.2.7",
+    "marked": "^2.0.0",
     "notextures": "^3.4.2",
     "preact": "^10.5.8",
     "three": "^0.124.0"
