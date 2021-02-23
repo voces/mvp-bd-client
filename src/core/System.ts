@@ -6,6 +6,8 @@ abstract class System<T extends Entity = Entity> {
 
 	static readonly components: ReadonlyArray<ComponentConstructor> = [];
 
+	readonly pure: boolean = false;
+
 	abstract test(entity: Entity | T): entity is T;
 
 	private _add(entity: T): void {

@@ -1,4 +1,5 @@
 import { logLine } from "../core/logger";
+import { Terrain } from "../engine/entities/Terrain";
 // eslint-disable-next-line no-restricted-imports
 import { Game } from "../engine/Game";
 import { nextColor } from "../engine/players/colors";
@@ -9,10 +10,12 @@ import {
 	MazingContestNetwork,
 	NetworkEventCallback,
 } from "./MazingContestNetwork";
+import { MainLogic } from "./mechanisms/MainLogic";
+import { terrain } from "./terrain";
 import { Settings } from "./types";
 
 export class MazingContest extends Game {
-	static readonly isKatma = true;
+	static readonly isMazingContest = true;
 
 	localPlayer!: Player;
 	players: Player[] = [];
@@ -27,20 +30,36 @@ export class MazingContest extends Game {
 	addNetworkListener!: MazingContestNetwork["addEventListener"];
 	removeNetworkListener!: MazingContestNetwork["removeEventListener"];
 
+	displayName = "Mazing Contest";
+	protocol = "mazingcontest";
+
 	constructor(network: MazingContestNetwork) {
 		super(network);
-
+		logLine("Creating MazingContest");
 		withMazingContest(this, () => {
 			this.addNetworkListener("init", (e) => this.onInit(e));
 
 			// Received by the the upon someone connecting after the round ends
 			this.addNetworkListener("state", (e) => this.onState(e));
+
+			new Terrain(terrain);
+			this.graphics.panTo(
+				{
+					x: terrain.height / 2,
+					y: terrain.width / 2 - 7,
+				},
+				0,
+			);
+			this.addMechanism(new MainLogic());
 		});
 	}
 
 	private onInit: NetworkEventCallback["init"] = ({
+		connections,
 		state: { players: inputPlayers },
 	}) => {
+		if (connections === 0) this.synchronizationState = "synchronized";
+
 		patchInState(this, inputPlayers);
 	};
 
@@ -84,7 +103,7 @@ export class MazingContest extends Game {
 	// protected _update(e: { time: number }): void {
 	// 	super._update(e);
 
-	// 	// const time = e.time / 1000;
+	// 	const time = e.time / 1000;
 
 	// 	// Update is called for people who have recently joined
 	// 	// if (this.round) {
@@ -109,10 +128,9 @@ export class MazingContest extends Game {
 		withMazingContest(this, () => this._update(e));
 	}
 
-	// toJSON(): ReturnType<Game["toJSON"]> & {
-	// } {
-	// 	return {
-	// 		...super.toJSON(),
-	// 	};
-	// }
+	toJSON(): ReturnType<Game["toJSON"]> {
+		return {
+			...super.toJSON(),
+		};
+	}
 }

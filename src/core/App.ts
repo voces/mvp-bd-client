@@ -9,7 +9,8 @@ import { requestAnimationFrame } from "./util/globals";
 export class App {
 	protected _entities = new Set<Entity>();
 	entities = new PublicSetView(this._entities);
-	protected systems: System[] = [];
+	protected impureSystems: System[] = [];
+	private allSystems: System[] = [];
 	protected mechanisms: Mechanism[] = [];
 	private lastRender = 0;
 	private requestedAnimationFrame?: number;
@@ -27,7 +28,8 @@ export class App {
 	}
 
 	addSystem(system: System): App {
-		this.systems.push(system);
+		this.allSystems.push(system);
+		if (!system.pure) this.impureSystems.push(system);
 
 		for (const component of (system.constructor as typeof System)
 			.components) {
@@ -45,8 +47,11 @@ export class App {
 	}
 
 	removeSystem(system: System): App {
-		const index = this.systems.indexOf(system);
-		if (index >= 0) this.systems.splice(index, 1);
+		let index = this.allSystems.indexOf(system);
+		if (index >= 0) this.allSystems.splice(index, 1);
+
+		index = this.impureSystems.indexOf(system);
+		if (index >= 0) this.impureSystems.splice(index, 1);
 
 		system.dispose();
 
@@ -61,7 +66,7 @@ export class App {
 
 	dispose(): void {
 		for (const mechanism of this.mechanisms) mechanism.dispose();
-		for (const system of this.systems) system.dispose();
+		for (const system of this.allSystems) system.dispose();
 	}
 
 	add(entity: Entity): boolean {
@@ -69,7 +74,7 @@ export class App {
 
 		this._entities.add(entity);
 
-		for (const system of this.systems) system.add(entity);
+		for (const system of this.impureSystems) system.add(entity);
 
 		return true;
 	}
@@ -78,7 +83,7 @@ export class App {
 	remove(entity: Entity): boolean {
 		if (!this._entities.has(entity)) return false;
 
-		for (const system of this.systems) system.remove(entity);
+		for (const system of this.impureSystems) system.remove(entity);
 
 		entity.clear();
 
@@ -109,7 +114,7 @@ export class App {
 		for (const mechanism of this.mechanisms)
 			mechanism.render(delta, thisRender);
 
-		for (const system of this.systems) {
+		for (const system of this.allSystems) {
 			system.preRender(delta, thisRender);
 
 			if (system.render)
@@ -133,7 +138,7 @@ export class App {
 		for (const mechanism of this.mechanisms)
 			mechanism.update(delta, this._time);
 
-		for (const system of this.systems) {
+		for (const system of this.allSystems) {
 			system.preUpdate(delta, this._time);
 
 			if (system.update)

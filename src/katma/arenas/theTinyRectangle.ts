@@ -1,5 +1,4 @@
-import { InternalArena } from "./types";
-import { stringMap } from "./util";
+import { InternalArena, stringMap } from "../../engine/entities/terrainHelpers";
 
 export const theTinyRectangle: InternalArena = {
 	name: "The Tiny Rectangle",

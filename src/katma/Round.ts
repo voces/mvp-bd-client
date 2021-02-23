@@ -1,12 +1,12 @@
 import { Emitter, emitter } from "../core/emitter";
 import { logLine } from "../core/logger";
 import { TILE_TYPES, TileType } from "../engine/constants";
+import { Arena } from "../engine/entities/terrainHelpers";
 import { Sprite } from "../engine/entities/widgets/Sprite";
 import { Unit } from "../engine/entities/widgets/sprites/Unit";
 import { PathingMap } from "../engine/pathing/PathingMap";
 import { resourceKeys } from "../engine/types";
 import { arenas } from "./arenas/index";
-import { Arena } from "./arenas/types";
 import { Crosser } from "./entities/Crosser";
 import { Defender } from "./entities/Defender";
 import { currentKatma } from "./katmaContext";

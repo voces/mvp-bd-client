@@ -6,6 +6,7 @@ import { Terrain } from "./entities/Terrain";
 import { withGame, wrapGame } from "./gameContext";
 import { alea } from "./lib/alea";
 import { Alliances } from "./mechanisms/Alliances";
+import { FPSMonitor } from "./mechanisms/FPSMonitor";
 import { ObstructionPlacement } from "./mechanisms/ObstructionPlacement";
 import { ConnectionEvent, Network } from "./Network";
 import { PathingMap } from "./pathing/PathingMap";
@@ -26,6 +27,7 @@ import { circleSystems } from "./systems/MovingCircles";
 import { ProjectileSystem } from "./systems/ProjectileSystem";
 import { SelectedSystem } from "./systems/SelectedSystem";
 import { ThreeGraphics } from "./systems/ThreeGraphics";
+import { TimerSystem } from "./systems/TimerSystem";
 import { isSprite } from "./typeguards";
 import { Hotkeys } from "./ui/hotkeys";
 import { UI } from "./ui/index";
@@ -73,12 +75,16 @@ class Game extends App {
 	graphics!: ThreeGraphics;
 	selectionSystem!: SelectedSystem;
 	alliances!: Alliances;
+	fpsMonitor!: FPSMonitor;
 
 	// Replace with a heap
 	intervals: Interval[] = [];
 	nextIntervalId = 0;
 	timeouts: Timeout[] = [];
 	nextTimeoutId = 0;
+
+	displayName = "Untitled Game";
+	protocol = "unknown";
 
 	private _pathingMap?: PathingMap;
 
@@ -95,6 +101,9 @@ class Game extends App {
 			this.addSystem(new AutoAttackSystem());
 			this.addSystem(new AnimationSystem());
 			this.addSystem(new MeshBuilder());
+			this.addSystem(new TimerSystem());
+			this.fpsMonitor = new FPSMonitor();
+			this.addMechanism(this.fpsMonitor);
 
 			this.graphics = new ThreeGraphics(this);
 			this.addSystem(this.graphics);
@@ -273,7 +282,7 @@ class Game extends App {
 	remove(entity: Entity): boolean {
 		if (!this._entities.has(entity)) return false;
 
-		for (const system of this.systems) system.remove(entity);
+		for (const system of this.impureSystems) system.remove(entity);
 
 		entity.clear();
 		if (isSprite(entity)) entity.remove(true);

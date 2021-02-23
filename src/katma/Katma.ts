@@ -1,12 +1,12 @@
 import { Entity } from "../core/Entity";
 import { logLine } from "../core/logger";
 import { Terrain } from "../engine/entities/Terrain";
+import { Arena } from "../engine/entities/terrainHelpers";
 // eslint-disable-next-line no-restricted-imports
 import { Game } from "../engine/Game";
 import { nextColor } from "../engine/players/colors";
 import { isSprite } from "../engine/typeguards";
 import { arenas } from "./arenas";
-import { Arena } from "./arenas/types";
 import { withKatma } from "./katmaContext";
 import {
 	ConnectionEvent,
@@ -41,6 +41,9 @@ export class Katma extends Game {
 
 	addNetworkListener!: KatmaNetwork["addEventListener"];
 	removeNetworkListener!: KatmaNetwork["removeEventListener"];
+
+	displayName = "katma";
+	protocol = "katma";
 
 	constructor(network: KatmaNetwork) {
 		super(network);

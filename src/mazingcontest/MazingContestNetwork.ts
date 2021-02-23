@@ -1,6 +1,7 @@
 import { Emitter } from "../core/emitter";
 // eslint-disable-next-line no-restricted-imports
 import {
+	activeHost,
 	ConnectionEvent,
 	InitEvent,
 	Network,
@@ -36,4 +37,4 @@ class MazingContestNetwork
 	dispatchEvent!: Emitter<NetworkEventCallback>["dispatchEvent"];
 }
 
-export { ConnectionEvent, MazingContestNetwork };
+export { activeHost, ConnectionEvent, MazingContestNetwork };

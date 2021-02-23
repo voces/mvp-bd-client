@@ -1,7 +1,6 @@
 import { cliffMap } from "notextures";
 
-import { InternalArena } from "./types";
-import { stringMap } from "./util";
+import { InternalArena, stringMap } from "../../engine/entities/terrainHelpers";
 
 export const theDump: InternalArena = {
 	name: "The Dump",

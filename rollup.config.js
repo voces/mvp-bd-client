@@ -15,18 +15,13 @@ const plugins = [
 
 export default [
 	{
-		input: ["src/engine/Game.ts"],
-		output: [{ dir: "public/js", format: "es" }],
-		plugins,
-	},
-	{
 		input: ["src/katma/index.ts", "src/katma/server.ts"],
 		output: [{ dir: "public/katma/js", format: "es" }],
 		plugins,
 	},
-	// {
-	// 	input: ["src/mazingcontest/index.ts", "src/mazingcontest/server.ts"],
-	// 	output: [{ dir: "public/mazingcontest/js", format: "es" }],
-	// 	plugins,
-	// },
+	{
+		input: ["src/mazingcontest/index.ts", "src/mazingcontest/server.ts"],
+		output: [{ dir: "public/mazingcontest/js", format: "es" }],
+		plugins,
+	},
 ];
