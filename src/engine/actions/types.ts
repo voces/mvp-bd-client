@@ -1,8 +1,8 @@
-import { Widget } from "../entities/Widget";
-import { Obstruction } from "../entities/widgets/sprites/units/Obstruction";
-import { NetworkEventCallback } from "../Network";
-import { Point } from "../pathing/PathingMap";
-import { Player } from "../players/Player";
+import type { Widget } from "../entities/Widget";
+import type { Obstruction } from "../entities/widgets/sprites/units/Obstruction";
+import type { NetworkEventCallback } from "../Network";
+import type { Point } from "../pathing/PathingMap";
+import type { Player } from "../players/Player";
 
 export type Action<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

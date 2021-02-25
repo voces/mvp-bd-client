@@ -1,14 +1,14 @@
-import { Entity } from "../core/Entity";
+import type { Entity } from "../core/Entity";
 import { logLine } from "../core/logger";
 import { Terrain } from "../engine/entities/Terrain";
-import { Arena } from "../engine/entities/terrainHelpers";
+import type { Arena } from "../engine/entities/terrainHelpers";
 // eslint-disable-next-line no-restricted-imports
 import { Game } from "../engine/Game";
 import { nextColor } from "../engine/players/colors";
 import { isSprite } from "../engine/typeguards";
 import { arenas } from "./arenas";
 import { withKatma } from "./katmaContext";
-import {
+import type {
 	ConnectionEvent,
 	KatmaNetwork,
 	NetworkEventCallback,
@@ -17,7 +17,7 @@ import { updateDisplay } from "./players/elo";
 import { getPlaceholderPlayer } from "./players/placeholder";
 import { patchInState, Player } from "./players/Player";
 import { Round } from "./Round";
-import { Settings } from "./types";
+import type { Settings } from "./types";
 
 export class Katma extends Game {
 	static readonly isKatma = true;

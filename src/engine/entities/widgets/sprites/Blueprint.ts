@@ -1,5 +1,5 @@
 import { Sprite } from "../Sprite";
-import { Obstruction } from "./units/Obstruction";
+import type { Obstruction } from "./units/Obstruction";
 
 // TODO: this should have to extend Sprite (health/owner are silly)
 export class Blueprint extends Sprite {

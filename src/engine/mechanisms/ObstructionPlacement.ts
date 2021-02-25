@@ -6,10 +6,10 @@ import { ThreeObjectComponent } from "../components/graphics/ThreeObjectComponen
 import { Position } from "../components/Position";
 import { Widget } from "../entities/Widget";
 import { Blueprint } from "../entities/widgets/sprites/Blueprint";
-import { Obstruction } from "../entities/widgets/sprites/units/Obstruction";
-import { Game } from "../Game";
+import type { Obstruction } from "../entities/widgets/sprites/units/Obstruction";
+import type { Game } from "../Game";
 import { currentGame } from "../gameContext";
-import { Mouse } from "../systems/Mouse";
+import type { Mouse } from "../systems/Mouse";
 import { appendErrorMessage } from "../ui/chat";
 
 const edgeSnap = (v: number) => Math.round(v);

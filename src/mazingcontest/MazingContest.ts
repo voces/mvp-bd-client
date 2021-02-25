@@ -5,14 +5,14 @@ import { Game } from "../engine/Game";
 import { nextColor } from "../engine/players/colors";
 import { patchInState, Player } from "../engine/players/Player";
 import { withMazingContest } from "./mazingContestContext";
-import {
+import type {
 	ConnectionEvent,
 	MazingContestNetwork,
 	NetworkEventCallback,
 } from "./MazingContestNetwork";
 import { MainLogic } from "./mechanisms/MainLogic";
 import { terrain } from "./terrain";
-import { Settings } from "./types";
+import type { Settings } from "./types";
 
 export class MazingContest extends Game {
 	static readonly isMazingContest = true;
@@ -44,10 +44,7 @@ export class MazingContest extends Game {
 
 			new Terrain(terrain);
 			this.graphics.panTo(
-				{
-					x: terrain.height / 2,
-					y: terrain.width / 2 - 7,
-				},
+				{ x: terrain.height / 2, y: terrain.width / 2 - 7 },
 				0,
 			);
 			this.addMechanism(new MainLogic());

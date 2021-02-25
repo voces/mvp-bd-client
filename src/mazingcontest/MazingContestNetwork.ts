@@ -1,13 +1,9 @@
-import { Emitter } from "../core/emitter";
+import type { Emitter } from "../core/emitter";
 // eslint-disable-next-line no-restricted-imports
-import {
-	activeHost,
-	ConnectionEvent,
-	InitEvent,
-	Network,
-	StateEvent,
-} from "../engine/Network";
-import { MazingContest } from "./MazingContest";
+import type { InitEvent, StateEvent } from "../engine/Network";
+// eslint-disable-next-line no-restricted-imports
+import { activeHost, ConnectionEvent, Network } from "../engine/Network";
+import type { MazingContest } from "./MazingContest";
 
 type MazingContestInitEvent = InitEvent & {
 	state: ReturnType<MazingContest["toJSON"]>;

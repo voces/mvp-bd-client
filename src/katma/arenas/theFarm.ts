@@ -1,5 +1,5 @@
+import type { InternalArena } from "../../engine/entities/terrainHelpers";
 import {
-	InternalArena,
 	stringMap,
 	stringMapWithRamps,
 } from "../../engine/entities/terrainHelpers";

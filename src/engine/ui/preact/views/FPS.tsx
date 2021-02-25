@@ -1,8 +1,10 @@
-import { h, JSX } from "preact";
+import type { JSX } from "preact";
+import { h } from "preact";
 import { useContext } from "preact/hooks";
 
 import { Mechanism } from "../../../../core/Merchanism";
-import { Game, GameType } from "../contexts/Game";
+import type { GameType } from "../contexts/Game";
+import { Game } from "../contexts/Game";
 import { useForceRender } from "../hooks/useForceRender";
 
 const attached = new Set<GameType>();

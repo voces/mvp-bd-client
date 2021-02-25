@@ -1,13 +1,9 @@
-import {
-	DamageComponent,
-	Weapon,
-} from "../../../engine/components/DamageComponent";
-import { Effect, Sprite } from "../../../engine/entities/widgets/Sprite";
+import type { Weapon } from "../../../engine/components/DamageComponent";
+import { DamageComponent } from "../../../engine/components/DamageComponent";
+import type { Effect, Sprite } from "../../../engine/entities/widgets/Sprite";
 import { Projectile } from "../../../engine/entities/widgets/sprites/Projectile";
-import {
-	Obstruction,
-	ObstructionProps,
-} from "../../../engine/entities/widgets/sprites/units/Obstruction";
+import type { ObstructionProps } from "../../../engine/entities/widgets/sprites/units/Obstruction";
+import { Obstruction } from "../../../engine/entities/widgets/sprites/units/Obstruction";
 import { currentGame } from "../../../engine/gameContext";
 import { isUnit } from "../../../engine/typeguards";
 import { clone } from "../../../engine/util/clone";

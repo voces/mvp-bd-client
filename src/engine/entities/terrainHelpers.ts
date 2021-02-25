@@ -1,5 +1,5 @@
 import { PATHING_TYPES } from "../pathing/constants";
-import { Point } from "../pathing/PathingMap";
+import type { Point } from "../pathing/PathingMap";
 
 export interface InternalArena {
 	name: string;

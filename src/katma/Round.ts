@@ -1,9 +1,11 @@
-import { Emitter, emitter } from "../core/emitter";
+import type { Emitter } from "../core/emitter";
+import { emitter } from "../core/emitter";
 import { logLine } from "../core/logger";
-import { TILE_TYPES, TileType } from "../engine/constants";
-import { Arena } from "../engine/entities/terrainHelpers";
-import { Sprite } from "../engine/entities/widgets/Sprite";
-import { Unit } from "../engine/entities/widgets/sprites/Unit";
+import type { TileType } from "../engine/constants";
+import { TILE_TYPES } from "../engine/constants";
+import type { Arena } from "../engine/entities/terrainHelpers";
+import type { Sprite } from "../engine/entities/widgets/Sprite";
+import type { Unit } from "../engine/entities/widgets/sprites/Unit";
 import { PathingMap } from "../engine/pathing/PathingMap";
 import { resourceKeys } from "../engine/types";
 import { arenas } from "./arenas/index";
@@ -12,10 +14,11 @@ import { Defender } from "./entities/Defender";
 import { currentKatma } from "./katmaContext";
 import { elo, updateDisplay } from "./players/elo";
 import { getPlaceholderPlayer } from "./players/placeholder";
-import { Player } from "./players/Player";
+import type { Player } from "./players/Player";
 import { TileSystem } from "./systems/TileSystem";
 import { isCrosser, isResource } from "./typeguards";
-import { Settings, teamKeys } from "./types";
+import type { Settings } from "./types";
+import { teamKeys } from "./types";
 
 // A round starts upon construction
 class Round {

@@ -1,6 +1,6 @@
 import { System } from "../../core/System";
 import { GerminateComponent } from "../components/GerminateComponent";
-import { Sprite } from "../entities/widgets/Sprite";
+import type { Sprite } from "../entities/widgets/Sprite";
 
 type GerminatingEntity = Sprite & {
 	buildTime: number;

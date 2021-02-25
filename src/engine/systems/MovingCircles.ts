@@ -1,4 +1,4 @@
-import { Entity } from "../../core/Entity";
+import type { Entity } from "../../core/Entity";
 import { System } from "../../core/System";
 import { Hover } from "../components/Hover";
 import { MoveTarget } from "../components/MoveTarget";

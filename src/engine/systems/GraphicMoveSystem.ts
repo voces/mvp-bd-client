@@ -1,11 +1,11 @@
-import { Entity } from "../../core/Entity";
+import type { Entity } from "../../core/Entity";
 import { System } from "../../core/System";
 import { ThreeObjectComponent } from "../components/graphics/ThreeObjectComponent";
 import { Hover } from "../components/Hover";
 import { MoveTarget } from "../components/MoveTarget";
 import { Position } from "../components/Position";
 import { Selected } from "../components/Selected";
-import { Widget } from "../entities/Widget";
+import type { Widget } from "../entities/Widget";
 import { SELECTION_CRICLE_ZOFFSET } from "../entities/widgets/SelectionCircle";
 import { currentGame } from "../gameContext";
 

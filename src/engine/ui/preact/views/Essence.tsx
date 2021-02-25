@@ -1,4 +1,5 @@
-import { h, JSX } from "preact";
+import type { JSX } from "preact";
+import { h } from "preact";
 import { useContext, useState } from "preact/hooks";
 
 import { Game } from "../contexts/Game";

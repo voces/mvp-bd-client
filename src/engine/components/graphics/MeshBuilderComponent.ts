@@ -1,7 +1,7 @@
-import { Color } from "three";
+import type { Color } from "three";
 
 import { Component } from "../../../core/Component";
-import { Mutable } from "../../types";
+import type { Mutable } from "../../types";
 
 export type MeshBuilderComponentProps = {
 	shape: "square" | "circle";

@@ -1,8 +1,9 @@
-import { Emitter, emitter } from "../core/emitter";
-import { EntityID } from "../core/Entity";
+import type { Emitter } from "../core/emitter";
+import { emitter } from "../core/emitter";
+import type { EntityID } from "../core/Entity";
 import { location } from "../core/util/globals";
-import { Game } from "./Game";
-import { ValueOf } from "./types";
+import type { Game } from "./Game";
+import type { ValueOf } from "./types";
 
 export const activeHost = location.port
 	? `${location.hostname}:${8080}`

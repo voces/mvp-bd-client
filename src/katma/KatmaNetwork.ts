@@ -1,13 +1,9 @@
-import { Emitter } from "../core/emitter";
+import type { Emitter } from "../core/emitter";
 // eslint-disable-next-line no-restricted-imports
-import {
-	activeHost,
-	ConnectionEvent,
-	InitEvent,
-	Network,
-	StateEvent,
-} from "../engine/Network";
-import { Katma } from "./Katma";
+import type { InitEvent, StateEvent } from "../engine/Network";
+// eslint-disable-next-line no-restricted-imports
+import { activeHost, ConnectionEvent, Network } from "../engine/Network";
+import type { Katma } from "./Katma";
 
 type KatmaInitEvent = InitEvent & {
 	state: ReturnType<Katma["toJSON"]>;

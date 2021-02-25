@@ -1,5 +1,5 @@
 import { logLine } from "../../core/logger";
-import { Game } from "../Game";
+import type { Game } from "../Game";
 import { alea } from "../lib/alea";
 
 export const initPlayerLogic = (game: Game): void => {

@@ -1,8 +1,8 @@
 import { createContext } from "preact";
 
-import { Game as WCGame } from "../../../../engine/Game";
+import type { Game as WCGame } from "../../../../engine/Game";
 // eslint-disable-next-line no-restricted-imports
-import { Round } from "../../../../katma/Round";
+import type { Round } from "../../../../katma/Round";
 
 export type GameType = WCGame & {
 	round?: { expireAt: Round["expireAt"] };

@@ -1,8 +1,8 @@
-import { Obstruction } from "../entities/widgets/sprites/units/Obstruction";
+import type { Obstruction } from "../entities/widgets/sprites/units/Obstruction";
 import { currentGame } from "../gameContext";
-import { SelfDestructEvent } from "../Network";
+import type { SelfDestructEvent } from "../Network";
 import { isObstruction } from "../typeguards";
-import { ImmediateActionProps } from "./types";
+import type { ImmediateActionProps } from "./types";
 
 export const selfDestructAction = {
 	name: "Destroy box",

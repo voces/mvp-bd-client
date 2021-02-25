@@ -1,4 +1,4 @@
-import { Resource } from "../engine/types";
+import type { Resource } from "../engine/types";
 
 // Teams
 interface TeamMap<T> {

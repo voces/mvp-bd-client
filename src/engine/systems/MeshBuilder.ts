@@ -13,8 +13,8 @@ import {
 import { System } from "../../core/System";
 import { MeshBuilderComponent } from "../components/graphics/MeshBuilderComponent";
 import { ThreeObjectComponent } from "../components/graphics/ThreeObjectComponent";
-import { Sprite } from "../entities/widgets/Sprite";
-import { EntityMesh } from "../types";
+import type { Sprite } from "../entities/widgets/Sprite";
+import type { EntityMesh } from "../types";
 
 const getColor = (entity: Sprite, meshBuilder: MeshBuilderComponent) => {
 	const rawColor =

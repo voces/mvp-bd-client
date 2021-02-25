@@ -1,10 +1,11 @@
-import { Action } from "../../engine/actions/types";
+import type { Action } from "../../engine/actions/types";
 import { Animation } from "../../engine/components/graphics/Animation";
 import { MeshBuilderComponent } from "../../engine/components/graphics/MeshBuilderComponent";
 import { Hover } from "../../engine/components/Hover";
 import { Selected } from "../../engine/components/Selected";
-import { Unit, UnitProps } from "../../engine/entities/widgets/sprites/Unit";
-import { Obstruction } from "../../engine/entities/widgets/sprites/units/Obstruction";
+import type { UnitProps } from "../../engine/entities/widgets/sprites/Unit";
+import { Unit } from "../../engine/entities/widgets/sprites/Unit";
+import type { Obstruction } from "../../engine/entities/widgets/sprites/units/Obstruction";
 import { currentGame } from "../../engine/gameContext";
 import { destroyLastBox } from "../actions/destroyLastBox";
 import { Basic } from "./obstructions/Basic";

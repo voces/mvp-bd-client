@@ -1,10 +1,9 @@
 import { releaseColor, takeColor } from "../../engine/players/colors";
 // eslint-disable-next-line no-restricted-imports
-import {
-	Player as EnginePlayer,
-	PlayerState as EnginePlayerState,
-} from "../../engine/players/Player";
-import { Katma } from "../Katma";
+import type { PlayerState as EnginePlayerState } from "../../engine/players/Player";
+// eslint-disable-next-line no-restricted-imports
+import { Player as EnginePlayer } from "../../engine/players/Player";
+import type { Katma } from "../Katma";
 
 export type PlayerState = EnginePlayerState & {
 	crosserPlays: number;

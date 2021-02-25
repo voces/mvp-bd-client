@@ -1,6 +1,6 @@
-import { Mesh, Object3D } from "three";
+import type { Mesh, Object3D } from "three";
 
-import { Entity } from "../core/Entity";
+import type { Entity } from "../core/Entity";
 
 // Resource
 export interface ResourceMap {

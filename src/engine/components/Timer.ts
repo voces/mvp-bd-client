@@ -1,7 +1,7 @@
 import { Component } from "../../core/Component";
-import { Entity } from "../../core/Entity";
+import type { Entity } from "../../core/Entity";
 import { currentGame } from "../gameContext";
-import { Mutable } from "../types";
+import type { Mutable } from "../types";
 
 export class Timer extends Component<
 	[fn: () => void, timeout: number, periodic: boolean, oncePerUpdate: boolean]

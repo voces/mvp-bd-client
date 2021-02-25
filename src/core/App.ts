@@ -1,9 +1,9 @@
 import { withApp } from "./appContext";
-import { Component, ComponentConstructor } from "./Component";
-import { Entity } from "./Entity";
-import { Mechanism } from "./Merchanism";
+import type { Component, ComponentConstructor } from "./Component";
+import type { Entity } from "./Entity";
+import type { Mechanism } from "./Merchanism";
 import { PublicSetView } from "./PublicSetView";
-import { System } from "./System";
+import type { System } from "./System";
 import { requestAnimationFrame } from "./util/globals";
 
 export class App {

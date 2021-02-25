@@ -1,6 +1,6 @@
-import { Game } from "../Game";
+import type { Game } from "../Game";
 import { currentGame } from "../gameContext";
-import { MouseEvents } from "../systems/Mouse";
+import type { MouseEvents } from "../systems/Mouse";
 import { isUnit, isWidget } from "../typeguards";
 import { attackAction } from "./attack";
 import { attackMoveAction } from "./attackMove";

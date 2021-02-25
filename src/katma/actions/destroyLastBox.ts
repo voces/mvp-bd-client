@@ -1,4 +1,4 @@
-import { ImmediateActionProps } from "../../engine/actions/types";
+import type { ImmediateActionProps } from "../../engine/actions/types";
 import { isCrosser } from "../typeguards";
 
 export const destroyLastBox = {

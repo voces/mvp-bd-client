@@ -1,4 +1,5 @@
-import { FetchState, useFetch } from "./useFetch";
+import type { FetchState } from "./useFetch";
+import { useFetch } from "./useFetch";
 
 type LoginResult = { token: string; username: string; room?: string };
 

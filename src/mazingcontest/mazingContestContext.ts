@@ -1,5 +1,5 @@
 import { currentApp, withApp, wrapApp } from "../core/appContext";
-import { MazingContest } from "./MazingContest";
+import type { MazingContest } from "./MazingContest";
 import { isMazingContest } from "./typeguards";
 
 export const withMazingContest = <T>(

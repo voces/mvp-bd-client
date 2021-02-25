@@ -1,14 +1,15 @@
 import { selfDestructAction } from "../../../../actions/selfDestruct";
-import { Action } from "../../../../actions/types";
+import type { Action } from "../../../../actions/types";
 import { toFootprint } from "../../../../api/toFootprint";
 import { GerminateComponent } from "../../../../components/GerminateComponent";
 import {
 	INITIAL_OBSTRUCTION_PROGRESS,
 	PATHING_TYPES,
 } from "../../../../constants";
-import { Player } from "../../../../players/Player";
-import { ResourceMap } from "../../../../types";
-import { Unit, UnitProps } from "../Unit";
+import type { Player } from "../../../../players/Player";
+import type { ResourceMap } from "../../../../types";
+import type { UnitProps } from "../Unit";
+import { Unit } from "../Unit";
 
 export type ObstructionProps = UnitProps & {
 	buildTime?: number;
@@ -23,7 +24,7 @@ export class Obstruction extends Unit {
 		...Unit.defaults,
 		buildHotkey: undefined as Action["hotkey"] | undefined,
 		buildDescription: undefined as string | undefined,
-		cost: { essence: 1 },
+		// cost: { essence: 1 },
 		requiresPathing: PATHING_TYPES.WALKABLE | PATHING_TYPES.BUILDABLE,
 		speed: 0,
 		meshBuilder: {

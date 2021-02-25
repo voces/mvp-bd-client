@@ -8,6 +8,9 @@ module.exports = {
 			{ allowedNames: ["mutable"] },
 		],
 		"@typescript-eslint/prefer-nullish-coalescing": "error",
+		"@typescript-eslint/consistent-type-imports": ["error", {prefer: 'type-imports'}],
+		"no-duplicate-imports": "off",
+  		"@typescript-eslint/no-duplicate-imports": ["error"],
 	},
 	overrides: [
 		{

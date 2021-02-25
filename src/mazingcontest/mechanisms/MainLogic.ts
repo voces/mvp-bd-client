@@ -1,4 +1,5 @@
 import { Mechanism } from "../../core/Merchanism";
+import type { MazingContest } from "../MazingContest";
 import { currentMazingContest } from "../mazingContestContext";
 
 interface Obstruction {
@@ -17,17 +18,25 @@ export class MainLogic extends Mechanism {
 		gold: number;
 	};
 
+	private startRound(time: number, game: MazingContest) {
+		this.round = {
+			start: time,
+			buildTime: game.settings.buildTime,
+			initial: [],
+			gold: game.settings.thunderTowers
+				? Math.floor(Math.random() * Math.random() * 4)
+				: 0,
+			lumber: Math.floor(Math.random() * Math.random() * 35),
+		};
+
+		// game.players.forEach((player) => {
+		// 	new Builder();
+		// });
+	}
+
 	update(delta: number, time: number): void {
 		const game = currentMazingContest();
-		console.log(game.players.length);
 
-		if (!this.round && game.players.length > 0)
-			this.round = {
-				start: time,
-				buildTime: 60,
-				initial: [],
-				lumber: Math.floor(Math.random() * Math.random() * 4),
-				gold: Math.floor(Math.random() * Math.random() * 35),
-			};
+		if (!this.round && game.players.length > 0) this.startRound(time, game);
 	}
 }

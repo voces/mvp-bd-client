@@ -2,7 +2,7 @@ import { h, render } from "preact";
 import { useState } from "preact/hooks";
 
 import { document } from "../../../core/util/globals";
-import { Game } from "../../Game";
+import type { Game } from "../../Game";
 import { Game as GameContext } from "./contexts/Game";
 import { Clock } from "./views/Clock";
 import { Essense } from "./views/Essence";

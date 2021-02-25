@@ -1,8 +1,8 @@
-import { Entity } from "../../core/Entity";
+import type { Entity } from "../../core/Entity";
 import { Mechanism } from "../../core/Merchanism";
 import { document } from "../../core/util/globals";
 import { centerAction } from "../../engine/actions/center";
-import { Action } from "../../engine/actions/types";
+import type { Action } from "../../engine/actions/types";
 import { currentGame } from "../../engine/gameContext";
 import { isUnit } from "../../engine/typeguards";
 import { defined } from "../../engine/types";

@@ -1,9 +1,9 @@
 import { Component } from "../../core/Component";
-import { Entity } from "../../core/Entity";
+import type { Entity } from "../../core/Entity";
 import { whileReplacingComponent } from "../../core/util/flags";
-import { Point } from "../pathing/PathingMap";
+import type { Point } from "../pathing/PathingMap";
 import { isEntity } from "../typeguards";
-import { Mutable } from "../types";
+import type { Mutable } from "../types";
 
 export class Position extends Component<[number, number, { zOffset: number }]> {
 	static setXY(entity: Entity, x: number, y: number): Position {

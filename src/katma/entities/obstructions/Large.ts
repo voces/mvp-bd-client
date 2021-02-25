@@ -1,7 +1,5 @@
-import {
-	Obstruction,
-	ObstructionProps,
-} from "../../../engine/entities/widgets/sprites/units/Obstruction";
+import type { ObstructionProps } from "../../../engine/entities/widgets/sprites/units/Obstruction";
+import { Obstruction } from "../../../engine/entities/widgets/sprites/units/Obstruction";
 
 export class Large extends Obstruction {
 	static defaults = {

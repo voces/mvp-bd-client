@@ -1,7 +1,7 @@
 import { System } from "../../core/System";
 import { TILE_TYPES } from "../../engine/constants";
-import { Sprite } from "../../engine/entities/widgets/Sprite";
-import { Crosser } from "../entities/Crosser";
+import type { Sprite } from "../../engine/entities/widgets/Sprite";
+import type { Crosser } from "../entities/Crosser";
 import { currentRound } from "../roundContext";
 import { isCrosser } from "../typeguards";
 

@@ -1,5 +1,5 @@
 import { Component } from "../../core/Component";
-import { Entity } from "../../core/Entity";
+import type { Entity } from "../../core/Entity";
 import { SelectionCircle } from "../entities/widgets/SelectionCircle";
 import { currentGame } from "../gameContext";
 import { getXY } from "./Position";

@@ -1,5 +1,5 @@
-import { ComponentConstructor } from "./Component";
-import { Entity } from "./Entity";
+import type { ComponentConstructor } from "./Component";
+import type { Entity } from "./Entity";
 
 abstract class System<T extends Entity = Entity> {
 	private set: Set<T> = new Set();

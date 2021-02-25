@@ -1,6 +1,6 @@
 import { isEqual } from "lodash-es";
 
-import { Entity } from "../../core/Entity";
+import type { Entity } from "../../core/Entity";
 import { System } from "../../core/System";
 import { Selected } from "../components/Selected";
 import { currentGame } from "../gameContext";
