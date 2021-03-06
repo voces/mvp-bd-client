@@ -7,7 +7,6 @@ import type { Arena } from "../engine/entities/terrainHelpers";
 import type { Sprite } from "../engine/entities/widgets/Sprite";
 import type { Unit } from "../engine/entities/widgets/sprites/Unit";
 import { PathingMap } from "../engine/pathing/PathingMap";
-import { resourceKeys } from "../engine/types";
 import { arenas } from "./arenas/index";
 import { Crosser } from "./entities/Crosser";
 import { Defender } from "./entities/Defender";
@@ -18,7 +17,7 @@ import type { Player } from "./players/Player";
 import { TileSystem } from "./systems/TileSystem";
 import { isCrosser, isResource } from "./typeguards";
 import type { Settings } from "./types";
-import { teamKeys } from "./types";
+import { resourceKeys, teamKeys } from "./types";
 
 // A round starts upon construction
 class Round {
@@ -122,13 +121,11 @@ class Round {
 
 	grantResources(): void {
 		for (const team of teamKeys)
-			if (team in this.settings.resources)
-				this[team].forEach((player) => {
-					for (const resource of resourceKeys)
-						player.resources[resource] = this.settings.resources[
-							team
-						][resource].starting;
-				});
+			for (const player of this[team])
+				for (const resource of resourceKeys)
+					player.resources[resource] = this.settings.resources[team][
+						resource
+					].starting;
 	}
 
 	_spawnUnit(
@@ -255,14 +252,13 @@ class Round {
 			) / 2;
 
 		for (const team of teamKeys)
-			if (team in this.settings.resources)
-				this[team].forEach((player) => {
-					for (const resource of resourceKeys)
-						player.resources[resource] +=
-							this.settings.resources[team][resource].rate *
+			for (const player of this[team])
+				for (const resource of resourceKeys)
+					player.resources[resource] =
+						(player.resources[resource] ?? 0) +
+						this.settings.resources[team][resource].rate *
 							delta *
 							factor;
-				});
 	}
 
 	update(time: number): void {

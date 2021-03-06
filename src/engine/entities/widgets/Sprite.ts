@@ -51,15 +51,20 @@ export type SpriteEvents = {
 	remove: () => void;
 };
 
+export type SpriteDefaultProps = Required<
+	Pick<SpriteProps, "collisionRadius" | "meshBuilder">
+>;
+
 class Sprite extends Widget {
 	static readonly isSprite = true;
 
-	static defaults = {
+	static defaults: SpriteDefaultProps = {
 		collisionRadius: 1,
 		meshBuilder: { shape: "circle" as "square" | "circle" },
 	};
 
 	// TODO: figure out how to type this...
+	// It may not be possible in TS: https://github.com/microsoft/TypeScript/issues/5863
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	static get clonedDefaults() {
 		return clone(this.defaults);

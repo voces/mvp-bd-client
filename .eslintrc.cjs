@@ -11,6 +11,7 @@ module.exports = {
 		"@typescript-eslint/consistent-type-imports": ["error", {prefer: 'type-imports'}],
 		"no-duplicate-imports": "off",
   		"@typescript-eslint/no-duplicate-imports": ["error"],
+		"react/react-in-jsx-scope": "off"
 	},
 	overrides: [
 		{

@@ -12,3 +12,22 @@ export class Thunder extends Obstruction {
 		super({ ...Thunder.clonedDefaults, ...props });
 	}
 }
+
+// const obj: unknown = {};
+// if (
+// 	typeof obj === "object" &&
+// 	obj &&
+// 	"foo" in obj &&
+
+// 	typeof obj.foo === "string"
+// ) {
+// 	const foo = obj.foo;
+// }
+
+interface Foo {
+	foo: string;
+}
+
+const foo: Foo = { foo: "A", b: 3 };
+
+console.log(foo);

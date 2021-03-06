@@ -7,24 +7,23 @@ import {
 	PATHING_TYPES,
 } from "../../../../constants";
 import type { Player } from "../../../../players/Player";
-import type { ResourceMap } from "../../../../types";
 import type { UnitProps } from "../Unit";
 import { Unit } from "../Unit";
 
-export type ObstructionProps = UnitProps & {
+export type ObstructionProps<Resource extends string> = UnitProps & {
 	buildTime?: number;
-	cost?: ResourceMap;
+	cost?: Record<Resource, number>;
 	owner: Player;
 };
 
-export class Obstruction extends Unit {
+export class Obstruction<Resource extends string = string> extends Unit {
 	static readonly isObstruction = true;
 
 	static defaults = {
 		...Unit.defaults,
 		buildHotkey: undefined as Action["hotkey"] | undefined,
 		buildDescription: undefined as string | undefined,
-		// cost: { essence: 1 },
+		cost: {},
 		requiresPathing: PATHING_TYPES.WALKABLE | PATHING_TYPES.BUILDABLE,
 		speed: 0,
 		meshBuilder: {
@@ -53,7 +52,7 @@ export class Obstruction extends Unit {
 		return this._buildAction;
 	}
 
-	constructor({ buildTime = 1, ...props }: ObstructionProps) {
+	constructor({ buildTime = 1, ...props }: ObstructionProps<Resource>) {
 		super({ ...Obstruction.clonedDefaults, ...props });
 
 		this.health = Math.round(

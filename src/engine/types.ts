@@ -2,13 +2,6 @@ import type { Mesh, Object3D } from "three";
 
 import type { Entity } from "../core/Entity";
 
-// Resource
-export interface ResourceMap {
-	essence: number;
-}
-export type Resource = keyof ResourceMap;
-export const resourceKeys: Resource[] = ["essence"];
-
 export type ValueOf<T> = T[keyof T];
 
 export const defined = <T>(value: T | undefined): value is T => !!value;

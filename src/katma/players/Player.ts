@@ -4,13 +4,14 @@ import type { PlayerState as EnginePlayerState } from "../../engine/players/Play
 // eslint-disable-next-line no-restricted-imports
 import { Player as EnginePlayer } from "../../engine/players/Player";
 import type { Katma } from "../Katma";
+import type { Resource } from "../types";
 
 export type PlayerState = EnginePlayerState & {
 	crosserPlays: number;
 	score: { bulldog: number };
 };
 
-export class Player extends EnginePlayer {
+export class Player extends EnginePlayer<Resource> {
 	crosserPlays;
 	score: { bulldog: number };
 

@@ -15,7 +15,7 @@ import { BUILD_DISTANCE } from "../../../constants";
 import { currentGame } from "../../../gameContext";
 import type { Point } from "../../../pathing/PathingMap";
 import type { Player } from "../../../players/Player";
-import type { SpriteProps } from "../Sprite";
+import type { SpriteDefaultProps, SpriteProps } from "../Sprite";
 import { Sprite } from "../Sprite";
 import type { Obstruction } from "./units/Obstruction";
 
@@ -43,12 +43,15 @@ const revealIllusion = (owner: Player) => {
 
 const darkBlue = new Color("#191966");
 
+export type UnitDefaultProps = SpriteDefaultProps &
+	Required<Pick<UnitProps, "isIllusion" | "speed" | "autoAttack">>;
+
 // `Seeing Class extends value undefined is not a constructor or null`? Import
 // Player before Sprite.
 class Unit extends Sprite {
 	static readonly isUnit = true;
 
-	static defaults = {
+	static defaults: UnitDefaultProps = {
 		...Sprite.clonedDefaults,
 		isIllusion: false,
 		// 380 in WC3

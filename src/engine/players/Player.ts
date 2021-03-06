@@ -2,8 +2,6 @@ import type { Sprite } from "../entities/widgets/Sprite";
 import type { Unit } from "../entities/widgets/sprites/Unit";
 import type { Game } from "../Game";
 import { currentGame } from "../gameContext";
-import type { Resource, ResourceMap } from "../types";
-import { resourceKeys } from "../types";
 import type { Color } from "./colors";
 import { colors, releaseColor, takeColor } from "./colors";
 
@@ -12,12 +10,11 @@ export interface PlayerState {
 	id: number;
 	username: string;
 }
-
-export class Player {
+export class Player<Resource extends string = string> {
 	game: Game;
 	sprites: Array<Sprite> = [];
 	isHere = true;
-	resources = { essence: 0 };
+	resources: Partial<Record<Resource, number>> = {};
 	username = "tim";
 	id = -1;
 	color?: Color;
@@ -36,18 +33,19 @@ export class Player {
 		if (data.id !== -1) game.players.push(this);
 	}
 
-	checkResources(resources: ResourceMap): Resource[] {
+	checkResources(resources: Record<Resource, number>): Resource[] {
 		const low: Resource[] = [];
-		for (const resource of resourceKeys)
+		for (const resource in resources)
 			if (this.resources[resource] < resources[resource])
 				low.push(resource);
 
 		return low;
 	}
 
-	subtractResources(resources: ResourceMap): void {
-		for (const resource of resourceKeys)
-			this.resources[resource] -= resources[resource];
+	subtractResources(resources: Record<Resource, number>): void {
+		for (const resource in resources)
+			this.resources[resource] =
+				(this.resources[resource] ?? 0) - resources[resource];
 	}
 
 	get enemies(): Player[] {

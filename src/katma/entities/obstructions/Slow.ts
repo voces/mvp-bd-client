@@ -2,12 +2,12 @@ import type { Weapon } from "../../../engine/components/DamageComponent";
 import { DamageComponent } from "../../../engine/components/DamageComponent";
 import type { Effect, Sprite } from "../../../engine/entities/widgets/Sprite";
 import { Projectile } from "../../../engine/entities/widgets/sprites/Projectile";
-import type { ObstructionProps } from "../../../engine/entities/widgets/sprites/units/Obstruction";
-import { Obstruction } from "../../../engine/entities/widgets/sprites/units/Obstruction";
 import { currentGame } from "../../../engine/gameContext";
 import { isUnit } from "../../../engine/typeguards";
 import { clone } from "../../../engine/util/clone";
 import { isSlow } from "../../typeguards";
+import type { ObstructionProps } from "./Obstruction";
+import { Obstruction } from "./Obstruction";
 
 const slowTimeout = (target: Sprite) =>
 	currentGame().setTimeout(() => {
