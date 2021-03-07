@@ -28,7 +28,7 @@ type UpdateEvent = Event & {
 	type: "update";
 };
 
-type PlayerEvent = Event & {
+export type PlayerEvent = Event & {
 	connection: number;
 	sent?: number;
 };
@@ -57,12 +57,6 @@ export type AttackEvent = PlayerEvent & {
 	target: EntityID | undefined;
 	x: number;
 	y: number;
-};
-
-export type SelfDestructEvent = PlayerEvent & {
-	type: "selfDestruct";
-	connection: number;
-	sprites: EntityID[];
 };
 
 export type HoldPositionEvent = PlayerEvent & {
@@ -111,7 +105,6 @@ const networkEvents = {
 	build: (data: BuildEvent) => {},
 	move: (data: MoveEvent) => {},
 	attack: (data: AttackEvent) => {},
-	selfDestruct: (data: SelfDestructEvent) => {},
 	holdPosition: (data: HoldPositionEvent) => {},
 	stop: (data: StopEvent) => {},
 	mirror: (data: MirrorEvent) => {},

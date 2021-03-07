@@ -4,7 +4,6 @@ import { document } from "../../core/util/globals";
 import { centerAction } from "../../engine/actions/center";
 import type { Action } from "../../engine/actions/types";
 import { currentGame } from "../../engine/gameContext";
-import { isUnit } from "../../engine/typeguards";
 import { defined } from "../../engine/types";
 import { emptyElement } from "../../engine/util/html";
 
@@ -75,14 +74,9 @@ export class Hotkeys extends Mechanism {
 
 		// Get actions
 		const game = currentGame();
-		const units = entities
-			.filter(isUnit)
-			.filter((u) => u.owner === game.localPlayer);
-		if (!units.length) return;
+		const activeUnit = game.localPlayer.getPrimarySelectedUnit(entities);
+		if (!activeUnit) return;
 
-		let activeUnit = units[0];
-		for (let i = 1; i < units.length; i++)
-			if (units[i].priority > activeUnit.priority) activeUnit = units[i];
 		const actions = activeUnit.actions;
 		const sortedActions = qwertySort
 			.map((k) => actions.find((b) => b.hotkey === k))

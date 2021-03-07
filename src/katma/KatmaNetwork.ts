@@ -1,6 +1,7 @@
 import type { Emitter } from "../core/emitter";
+import type { EntityID } from "../core/Entity";
 // eslint-disable-next-line no-restricted-imports
-import type { InitEvent, StateEvent } from "../engine/Network";
+import type { InitEvent, PlayerEvent, StateEvent } from "../engine/Network";
 // eslint-disable-next-line no-restricted-imports
 import { activeHost, ConnectionEvent, Network } from "../engine/Network";
 import type { Katma } from "./Katma";
@@ -13,11 +14,18 @@ type KatmaStateEvent = StateEvent & {
 	state: ReturnType<Katma["toJSON"]>;
 };
 
+export type SelfDestructEvent = PlayerEvent & {
+	type: "selfDestruct";
+	connection: number;
+	sprites: EntityID[];
+};
+
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function */
 const networkEvents = {
 	...Network.networkEvents,
 	init: (data: KatmaInitEvent) => {},
 	state: (data: KatmaStateEvent) => {},
+	selfDestruct: (data: SelfDestructEvent) => {},
 } as const;
 /* eslint-enable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function */
 

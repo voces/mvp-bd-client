@@ -1,7 +1,9 @@
+import type { Entity } from "../../core/Entity";
 import type { Sprite } from "../entities/widgets/Sprite";
 import type { Unit } from "../entities/widgets/sprites/Unit";
 import type { Game } from "../Game";
 import { currentGame } from "../gameContext";
+import { isUnit } from "../typeguards";
 import type { Color } from "./colors";
 import { colors, releaseColor, takeColor } from "./colors";
 
@@ -18,7 +20,6 @@ export class Player<Resource extends string = string> {
 	username = "tim";
 	id = -1;
 	color?: Color;
-	unit?: Unit;
 
 	constructor({ game, ...data }: Partial<Player> & { game: Game }) {
 		this.game = game;
@@ -36,7 +37,7 @@ export class Player<Resource extends string = string> {
 	checkResources(resources: Record<Resource, number>): Resource[] {
 		const low: Resource[] = [];
 		for (const resource in resources)
-			if (this.resources[resource] < resources[resource])
+			if ((this.resources[resource] ?? 0) < resources[resource])
 				low.push(resource);
 
 		return low;
@@ -65,6 +66,19 @@ export class Player<Resource extends string = string> {
 
 	get uid(): string {
 		return `${this.username}#${this.id}`;
+	}
+
+	// TODO: Remove off Player and make a helper
+	getPrimarySelectedUnit(entities?: ReadonlyArray<Entity>): Unit | undefined {
+		const universe = entities ?? this.game.selectionSystem.selection;
+		const units = universe.filter(isUnit).filter((u) => u.owner === this);
+		if (!units.length) return;
+
+		let activeUnit = units[0];
+		for (let i = 1; i < units.length; i++)
+			if (units[i].priority > activeUnit.priority) activeUnit = units[i];
+
+		return units[0];
 	}
 
 	toJSON(): PlayerState {

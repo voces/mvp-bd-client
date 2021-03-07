@@ -12,11 +12,13 @@ export const Resources = (): JSX.Element => {
 
 	return (
 		<>
-			{Object.entries(game.localPlayer.resources).map(([key, value]) => (
-				<span key={key} title={key[0].toUpperCase() + key.slice(1)}>
-					{game.localPlayer && Math.floor(value ?? 0)}
-				</span>
-			))}
+			{Object.entries(game.localPlayer.resources)
+				.filter(([, value]) => typeof value === "number")
+				.map(([key, value]) => (
+					<span key={key} title={key[0].toUpperCase() + key.slice(1)}>
+						{game.localPlayer && Math.floor(value ?? 0)}
+					</span>
+				))}
 		</>
 	);
 };

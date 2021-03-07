@@ -5,13 +5,13 @@ import type { InitEvent, StateEvent } from "../engine/Network";
 import { activeHost, ConnectionEvent, Network } from "../engine/Network";
 import type { MazingContest } from "./MazingContest";
 
-type MazingContestInitEvent = InitEvent & {
+interface MazingContestInitEvent extends InitEvent {
 	state: ReturnType<MazingContest["toJSON"]>;
-};
+}
 
-type MazingContestStateEvent = StateEvent & {
+interface MazingContestStateEvent extends StateEvent {
 	state: ReturnType<MazingContest["toJSON"]>;
-};
+}
 
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function */
 const networkEvents = {

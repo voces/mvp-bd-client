@@ -186,7 +186,10 @@ class Sprite extends Widget {
 
 		// Death antimation
 		if (removeImmediately) this.remove();
-		else game.setTimeout(() => this.remove(), 0.125);
+		else {
+			debugger;
+			game.setTimeout(() => this.remove(), 0.125);
+		}
 	}
 
 	remove(initializedFromApp = false): void {

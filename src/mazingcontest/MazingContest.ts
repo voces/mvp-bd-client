@@ -2,8 +2,8 @@ import { logLine } from "../core/logger";
 import { Terrain } from "../engine/entities/Terrain";
 // eslint-disable-next-line no-restricted-imports
 import { Game } from "../engine/Game";
+import { PathingMap } from "../engine/pathing/PathingMap";
 import { nextColor } from "../engine/players/colors";
-import { patchInState, Player } from "../engine/players/Player";
 import { withMazingContest } from "./mazingContestContext";
 import type {
 	ConnectionEvent,
@@ -11,6 +11,7 @@ import type {
 	NetworkEventCallback,
 } from "./MazingContestNetwork";
 import { MainLogic } from "./mechanisms/MainLogic";
+import { patchInState, Player } from "./Player";
 import { terrain } from "./terrain";
 import type { Settings } from "./types";
 
@@ -42,11 +43,16 @@ export class MazingContest extends Game {
 			// Received by the the upon someone connecting after the round ends
 			this.addNetworkListener("state", (e) => this.onState(e));
 
-			new Terrain(terrain);
+			this.terrain = new Terrain(terrain);
 			this.graphics.panTo(
 				{ x: terrain.height / 2, y: terrain.width / 2 - 7 },
 				0,
 			);
+			this.pathingMap = new PathingMap({
+				pathing: terrain.pathing,
+				layers: terrain.pathingCliffs.slice().reverse(),
+				resolution: 2,
+			});
 			this.addMechanism(new MainLogic());
 		});
 	}
@@ -97,25 +103,25 @@ export class MazingContest extends Game {
 	// Cycles
 	///////////////////////
 
-	// protected _update(e: { time: number }): void {
-	// 	super._update(e);
+	protected _update(e: { time: number }): void {
+		super._update(e);
 
-	// 	const time = e.time / 1000;
+		const time = e.time / 1000;
 
-	// 	// Update is called for people who have recently joined
-	// 	// if (this.round) {
-	// 	// 	this.round.update(time);
-	// 	// 	this.dispatchEvent("update", time);
-	// 	// 	return;
-	// 	// }
+		// Update is called for people who have recently joined
+		// if (this.round) {
+		// 	this.round.update(time);
+		this.dispatchEvent("update", time);
+		// 	return;
+		// }
 
-	// 	// if (
-	// 	// 	this.players.length &&
-	// 	// 	this.receivedState &&
-	// 	// 	(!this.lastRoundEnd || time > this.lastRoundEnd + 2)
-	// 	// )
-	// 	// 	this.start({ time });
-	// }
+		// if (
+		// 	this.players.length &&
+		// 	this.receivedState &&
+		// 	(!this.lastRoundEnd || time > this.lastRoundEnd + 2)
+		// )
+		// 	this.start({ time });
+	}
 
 	render(): void {
 		withMazingContest(this, () => this._render());
@@ -125,9 +131,12 @@ export class MazingContest extends Game {
 		withMazingContest(this, () => this._update(e));
 	}
 
-	toJSON(): ReturnType<Game["toJSON"]> {
+	toJSON(): ReturnType<Game["toJSON"]> & {
+		players: ReturnType<Player["toJSON"]>[];
+	} {
 		return {
 			...super.toJSON(),
+			players: this.players.map((p) => p.toJSON()),
 		};
 	}
 }

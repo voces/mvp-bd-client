@@ -78,7 +78,7 @@ export class ObstructionPlacement extends Mechanism {
 	private updateCells() {
 		if (!this.plannedObstruction) return;
 
-		const unit = this.game.localPlayer.unit;
+		const unit = this.game.localPlayer.getPrimarySelectedUnit();
 		if (!unit) return;
 
 		const pathing = this.plannedObstruction.defaults.requiresPathing;
@@ -181,7 +181,7 @@ export class ObstructionPlacement extends Mechanism {
 				obstruction.defaults.cost,
 			);
 			if (check.length) {
-				appendErrorMessage(`Not enough ${check.join(" ")}`);
+				appendErrorMessage(`Not enough ${check.join(" or ")}`);
 				return;
 			}
 		}

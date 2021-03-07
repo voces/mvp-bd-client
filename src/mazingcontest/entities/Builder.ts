@@ -7,6 +7,10 @@ export class Builder extends Unit {
 	static defaults = {
 		...Unit.defaults,
 		builds: [Block, Thunder],
+		collisionRadius: 0.5,
+		requiresPathing: 0,
+		speed: 5,
+		zOffset: 2,
 	};
 
 	constructor(props: UnitProps) {

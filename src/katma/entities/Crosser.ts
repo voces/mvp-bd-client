@@ -4,7 +4,6 @@ import { MeshBuilderComponent } from "../../engine/components/graphics/MeshBuild
 import { Hover } from "../../engine/components/Hover";
 import { Selected } from "../../engine/components/Selected";
 import type { UnitProps } from "../../engine/entities/widgets/sprites/Unit";
-import { Unit } from "../../engine/entities/widgets/sprites/Unit";
 import type { Obstruction } from "../../engine/entities/widgets/sprites/units/Obstruction";
 import { currentGame } from "../../engine/gameContext";
 import { destroyLastBox } from "../actions/destroyLastBox";
@@ -16,6 +15,7 @@ import { Resource } from "./obstructions/Resource";
 import { Slow } from "./obstructions/Slow";
 import { Stack } from "./obstructions/Stack";
 import { Tiny } from "./obstructions/Tiny";
+import { Unit } from "./Unit";
 
 export class Crosser extends Unit {
 	static readonly isCrosser = true;

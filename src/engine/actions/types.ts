@@ -50,7 +50,8 @@ export type Action<
 	  }
 	| {
 			type: "custom";
-			localHandler: (data: ImmediateActionProps) => void;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			localHandler: (data: ImmediateActionProps<any>) => void;
 	  }
 	| {
 			type: "target";
@@ -66,7 +67,7 @@ export type Action<
 	  }
 );
 
-export type ImmediateActionProps = { player: Player };
+export type ImmediateActionProps<P extends Player = Player> = { player: P };
 export type TargetActionProps = { player: Player; target: Widget };
 export type PointActionProps = { player: Player; point: Point };
 export type TargetOrPointActionProps = {

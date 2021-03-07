@@ -1,3 +1,4 @@
+import type { Unit } from "../../engine/entities/widgets/sprites/Unit";
 import { releaseColor, takeColor } from "../../engine/players/colors";
 // eslint-disable-next-line no-restricted-imports
 import type { PlayerState as EnginePlayerState } from "../../engine/players/Player";
@@ -14,6 +15,7 @@ export type PlayerState = EnginePlayerState & {
 export class Player extends EnginePlayer<Resource> {
 	crosserPlays;
 	score: { bulldog: number };
+	unit?: Unit;
 
 	constructor(props: Partial<Player> & { game: Katma }) {
 		super(props);

@@ -1,4 +1,3 @@
-import { selfDestructAction } from "../../../../actions/selfDestruct";
 import type { Action } from "../../../../actions/types";
 import { toFootprint } from "../../../../api/toFootprint";
 import { GerminateComponent } from "../../../../components/GerminateComponent";
@@ -56,16 +55,10 @@ export class Obstruction<Resource extends string = string> extends Unit {
 		super({ ...Obstruction.clonedDefaults, ...props });
 
 		this.health = Math.round(
-			Math.min(this.maxHealth * INITIAL_OBSTRUCTION_PROGRESS, 1),
+			Math.max(this.maxHealth * INITIAL_OBSTRUCTION_PROGRESS, 1),
 		);
 		this.buildTime = buildTime;
 
 		new GerminateComponent(this);
-	}
-
-	get actions(): Action[] {
-		const actions = super.actions;
-		actions.push(selfDestructAction);
-		return actions;
 	}
 }

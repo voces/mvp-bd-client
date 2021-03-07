@@ -1,6 +1,8 @@
 import { Mechanism } from "../../core/Merchanism";
+import { Builder } from "../entities/Builder";
 import type { MazingContest } from "../MazingContest";
 import { currentMazingContest } from "../mazingContestContext";
+import { terrain } from "../terrain";
 
 interface Obstruction {
 	type: "thunder" | "block";
@@ -26,12 +28,24 @@ export class MainLogic extends Mechanism {
 			gold: game.settings.thunderTowers
 				? Math.floor(Math.random() * Math.random() * 4)
 				: 0,
-			lumber: Math.floor(Math.random() * Math.random() * 35),
+			lumber: Math.ceil(Math.random() * Math.random() * 35),
 		};
 
-		// game.players.forEach((player) => {
-		// 	new Builder();
-		// });
+		for (const owner of game.players) {
+			owner.resources.gold = this.round.gold;
+			owner.resources.lumber = this.round.lumber;
+
+			const u = new Builder({
+				x: terrain.width / 2,
+				y: terrain.height / 2,
+				owner,
+			});
+
+			if (owner === game.localPlayer) {
+				game.selectionSystem.select(u);
+				game.graphics.panTo(u.position, 0);
+			}
+		}
 	}
 
 	update(delta: number, time: number): void {

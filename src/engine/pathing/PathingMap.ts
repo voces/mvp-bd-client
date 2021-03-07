@@ -19,10 +19,14 @@ let debugging = false;
 
 // 	debugging = !debugging;
 // };
-Object.defineProperty(globalThis, "debugging", {
-	set: (value) => (debugging = value),
-	get: () => debugging,
-});
+try {
+	Object.defineProperty(globalThis, "debugging", {
+		set: (value) => (debugging = value),
+		get: () => debugging,
+	});
+} catch (err) {
+	/* do nothing */
+}
 
 const DEFAULT_RESOLUTION = 1;
 

@@ -56,6 +56,7 @@ module.exports = {
 						patterns: [
 							"**/engine/Game",
 							"**/engine/Network",
+							"**/engine/players/Player",
 						],
 					},
 				],

@@ -6,12 +6,17 @@ import { isEntity } from "../typeguards";
 import type { Mutable } from "../types";
 
 export class Position extends Component<[number, number, { zOffset: number }]> {
-	static setXY(entity: Entity, x: number, y: number): Position {
+	static setXY(
+		entity: Entity,
+		x: number,
+		y: number,
+		zOffset?: number,
+	): Position {
 		return whileReplacingComponent(() => {
 			const component = entity.get(Position)[0];
 			if (component) entity.clear(this);
 			return new Position(entity, x, y, {
-				zOffset: component?.zOffset,
+				zOffset: zOffset ?? component?.zOffset,
 			});
 		});
 	}
@@ -40,8 +45,8 @@ export class Position extends Component<[number, number, { zOffset: number }]> {
 		mutable.zOffset = zOffset;
 	}
 
-	setXY(x: number, y: number): Position {
-		return Position.setXY(this.entity, x, y);
+	setXY(x: number, y: number, zOffset?: number): Position {
+		return Position.setXY(this.entity, x, y, zOffset);
 	}
 }
 

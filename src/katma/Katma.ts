@@ -6,6 +6,7 @@ import type { Arena } from "../engine/entities/terrainHelpers";
 import { Game } from "../engine/Game";
 import { nextColor } from "../engine/players/colors";
 import { isSprite } from "../engine/typeguards";
+import { registerNetworkedActionListeners } from "./actions";
 import { arenas } from "./arenas";
 import { withKatma } from "./katmaContext";
 import type {
@@ -54,6 +55,7 @@ export class Katma extends Game {
 
 			// Received by the the upon someone connecting after the round ends
 			this.addNetworkListener("state", (e) => this.onState(e));
+			registerNetworkedActionListeners();
 		});
 	}
 
@@ -222,8 +224,8 @@ export class Katma extends Game {
 	toJSON(): ReturnType<Game["toJSON"]> & {
 		arena: number;
 		lastRoundEnd: number | undefined;
-		players: ReturnType<typeof Player.prototype.toJSON>[];
-		round: ReturnType<typeof Round.prototype.toJSON> | undefined;
+		players: ReturnType<Player["toJSON"]>[];
+		round: ReturnType<Round["toJSON"]> | undefined;
 	} {
 		return {
 			...super.toJSON(),
