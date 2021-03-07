@@ -33,6 +33,7 @@ export class Obstruction<Resource extends string = string> extends Unit {
 
 	requiresTilemap = toFootprint(this.collisionRadius, this.requiresPathing);
 	blocksTilemap = toFootprint(this.collisionRadius, this.blocksPathing);
+	structure = true;
 	buildTime: number;
 	owner!: Player;
 

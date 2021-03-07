@@ -74,7 +74,7 @@ export class MeshBuilder extends System {
 		}
 		mesh.position.x = entity.position.x;
 		mesh.position.y = entity.position.y;
-		// mesh.position.z = ;
+		meshBuilder.mutator?.(mesh);
 		mesh.entity = entity;
 
 		mesh.animations.push(

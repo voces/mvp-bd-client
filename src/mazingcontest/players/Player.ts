@@ -1,10 +1,10 @@
-import { releaseColor, takeColor } from "../engine/players/colors";
+import { releaseColor, takeColor } from "../../engine/players/colors";
 // eslint-disable-next-line no-restricted-imports
-import type { PlayerState as EnginePlayerState } from "../engine/players/Player";
+import type { PlayerState as EnginePlayerState } from "../../engine/players/Player";
 // eslint-disable-next-line no-restricted-imports
-import { Player as EnginePlayer } from "../engine/players/Player";
-import type { MazingContest } from "./MazingContest";
-import type { Resource } from "./types";
+import { Player as EnginePlayer } from "../../engine/players/Player";
+import type { MazingContest } from "../MazingContest";
+import type { Resource } from "../types";
 
 interface PlayerStateMC extends EnginePlayerState {
 	resources: Player["resources"];

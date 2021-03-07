@@ -11,7 +11,7 @@ import type {
 	NetworkEventCallback,
 } from "./MazingContestNetwork";
 import { MainLogic } from "./mechanisms/MainLogic";
-import { patchInState, Player } from "./Player";
+import { patchInState, Player } from "./players/Player";
 import { terrain } from "./terrain";
 import type { Settings } from "./types";
 

@@ -1,7 +1,9 @@
 import { Mechanism } from "../../core/Merchanism";
 import { Builder } from "../entities/Builder";
+import { Checkpoint } from "../entities/Checkpoint";
 import type { MazingContest } from "../MazingContest";
 import { currentMazingContest } from "../mazingContestContext";
+import { getPlaceholderPlayer } from "../players/placeholder";
 import { terrain } from "../terrain";
 
 interface Obstruction {
@@ -26,9 +28,9 @@ export class MainLogic extends Mechanism {
 			buildTime: game.settings.buildTime,
 			initial: [],
 			gold: game.settings.thunderTowers
-				? Math.floor(Math.random() * Math.random() * 4)
+				? Math.floor(game.random() * game.random() * 4)
 				: 0,
-			lumber: Math.ceil(Math.random() * Math.random() * 35),
+			lumber: Math.ceil(game.random() * game.random() * 35),
 		};
 
 		for (const owner of game.players) {
@@ -45,6 +47,31 @@ export class MainLogic extends Mechanism {
 				game.selectionSystem.select(u);
 				game.graphics.panTo(u.position, 0);
 			}
+		}
+
+		if (game.settings.checkpoints) {
+			const x =
+				terrain.width / 2 +
+				Math.round(game.random.between(-9, 8)) +
+				0.5;
+			const y =
+				terrain.height / 2 +
+				Math.round(game.random.between(-9, 8)) +
+				0.5;
+
+			const entity = new Checkpoint({
+				x,
+				y,
+				owner: getPlaceholderPlayer(),
+			});
+
+			const newPos = game.pathingMap.nearestSpiralPathing(x, y, entity);
+
+			if (game.pathingMap.pathable(entity, x, y)) {
+				entity.position.setXY(newPos.x, newPos.y);
+
+				game.pathingMap.addEntity(entity);
+			} else entity.kill({ removeImmediately: true });
 		}
 	}
 
