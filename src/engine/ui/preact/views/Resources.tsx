@@ -1,3 +1,4 @@
+import type { JSX } from "preact";
 import { useContext, useState } from "preact/hooks";
 
 import { Game } from "../contexts/Game";
@@ -15,7 +16,11 @@ export const Resources = (): JSX.Element => {
 			{Object.entries(game.localPlayer.resources)
 				.filter(([, value]) => typeof value === "number")
 				.map(([key, value]) => (
-					<span key={key} title={key[0].toUpperCase() + key.slice(1)}>
+					<span
+						className={`resource ${key}`}
+						key={key}
+						title={key[0].toUpperCase() + key.slice(1)}
+					>
 						{game.localPlayer && Math.floor(value ?? 0)}
 					</span>
 				))}

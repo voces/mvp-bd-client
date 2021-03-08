@@ -4,6 +4,7 @@ import { emitter } from "../core/emitter";
 import type { Entity } from "../core/Entity";
 import { initSpriteLogicListeners } from "./actions/spriteLogic";
 import type { Terrain } from "./entities/Terrain";
+import type { Obstruction } from "./entities/widgets/sprites/units/Obstruction";
 import { withGame, wrapGame } from "./gameContext";
 import { alea } from "./lib/alea";
 import { Alliances } from "./mechanisms/Alliances";
@@ -29,6 +30,7 @@ import { ProjectileSystem } from "./systems/ProjectileSystem";
 import { SelectedSystem } from "./systems/SelectedSystem";
 import { ThreeGraphics } from "./systems/ThreeGraphics";
 import { TimerSystem } from "./systems/TimerSystem";
+import { TimerWindows } from "./systems/TimerWindows";
 import { isSprite } from "./typeguards";
 import { Hotkeys } from "./ui/hotkeys";
 import { UI } from "./ui/index";
@@ -77,6 +79,7 @@ class Game extends App {
 	selectionSystem!: SelectedSystem;
 	alliances!: Alliances;
 	fpsMonitor!: FPSMonitor;
+	timerWindows!: TimerWindows;
 
 	// Replace with a heap
 	intervals: Interval[] = [];
@@ -105,6 +108,8 @@ class Game extends App {
 			this.addSystem(new TimerSystem());
 			this.fpsMonitor = new FPSMonitor();
 			this.addMechanism(this.fpsMonitor);
+			this.timerWindows = new TimerWindows();
+			this.addSystem(this.timerWindows);
 
 			this.graphics = new ThreeGraphics(this);
 			this.addSystem(this.graphics);
@@ -287,6 +292,7 @@ class Game extends App {
 
 		entity.clear();
 		if (isSprite(entity)) entity.remove(true);
+		this._entities.delete(entity);
 
 		return true;
 	}
@@ -329,6 +335,9 @@ class Game extends App {
 export type GameEvents = {
 	update: (time: number) => void;
 	selection: (selection: Entity[]) => void;
+	build: (builder: Entity, obstruction: Obstruction) => void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	[key: string]: (...args: any[]) => void;
 };
 
 interface Game extends Emitter<GameEvents>, App {}

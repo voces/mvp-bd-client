@@ -83,9 +83,10 @@ export class App {
 	remove(entity: Entity): boolean {
 		if (!this._entities.has(entity)) return false;
 
-		for (const system of this.impureSystems) system.remove(entity);
+		for (const system of this.allSystems) system.remove(entity);
 
 		entity.clear();
+		this._entities.delete(entity);
 
 		return true;
 	}
@@ -98,9 +99,9 @@ export class App {
 		entity: Entity,
 		component: ComponentConstructor,
 	): void {
-		const arr = this.componentUpdateMap.get(component);
-		if (!arr) return;
-		for (const system of arr) system.check(entity);
+		const systems = this.componentUpdateMap.get(component);
+		if (!systems) return;
+		for (const system of systems) system.check(entity);
 	}
 
 	protected _render(): void {

@@ -16,12 +16,23 @@ const formatSeconds = (time: number) => {
 	return minutes.padStart(2, "0") + ":" + seconds.padStart(2, "0");
 };
 
-export const Clock = (): JSX.Element => {
+export const TimerWindows = (): JSX.Element => {
 	const [time, setTime] = useState<number>(0);
 	const game = useContext(Game);
 	useEventListener(game, "update", setTime);
 
 	return (
-		<span>{game.round && formatSeconds(game.round.expireAt - time)}</span>
+		<span className="timer-windows">
+			{game.timerWindows
+				.getTimerWindows()
+				.map(({ entity, timerWindow, timer }) => (
+					<span key={entity.id} className="timer-window">
+						<span className="title">{timerWindow.title}</span>
+						<span className="time">
+							{formatSeconds(timer.next - time)}
+						</span>
+					</span>
+				))}
+		</span>
 	);
 };

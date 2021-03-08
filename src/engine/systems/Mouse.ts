@@ -33,6 +33,8 @@ export type MouseEvents = {
 
 class Mouse extends System {
 	static components = [ThreeObjectComponent];
+	// We can consider this pure since the other condition is static
+	readonly pure = true;
 
 	client: Vector2;
 	/** Normalized coordinates from (-1 to 1) */

@@ -46,6 +46,7 @@ export type Action<
 } & (
 	| {
 			type: "build";
+			cost: { [key: string]: number };
 			obstruction: typeof Obstruction;
 	  }
 	| {

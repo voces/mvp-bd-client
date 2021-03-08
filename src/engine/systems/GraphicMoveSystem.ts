@@ -20,6 +20,7 @@ const hasSpeed = (
  */
 export class GraphicMoveSystem extends System {
 	static components = [ThreeObjectComponent, Position, MoveTarget];
+	readonly pure = true;
 
 	test(entity: Entity | Widget): entity is Widget {
 		return (

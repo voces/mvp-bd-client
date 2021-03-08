@@ -21,6 +21,7 @@ type MovingSprite = Sprite & {
 
 export class MoveSystem extends System<MovingSprite> {
 	static components = [MoveTarget];
+	readonly pure = false;
 
 	test(entity: Sprite & { speed?: number }): entity is MovingSprite {
 		return (

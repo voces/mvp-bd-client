@@ -11,6 +11,7 @@ type SelectedEntity = Entity & { __selected: true };
 
 export class SelectedSystem extends System {
 	static components = [Selected];
+	readonly pure = true;
 
 	data = new WeakMap<Entity, Selected>();
 

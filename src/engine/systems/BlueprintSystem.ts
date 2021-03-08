@@ -11,6 +11,7 @@ import { distanceBetweenPoints } from "../util/tweenPoints";
 
 export class BlueprintSystem extends System<Unit> {
 	static components = [BuildTarget, MoveTarget];
+	readonly pure = false;
 
 	test(entity: Sprite): entity is Unit {
 		return entity.has(BuildTarget) && isUnit(entity);
@@ -59,7 +60,8 @@ export class BlueprintSystem extends System<Unit> {
 			owner: entity.owner,
 		});
 
-		const pathingMap = currentGame().pathingMap;
+		const game = currentGame();
+		const pathingMap = game.pathingMap;
 		pathingMap.withoutEntity(entity, () => {
 			if (
 				pathingMap.pathable(
@@ -78,6 +80,7 @@ export class BlueprintSystem extends System<Unit> {
 				entity,
 			);
 			entity.position.setXY(newPos.x, newPos.y);
+			game.dispatchEvent("build", entity, obstruction);
 		});
 	}
 }

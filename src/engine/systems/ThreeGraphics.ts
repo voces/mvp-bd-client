@@ -97,6 +97,7 @@ type EntityData = { knownObject: Object3D };
 
 export class ThreeGraphics extends System {
 	static components = [ThreeObjectComponent];
+	readonly pure = true;
 
 	private entityData: Map<Entity, EntityData> = new Map();
 	private renderer: WebGLRenderer;

@@ -186,17 +186,14 @@ class Sprite extends Widget {
 
 		// Death antimation
 		if (removeImmediately) this.remove();
-		else {
-			debugger;
-			game.setTimeout(() => this.remove(), 0.125);
-		}
+		else game.setTimeout(() => this.remove(), 0.125);
 	}
 
-	remove(initializedFromApp = false): void {
+	remove(callInitializedFromApp = false): void {
 		const game = currentGame();
 		this.isAlive = false;
 		this.dispatchEvent("remove");
-		if (!initializedFromApp) game.remove(this);
+		if (!callInitializedFromApp) game.remove(this);
 		this.removeEventListeners();
 		game.pathingMap.removeEntity(this);
 

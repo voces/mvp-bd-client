@@ -6,6 +6,9 @@ import { isProjectile } from "../typeguards";
 import { distanceBetweenPoints } from "../util/tweenPoints";
 
 export class ProjectileSystem extends System<Projectile> {
+	// Conditions are static
+	readonly pure = true;
+
 	test(entity: Sprite): entity is Projectile {
 		return isProjectile(entity);
 	}

@@ -1,4 +1,4 @@
-import { h, render } from "preact";
+import { render } from "preact";
 import { useState } from "preact/hooks";
 
 import { document } from "../../../core/util/globals";
@@ -9,6 +9,7 @@ import { FPS } from "./views/FPS";
 import { Login } from "./views/Login";
 import { Ping } from "./views/Ping";
 import { Resources } from "./views/Resources";
+import { TimerWindows } from "./views/TimerWindows";
 
 const App = ({ game }: { game: Game }) => {
 	const [loggingIn, setLoggingIn] = useState(true);
@@ -18,6 +19,7 @@ const App = ({ game }: { game: Game }) => {
 				{loggingIn && <Login onSuccess={() => setLoggingIn(true)} />}
 				<div id="top-right" className="h-spacing-8">
 					<Resources />
+					<TimerWindows />
 					<Clock />
 					<span id="scores" />
 				</div>

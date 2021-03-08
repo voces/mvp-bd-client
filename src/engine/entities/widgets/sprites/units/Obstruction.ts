@@ -45,6 +45,7 @@ export class Obstruction<Resource extends string = string> extends Unit {
 			name: this.name,
 			hotkey: this.defaults.buildHotkey!,
 			description: this.defaults.buildDescription,
+			cost: this.defaults.cost,
 			type: "build",
 			obstruction: this,
 		};

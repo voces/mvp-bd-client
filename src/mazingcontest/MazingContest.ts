@@ -4,6 +4,7 @@ import { Terrain } from "../engine/entities/Terrain";
 import { Game } from "../engine/Game";
 import { PathingMap } from "../engine/pathing/PathingMap";
 import { nextColor } from "../engine/players/colors";
+import { isPathable } from "./helpers";
 import { withMazingContest } from "./mazingContestContext";
 import type {
 	ConnectionEvent,
@@ -12,10 +13,12 @@ import type {
 } from "./MazingContestNetwork";
 import { MainLogic } from "./mechanisms/MainLogic";
 import { patchInState, Player } from "./players/Player";
+import { RunnerTracker } from "./systems/RunnerTracker";
 import { terrain } from "./terrain";
+import { isThunder } from "./typeguards";
 import type { Settings } from "./types";
 
-export class MazingContest extends Game {
+class MazingContest extends Game {
 	static readonly isMazingContest = true;
 
 	localPlayer!: Player;
@@ -23,7 +26,7 @@ export class MazingContest extends Game {
 
 	settings: Settings = {
 		numberOfRounds: 10,
-		buildTime: 60,
+		buildTime: 15,
 		thunderTowers: true,
 		checkpoints: true,
 	};
@@ -34,6 +37,8 @@ export class MazingContest extends Game {
 	displayName = "Mazing Contest";
 	protocol = "mazingcontest";
 
+	runnerTracker!: RunnerTracker;
+
 	constructor(network: MazingContestNetwork) {
 		super(network);
 		logLine("Creating MazingContest");
@@ -42,6 +47,16 @@ export class MazingContest extends Game {
 
 			// Received by the the upon someone connecting after the round ends
 			this.addNetworkListener("state", (e) => this.onState(e));
+
+			this.addEventListener("build", (_, obstruction) => {
+				if (isPathable() || !obstruction.isAlive) return;
+				obstruction.kill();
+				obstruction.owner.resources.lumber =
+					(obstruction.owner.resources.lumber ?? 0) + 1;
+				if (isThunder(obstruction))
+					obstruction.owner.resources.gold =
+						(obstruction.owner.resources.gold ?? 0) + 1;
+			});
 
 			this.terrain = new Terrain(terrain);
 			this.graphics.panTo(
@@ -54,6 +69,7 @@ export class MazingContest extends Game {
 				resolution: 2,
 			});
 			this.addMechanism(new MainLogic());
+			this.runnerTracker = new RunnerTracker().addToApp(this);
 		});
 	}
 
@@ -140,3 +156,5 @@ export class MazingContest extends Game {
 		};
 	}
 }
+
+export { MazingContest };

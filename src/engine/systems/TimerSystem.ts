@@ -2,10 +2,6 @@ import type { Entity } from "../../core/Entity";
 import { System } from "../../core/System";
 import { Timer } from "../components/Timer";
 
-/**
- * For rendered objects, if the position is explicitly set, we should also
- * update the rendered position.
- */
 export class TimerSystem extends System {
 	static components = [Timer];
 	readonly pure = true;
@@ -17,7 +13,7 @@ export class TimerSystem extends System {
 	update(entity: Entity, delta: number, time: number): void {
 		entity.get(Timer).forEach((timer) => {
 			if (!timer) return;
-			if (timer.next < time) return;
+			if (timer.next > time) return;
 
 			// Invoke the timer safely
 			try {

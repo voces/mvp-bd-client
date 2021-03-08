@@ -8,6 +8,7 @@ type GerminatingEntity = Sprite & {
 
 export class GerminateSystem extends System<GerminatingEntity> {
 	static components = [GerminateComponent];
+	readonly pure = false;
 
 	test(entity: Sprite & { buildTime?: number }): entity is GerminatingEntity {
 		return (

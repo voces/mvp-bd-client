@@ -1,12 +1,19 @@
+import type { App } from "./App";
 import type { ComponentConstructor } from "./Component";
 import type { Entity } from "./Entity";
 
 abstract class System<T extends Entity = Entity> {
+	static readonly isSystem = true;
 	private set: Set<T> = new Set();
 
 	static readonly components: ReadonlyArray<ComponentConstructor> = [];
 
-	readonly pure: boolean = false;
+	/**
+	 * A system is pure if the result of its test function is only dependent on
+	 * the presence of components or is otherwise static for the entity (e.g.,
+	 * the entity's class or readonly properties).
+	 */
+	abstract readonly pure: boolean;
 
 	abstract test(entity: Entity | T): entity is T;
 
@@ -67,6 +74,11 @@ abstract class System<T extends Entity = Entity> {
 
 	[Symbol.iterator](): IterableIterator<T> {
 		return this.set[Symbol.iterator]();
+	}
+
+	addToApp(app: App): this {
+		app.addSystem(this);
+		return this;
 	}
 }
 

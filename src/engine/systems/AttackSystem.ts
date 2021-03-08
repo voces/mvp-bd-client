@@ -40,6 +40,7 @@ const doDamage = (entity: Unit, attackTarget: AttackTarget, weapon: Weapon) => {
 
 export class AttackSystem extends System<Unit> {
 	static components = [AttackTarget];
+	readonly pure = false;
 
 	test(entity: Sprite): entity is Unit {
 		return AttackTarget.has(entity) && isUnit(entity);

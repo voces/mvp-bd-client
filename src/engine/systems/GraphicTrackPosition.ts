@@ -14,6 +14,7 @@ import { currentGame } from "../gameContext";
  */
 export class GraphicTrackPosition extends System {
 	static components = [ThreeObjectComponent, Position];
+	readonly pure = true;
 
 	test(entity: Entity | Widget): entity is Widget {
 		return ThreeObjectComponent.has(entity) && Position.has(entity);

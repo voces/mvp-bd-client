@@ -20,6 +20,7 @@ export class AutoAttackSystem extends System<Unit> {
 		DamageComponent,
 		ActiveComponent,
 	];
+	readonly pure = false;
 
 	test(entity: Sprite): entity is Unit {
 		const damageComponent = entity.get(DamageComponent)[0];
