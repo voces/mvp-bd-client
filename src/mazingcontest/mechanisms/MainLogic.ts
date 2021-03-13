@@ -155,8 +155,8 @@ export class MainLogic extends Mechanism {
 	private endRound(game: MazingContest) {
 		if (!this.round) return;
 
-		if (this.round.runnerStart)
-			console.log("done!", game.time - this.round.runnerStart);
+		// if (this.round.runnerStart)
+		// 	console.log("done!", game.time - this.round.runnerStart);
 
 		this.round = undefined;
 		game.entities.forEach((v) => isUnit(v) && v.kill());
