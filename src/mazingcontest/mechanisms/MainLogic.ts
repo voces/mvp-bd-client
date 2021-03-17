@@ -3,6 +3,7 @@ import { Mechanism } from "../../core/Merchanism";
 import { Timer } from "../../engine/components/Timer";
 import { TimerWindow } from "../../engine/components/TimerWindow";
 import type { Unit } from "../../engine/entities/widgets/sprites/Unit";
+import { Point } from "../../engine/pathing/PathingMap";
 import { isUnit } from "../../engine/typeguards";
 import { Block } from "../entities/Block";
 import { Builder } from "../entities/Builder";
@@ -15,6 +16,7 @@ import { currentMazingContest } from "../mazingContestContext";
 import { getPlaceholderPlayer } from "../players/placeholder";
 import type { Player } from "../players/Player";
 import { terrain } from "../terrain";
+import { isCheckpoint } from "../typeguards";
 
 interface Obstruction {
 	type: "thunder" | "block";
@@ -108,10 +110,20 @@ export class MainLogic extends Mechanism {
 			owner: getPlaceholderPlayer(),
 		});
 		game.pathingMap.addEntity(u);
-		u.walkTo({
+
+		let target = {
 			x: terrain.width / 2,
 			y: terrain.height / 2 + 10.5,
-		});
+		};
+		if (game.settings.checkpoints) {
+			const checkpoint = game.entities.find(isCheckpoint)!;
+			if (isCheckpoint(checkpoint))
+				target = {
+					x: checkpoint.position.x,
+					y: checkpoint.position.y,
+				};
+		}
+		u.walkTo(target);
 	}
 
 	private startRound(time: number, game: MazingContest) {
