@@ -16,19 +16,12 @@ export class RunnerTracker extends System<Runner> {
 	}
 
 	modified(entity: Runner): void {
-		if (!entity.idle || entity.has(HasHitCheckpoint)) {
-			if (entity.idle) console.log("already hit checkpoint");
-			else console.log("idle");
-			return;
-		}
-		console.log("hit checkpoint");
+		if (!entity.idle || entity.has(HasHitCheckpoint)) return;
+
 		new HasHitCheckpoint(entity);
 
 		const game = currentMazingContest();
-		if (!game.settings.checkpoints) {
-			console.log("not checkpoints");
-			return;
-		}
+		if (!game.settings.checkpoints) return;
 
 		entity.walkTo({
 			x: terrain.width / 2,

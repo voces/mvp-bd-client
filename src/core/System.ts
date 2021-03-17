@@ -28,7 +28,6 @@ abstract class System<T extends Entity = Entity> {
 	}
 
 	private _remove(entity: Entity): void {
-		console.log("removing", entity, "from", this);
 		this.set.delete(entity as T);
 		this.onRemoveEntity?.(entity);
 	}

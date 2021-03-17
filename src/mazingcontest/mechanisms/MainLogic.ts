@@ -3,7 +3,6 @@ import { Mechanism } from "../../core/Merchanism";
 import { Timer } from "../../engine/components/Timer";
 import { TimerWindow } from "../../engine/components/TimerWindow";
 import type { Unit } from "../../engine/entities/widgets/sprites/Unit";
-import { Point } from "../../engine/pathing/PathingMap";
 import { isUnit } from "../../engine/typeguards";
 import { Block } from "../entities/Block";
 import { Builder } from "../entities/Builder";
@@ -117,11 +116,10 @@ export class MainLogic extends Mechanism {
 		};
 		if (game.settings.checkpoints) {
 			const checkpoint = game.entities.find(isCheckpoint)!;
-			if (isCheckpoint(checkpoint))
-				target = {
-					x: checkpoint.position.x,
-					y: checkpoint.position.y,
-				};
+			target = {
+				x: checkpoint.position.x,
+				y: checkpoint.position.y,
+			};
 		}
 		u.walkTo(target);
 	}

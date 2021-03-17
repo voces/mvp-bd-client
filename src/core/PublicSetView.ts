@@ -5,7 +5,7 @@ export class PublicSetView<T> {
 		this.set = set;
 	}
 
-	find(fn: (value: T) => boolean): T | undefined {
+	find<S extends T>(fn: (value: T) => value is S): S | undefined {
 		for (const value of this.set) if (fn(value)) return value;
 	}
 
