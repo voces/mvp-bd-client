@@ -1,9 +1,9 @@
 import type { ImmediateActionProps } from "../../engine/actions/types";
 import type { Player } from "../players/Player";
 
-export const destroyLastBox = {
-	name: "Destroy box",
-	description: "Destroys selected or last created box",
+export const destroyLast = {
+	name: "Destroy last",
+	description: "Destroys last created obstruction",
 	hotkey: "x" as const,
 	type: "custom" as const,
 	localHandler: ({ player }: ImmediateActionProps<Player>): void => {

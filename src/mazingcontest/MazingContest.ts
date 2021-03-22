@@ -4,6 +4,7 @@ import { Terrain } from "../engine/entities/Terrain";
 import { Game } from "../engine/Game";
 import { PathingMap } from "../engine/pathing/PathingMap";
 import { nextColor } from "../engine/players/colors";
+import { registerNetworkedActionListeners } from "./actions";
 import { withMazingContest } from "./mazingContestContext";
 import type {
 	ConnectionEvent,
@@ -36,6 +37,7 @@ class MazingContest extends Game {
 	displayName = "Mazing Contest";
 	protocol = "mazingcontest";
 
+	mainLogic!: MainLogic;
 	runnerTracker!: RunnerTracker;
 
 	constructor(network: MazingContestNetwork) {
@@ -58,9 +60,11 @@ class MazingContest extends Game {
 				layers: terrain.pathingCliffs.slice().reverse(),
 				resolution: 2,
 			});
-			this.addMechanism(new MainLogic());
+			this.mainLogic = new MainLogic().addToApp(this);
 			this.runnerTracker = new RunnerTracker().addToApp(this);
 			this.addSystem(new BuildWatcher());
+
+			registerNetworkedActionListeners();
 		});
 	}
 
