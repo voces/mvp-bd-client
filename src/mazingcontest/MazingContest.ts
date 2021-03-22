@@ -48,6 +48,7 @@ class MazingContest extends Game {
 			this.addNetworkListener("state", (e) => this.onState(e));
 
 			this.terrain = new Terrain(terrain);
+			this.add(this.terrain);
 			this.graphics.panTo(
 				{ x: terrain.height / 2, y: terrain.width / 2 - 7 },
 				0,

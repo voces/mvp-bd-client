@@ -20,7 +20,7 @@ export class Builder extends Unit {
 
 	get actions(): Action[] {
 		const actions = super.actions;
-
+		// actions.push(destroyLastBox);
 		return actions;
 	}
 }
