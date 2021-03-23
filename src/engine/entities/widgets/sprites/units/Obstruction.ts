@@ -66,19 +66,9 @@ export class Obstruction<Resource extends string = string> extends Unit {
 		const existing = this._upgradeActionMap.get(from);
 		if (existing) return existing;
 
-		const ourCosts: [string, number][] = Object.entries(this.defaults.cost);
-		const fromCosts = from.defaults.cost as { [key: string]: number };
-		const costs = ourCosts.map(([k, v]) => [
-			k,
-			v - (k in fromCosts ? fromCosts[k] ?? 0 : 0),
-		]);
-
 		const action = makeUpgradeAction({
-			name: this.name,
-			hotkey: this.defaults.buildHotkey!,
-			description: this.defaults.buildDescription,
-			cost: Object.fromEntries(costs),
-			obstruction: from,
+			fromObstruction: from,
+			toObsturction: this,
 		});
 
 		this._upgradeActionMap.set(from, action);
@@ -109,7 +99,11 @@ export class Obstruction<Resource extends string = string> extends Unit {
 		const upgrades = this.get(UpgradeComponent);
 		upgrades.forEach((u) => {
 			if (!u) return;
-			actions.push(Obstruction.upgradeAction(u.obstruction));
+			actions.push(
+				u.obstruction.upgradeAction(
+					this.constructor as typeof Obstruction,
+				),
+			);
 		});
 
 		return actions;

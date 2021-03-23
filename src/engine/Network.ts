@@ -114,6 +114,7 @@ const networkEvents = {
 	holdPosition: (data: HoldPositionEvent) => {},
 	stop: (data: StopEvent) => {},
 	mirror: (data: MirrorEvent) => {},
+	upgrade: (data: UpgradeEvent) => {},
 	chat: (data: ChatEvent) => {},
 	disconnection: (data: DisconnectionEvent) => {},
 	connection: (data: ConnectionEvent) => {},
