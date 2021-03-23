@@ -1,6 +1,8 @@
 import type { Action } from "../../../../actions/types";
+import { makeUpgradeAction } from "../../../../actions/upgrade";
 import { toFootprint } from "../../../../api/toFootprint";
 import { GerminateComponent } from "../../../../components/GerminateComponent";
+import { UpgradeComponent } from "../../../../components/UpgradeComponent";
 import {
 	INITIAL_OBSTRUCTION_PROGRESS,
 	PATHING_TYPES,
@@ -14,6 +16,7 @@ export type ObstructionProps<Resource extends string> = UnitProps & {
 	cost?: Record<Resource, number>;
 	owner: Player;
 	progress?: number;
+	upgradesTo?: typeof Obstruction[];
 };
 
 export class Obstruction<Resource extends string = string> extends Unit {
@@ -40,6 +43,10 @@ export class Obstruction<Resource extends string = string> extends Unit {
 	owner!: Player;
 
 	private static _buildAction: Action;
+	private static _upgradeActionMap = new WeakMap<
+		typeof Obstruction,
+		Action
+	>();
 
 	static get buildAction(): Action {
 		if (this._buildAction) return this._buildAction;
@@ -55,9 +62,34 @@ export class Obstruction<Resource extends string = string> extends Unit {
 		return this._buildAction;
 	}
 
+	static upgradeAction(from: typeof Obstruction): Action {
+		const existing = this._upgradeActionMap.get(from);
+		if (existing) return existing;
+
+		const ourCosts: [string, number][] = Object.entries(this.defaults.cost);
+		const fromCosts = from.defaults.cost as { [key: string]: number };
+		const costs = ourCosts.map(([k, v]) => [
+			k,
+			v - (k in fromCosts ? fromCosts[k] ?? 0 : 0),
+		]);
+
+		const action = makeUpgradeAction({
+			name: this.name,
+			hotkey: this.defaults.buildHotkey!,
+			description: this.defaults.buildDescription,
+			cost: Object.fromEntries(costs),
+			obstruction: from,
+		});
+
+		this._upgradeActionMap.set(from, action);
+
+		return action;
+	}
+
 	constructor({
 		buildTime = 1,
 		progress = Obstruction.defaults.progress,
+		upgradesTo = [],
 		...props
 	}: ObstructionProps<Resource>) {
 		super({ ...Obstruction.clonedDefaults, ...props });
@@ -66,5 +98,20 @@ export class Obstruction<Resource extends string = string> extends Unit {
 		this.buildTime = buildTime;
 
 		if (progress < 1) new GerminateComponent(this);
+
+		for (const upgradeTo of upgradesTo)
+			new UpgradeComponent(this, upgradeTo);
+	}
+
+	get actions(): Action[] {
+		const actions = super.actions;
+
+		const upgrades = this.get(UpgradeComponent);
+		upgrades.forEach((u) => {
+			if (!u) return;
+			actions.push(Obstruction.upgradeAction(u.obstruction));
+		});
+
+		return actions;
 	}
 }

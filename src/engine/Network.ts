@@ -77,6 +77,12 @@ export type MirrorEvent = PlayerEvent & {
 	sprites: EntityID[];
 };
 
+export type UpgradeEvent = PlayerEvent & {
+	type: "upgrade";
+	obstructions: [EntityID];
+	upgrade: string;
+};
+
 type ChatEvent = PlayerEvent & {
 	type: "chat";
 	message: string;
