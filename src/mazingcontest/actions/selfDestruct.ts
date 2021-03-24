@@ -63,5 +63,6 @@ export const selfDestructAction = {
 					s.owner.resources.gold = (s.owner.resources.gold ?? 0) + 1;
 			});
 	},
-	available: (player: Player): boolean => (player.resources.tnt ?? 0) > 0,
+	available: (): boolean =>
+		(currentMazingContest().localPlayer.resources.tnt ?? 0) > 0,
 };

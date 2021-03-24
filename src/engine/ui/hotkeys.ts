@@ -96,9 +96,7 @@ export class Hotkeys extends Mechanism {
 		if (!activeUnit) return;
 
 		const actions = activeUnit.actions.filter(
-			(v) =>
-				activeUnit.owner === game.localPlayer ||
-				v.available?.(game.localPlayer),
+			(v) => activeUnit.owner === game.localPlayer || v.available?.(),
 		);
 		const sortedActions = qwertySort
 			.map((k) => actions.find((b) => b.hotkey === k))

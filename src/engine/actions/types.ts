@@ -43,7 +43,7 @@ export type Action<
 	syncHandler?: NetworkEvent extends keyof NetworkEventCallback
 		? NetworkEventCallback[NetworkEvent]
 		: never;
-	available?: (player: Player) => boolean;
+	available?: () => boolean;
 } & (
 	| {
 			type: "build";
