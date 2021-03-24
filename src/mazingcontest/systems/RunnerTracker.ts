@@ -4,7 +4,7 @@ import { MoveTarget } from "../../engine/components/MoveTarget";
 import { HasHitCheckpoint } from "../components/HitCheckpoint";
 import type { Runner } from "../entities/Runner";
 import { currentMazingContest } from "../mazingContestContext";
-import { terrain } from "../terrain";
+import { target } from "../terrain";
 import { isRunner } from "../typeguards";
 
 export class RunnerTracker extends System<Runner> {
@@ -23,10 +23,7 @@ export class RunnerTracker extends System<Runner> {
 		const game = currentMazingContest();
 		if (!game.settings.checkpoints) return;
 
-		entity.walkTo({
-			x: terrain.width / 2,
-			y: terrain.height / 2 + 10.5,
-		});
+		entity.walkTo(target(entity.owner.color!.index));
 	}
 
 	get done(): boolean {

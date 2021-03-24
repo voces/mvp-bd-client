@@ -5,6 +5,7 @@ import { Timer } from "../../engine/components/Timer";
 import { TimerWindow } from "../../engine/components/TimerWindow";
 import type { Unit } from "../../engine/entities/widgets/sprites/Unit";
 import { isUnit } from "../../engine/typeguards";
+import { ForPlayer } from "../components/ForPlayer";
 import { Block } from "../entities/Block";
 import { Builder } from "../entities/Builder";
 import { Checkpoint } from "../entities/Checkpoint";
@@ -18,7 +19,7 @@ import {
 	getEnemyPlaceholderPlayer,
 } from "../players/placeholder";
 import type { Player } from "../players/Player";
-import { terrain } from "../terrain";
+import { center, offset, spawn, target, terrain } from "../terrain";
 import { isCheckpoint } from "../typeguards";
 
 interface Obstruction {
@@ -51,6 +52,7 @@ const spawnUnits = (
 	count: number,
 	factory: (props: { x: number; y: number; owner: Player }) => Unit,
 ) => {
+	const firstPlayer = game.players.find((p) => p.id >= 0)!;
 	while (count--) {
 		const x = terrain.width / 2 + Math.round(game.random.between(-9, 8));
 		const y = terrain.height / 2 + Math.round(game.random.between(-9, 8));
@@ -60,6 +62,7 @@ const spawnUnits = (
 			y,
 			owner: getAlliedPlaceholderPlayer(),
 		});
+		new ForPlayer(entity, firstPlayer);
 
 		const newPos = game.pathingMap.nearestSpiralPathing(x, y, entity);
 
@@ -67,7 +70,20 @@ const spawnUnits = (
 			entity.position.setXY(newPos.x, newPos.y);
 			game.pathingMap.addEntity(entity);
 
-			if (!isPathable()) entity.kill({ removeImmediately: true });
+			if (!isPathable(firstPlayer.color!.index))
+				entity.kill({ removeImmediately: true });
+			else
+				for (const player of game.players) {
+					if (player.id <= firstPlayer.id) continue;
+					const lOffset = offset(player.color!.index);
+					const clone = factory({
+						x: newPos.x + lOffset.x,
+						y: newPos.y + lOffset.y,
+						owner: player,
+					});
+					new ForPlayer(clone, player);
+					game.pathingMap.addEntity(clone);
+				}
 		} else entity.kill({ removeImmediately: true });
 	}
 };
@@ -109,25 +125,24 @@ export class MainLogic extends Mechanism {
 			if (builder) builder.kill();
 		});
 
-		const u = new Runner({
-			x: terrain.width / 2,
-			y: terrain.height / 2 - 10.5,
-			owner: getEnemyPlaceholderPlayer(),
-		});
-		game.pathingMap.addEntity(u);
+		for (const player of game.players) {
+			if (player.id < 0) continue;
+			const u = new Runner({
+				...spawn(player.color!.index),
+				owner: getEnemyPlaceholderPlayer(),
+			});
+			game.pathingMap.addEntity(u);
 
-		let target = {
-			x: terrain.width / 2,
-			y: terrain.height / 2 + 10.5,
-		};
-		if (game.settings.checkpoints) {
-			const checkpoint = game.entities.find(isCheckpoint)!;
-			target = {
-				x: checkpoint.position.x,
-				y: checkpoint.position.y,
-			};
+			let lTarget = target(player.color!.index);
+			if (game.settings.checkpoints) {
+				const checkpoint = game.entities.find(isCheckpoint)!;
+				lTarget = {
+					x: checkpoint.position.x,
+					y: checkpoint.position.y,
+				};
+			}
+			u.walkTo(lTarget);
 		}
-		u.walkTo(target);
 	}
 
 	private startRound(time: number, game: MazingContest) {
@@ -163,8 +178,7 @@ export class MainLogic extends Mechanism {
 			game.alliances.set(owner, enemyPlaceholderPlayer, "enemy", true);
 
 			const u = new Builder({
-				x: terrain.width / 2,
-				y: terrain.height / 2,
+				...center(owner.color!.index),
 				owner,
 			});
 

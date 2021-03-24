@@ -1,10 +1,11 @@
 import type { Entity } from "../../core/Entity";
 import { System } from "../../core/System";
 import { isObstruction } from "../../engine/typeguards";
+import { ForPlayer } from "../components/ForPlayer";
 import type { Obstruction } from "../entities/Obstruction";
 import { isPathable } from "../helpers";
 import { currentMazingContest } from "../mazingContestContext";
-import { isThunder } from "../typeguards";
+import { isCheckpoint, isThunder } from "../typeguards";
 
 export class BuildWatcher extends System<Obstruction> {
 	readonly pure = true;
@@ -16,7 +17,19 @@ export class BuildWatcher extends System<Obstruction> {
 
 	onAddEntity(obstruction: Obstruction): void {
 		currentMazingContest().setTimeout(() => {
-			if (isPathable() || !obstruction.isAlive) return;
+			if (isCheckpoint(obstruction)) return;
+
+			const pId =
+				obstruction.owner.id >= 0
+					? obstruction.owner.color!.index
+					: obstruction.get(ForPlayer)[0]?.player.color!.index;
+
+			if (pId === undefined)
+				throw new Error(
+					"Expected obstruction to be a real player or have a ForPlayer",
+				);
+
+			if (isPathable(pId) || !obstruction.isAlive) return;
 
 			obstruction.kill();
 
