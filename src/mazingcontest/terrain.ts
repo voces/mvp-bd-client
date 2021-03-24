@@ -2,13 +2,23 @@ import {
 	processArena,
 	stringMap,
 	stringMapWithRamps,
+	trimMap,
 } from "../engine/entities/terrainHelpers";
+
+const repeat = (map: string) => {
+	const h = trimMap(map)
+		.split("\n")
+		.map((v) => Array(5).fill(v).join("."));
+	return Array(4)
+		.fill(h.join("\n"))
+		.join(`\n${".".repeat(h[0].length)}\n`);
+};
 
 export const terrain = processArena({
 	name: "Mazing Contest",
 	// For jumping
 	cliffs: stringMapWithRamps(
-		`
+		repeat(`
 			000000000000000000
 			000000000000000000
 			000000000000000000
@@ -27,27 +37,29 @@ export const terrain = processArena({
 			000000000000000000
 			000000000000000000
 			000000000000000000
-		`,
+		`),
 		1,
 	),
-	tiles: stringMap(`
-		000000000000000000
-		0                0
-		0                0
-		0       11       0
-		0                0
-		0                0
-		0                0
-		0                0
-		0                0
-		0                0
-		0                0
-		0                0
-		0                0
-		0                0
-		0       11       0
-		0                0
-		0                0
-		000000000000000000
-	`),
+	tiles: stringMap(
+		repeat(`
+			000000000000000000
+			0                0
+			0                0
+			0       11       0
+			0                0
+			0                0
+			0                0
+			0                0
+			0                0
+			0                0
+			0                0
+			0                0
+			0                0
+			0                0
+			0       11       0
+			0                0
+			0                0
+			000000000000000000
+		`),
+	),
 });
