@@ -4,6 +4,7 @@ import { Unit } from "../../engine/entities/widgets/sprites/Unit";
 import { destroyLast } from "../actions/destroyLast";
 import { readyAction } from "../actions/ready";
 import { Block } from "./Block";
+import { registerEntity } from "./registry";
 import { Thunder } from "./Thunder";
 
 export class Builder extends Unit {
@@ -32,3 +33,5 @@ export class Builder extends Unit {
 		return actions;
 	}
 }
+
+registerEntity(Builder);

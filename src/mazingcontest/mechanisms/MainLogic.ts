@@ -21,12 +21,6 @@ import {
 import type { Player } from "../players/Player";
 import { center, offset, spawn, target } from "../terrain";
 
-interface Obstruction {
-	type: "thunder" | "block";
-	x: number;
-	y: number;
-}
-
 const spawnCheckpoint = (game: MazingContest) => {
 	const firstPlayer = game.players.find((p) => p.id >= 0)!;
 	const firstPlayerIndex = firstPlayer.color!.index;
@@ -116,12 +110,7 @@ export class MainLogic extends Mechanism {
 	phase: "idle" | "build" | "run" = "idle";
 	round?: {
 		buildStart: number;
-		buildTime: number;
 		runnerStart?: number;
-		initial: Obstruction[];
-		lumber: number;
-		gold: number;
-		tnt: number;
 	};
 	timer?: Entity;
 
@@ -161,16 +150,15 @@ export class MainLogic extends Mechanism {
 	}
 
 	private startRound(time: number, game: MazingContest) {
-		this.round = {
-			buildStart: time,
-			buildTime: game.settings.buildTime,
-			initial: [],
-			gold: game.settings.thunderTowers
-				? Math.floor((game.random() * game.random()) ** (1 / 2) * 4)
-				: 0,
-			lumber: Math.ceil((game.random() * game.random()) ** (1 / 2) * 35),
-			tnt: Math.floor((game.random() * game.random()) ** (1 / 2) * 3),
-		};
+		this.round = { buildStart: time };
+
+		const gold = game.settings.thunderTowers
+			? Math.floor((game.random() * game.random()) ** (1 / 2) * 4)
+			: 0;
+		const lumber = Math.ceil(
+			(game.random() * game.random()) ** (1 / 2) * 35,
+		);
+		const tnt = Math.floor((game.random() * game.random()) ** (1 / 2) * 3);
 
 		const alliedPlaceholderPlayer = getAlliedPlaceholderPlayer();
 		const enemyPlaceholderPlayer = getEnemyPlaceholderPlayer();
@@ -186,9 +174,9 @@ export class MainLogic extends Mechanism {
 			if (owner.id < 0) continue;
 
 			owner.ready = false;
-			owner.resources.gold = this.round.gold;
-			owner.resources.lumber = this.round.lumber;
-			owner.resources.tnt = this.round.tnt;
+			owner.resources.gold = gold;
+			owner.resources.lumber = lumber;
+			owner.resources.tnt = tnt;
 			game.alliances.set(owner, alliedPlaceholderPlayer, "ally", true);
 			game.alliances.set(owner, enemyPlaceholderPlayer, "enemy", true);
 
@@ -209,7 +197,11 @@ export class MainLogic extends Mechanism {
 		spawnThunders(game);
 
 		this.timer = new Entity();
-		new Timer(this.timer, () => this.startRunners(), this.round.buildTime);
+		new Timer(
+			this.timer,
+			() => this.startRunners(),
+			game.settings.buildTime,
+		);
 		new TimerWindow(this.timer, "Time remaining: ");
 		game.add(this.timer);
 	}

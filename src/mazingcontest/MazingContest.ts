@@ -6,6 +6,7 @@ import { Game } from "../engine/Game";
 import { PathingMap } from "../engine/pathing/PathingMap";
 import { nextColor } from "../engine/players/colors";
 import { registerNetworkedActionListeners } from "./actions";
+import { entityRegistry } from "./entities/registry";
 import { withMazingContest } from "./mazingContestContext";
 import type {
 	ConnectionEvent,
@@ -74,7 +75,18 @@ class MazingContest extends Game {
 		console.log("onInit", state);
 		if (connections === 0) this.synchronizationState = "synchronized";
 
+		this.mainLogic.round = state.round;
+
 		patchInState(this, state.players);
+
+		for (const entity of state.entities) {
+			if (entity.id === "TERRAIN") continue;
+
+			if (typeof entity.type === "string") {
+				const factory = entityRegistry[entity.type];
+				console.log(entity.type, factory);
+			}
+		}
 	};
 
 	///////////////////////
@@ -128,11 +140,13 @@ class MazingContest extends Game {
 	toJSON(): ReturnType<Game["toJSON"]> & {
 		players: ReturnType<Player["toJSON"]>[];
 		entities: ReturnType<Entity["toJSON"]>[];
+		round: MainLogic["round"];
 	} {
 		return {
 			...super.toJSON(),
 			players: this.players.map((p) => p.toJSON()),
 			entities: this.entities.map((e) => e.toJSON()),
+			round: this.mainLogic.round,
 		};
 	}
 }

@@ -6,6 +6,7 @@ import { isUnit } from "../../engine/typeguards";
 import { currentMazingContest } from "../mazingContestContext";
 import type { ObstructionProps } from "./Obstruction";
 import { Obstruction } from "./Obstruction";
+import { registerEntity } from "./registry";
 
 const black = new Color("#000");
 
@@ -74,3 +75,5 @@ export class Thunder extends Obstruction {
 		super({ ...Thunder.clonedDefaults, ...props });
 	}
 }
+
+registerEntity(Thunder);
