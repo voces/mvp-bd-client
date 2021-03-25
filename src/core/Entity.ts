@@ -98,4 +98,17 @@ export class Entity {
 	get components(): Component[] {
 		return Array.from(this.map.values()).flat();
 	}
+
+	toJSON(): {
+		id: EntityID;
+		components: ReturnType<Component["toJSON"]>[];
+		[key: string]: unknown;
+	} {
+		return {
+			id: this.id,
+			components: Array.from(this.map.values()).flatMap((v) =>
+				v.filter((c) => !c.derived).map((c) => c.toJSON()),
+			),
+		};
+	}
 }

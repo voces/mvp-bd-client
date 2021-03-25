@@ -218,17 +218,16 @@ class Sprite extends Widget {
 		);
 	}
 
-	toJSON(): {
-		constructor: string;
+	toJSON(): ReturnType<Widget["toJSON"]> & {
+		type: string;
 		health: number;
 		owner?: number;
-		position: Position;
 	} {
 		return {
-			constructor: this.constructor.name,
+			...super.toJSON(),
+			type: this.constructor.name,
 			health: this.health,
-			owner: this.owner && this.owner.id,
-			position: this.position,
+			owner: this.owner?.id,
 		};
 	}
 }

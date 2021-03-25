@@ -1,3 +1,4 @@
+import type { Entity } from "../core/Entity";
 import { logLine } from "../core/logger";
 import { Terrain } from "../engine/entities/Terrain";
 // eslint-disable-next-line no-restricted-imports
@@ -15,7 +16,7 @@ import { MainLogic } from "./mechanisms/MainLogic";
 import { patchInState, Player } from "./players/Player";
 import { BuildWatcher } from "./systems/BuildWatcher";
 import { RunnerTracker } from "./systems/RunnerTracker";
-import { terrain } from "./terrain";
+import { levelSize, terrain } from "./terrain";
 import type { Settings } from "./types";
 
 class MazingContest extends Game {
@@ -53,7 +54,7 @@ class MazingContest extends Game {
 			this.terrain = new Terrain(terrain);
 			this.add(this.terrain);
 			this.graphics.panTo(
-				{ x: terrain.height / 2, y: terrain.width / 2 - 7 },
+				{ x: levelSize.height / 2, y: levelSize.width / 2 - 7 },
 				0,
 			);
 			this.pathingMap = new PathingMap({
@@ -69,13 +70,11 @@ class MazingContest extends Game {
 		});
 	}
 
-	private onInit: NetworkEventCallback["init"] = ({
-		connections,
-		state: { players: inputPlayers },
-	}) => {
+	private onInit: NetworkEventCallback["init"] = ({ connections, state }) => {
+		console.log("onInit", state);
 		if (connections === 0) this.synchronizationState = "synchronized";
 
-		patchInState(this, inputPlayers);
+		patchInState(this, state.players);
 	};
 
 	///////////////////////
@@ -95,11 +94,12 @@ class MazingContest extends Game {
 
 	private onState: NetworkEventCallback["state"] = ({
 		time,
-		state: { players: inputPlayers },
+		state: { players, entities },
 	}) => {
+		console.log("onState", entities);
 		this.update({ time });
 
-		patchInState(this, inputPlayers);
+		patchInState(this, players);
 
 		logLine("synchronized");
 		this.synchronizationState = "synchronized";
@@ -127,10 +127,12 @@ class MazingContest extends Game {
 
 	toJSON(): ReturnType<Game["toJSON"]> & {
 		players: ReturnType<Player["toJSON"]>[];
+		entities: ReturnType<Entity["toJSON"]>[];
 	} {
 		return {
 			...super.toJSON(),
 			players: this.players.map((p) => p.toJSON()),
+			entities: this.entities.map((e) => e.toJSON()),
 		};
 	}
 }

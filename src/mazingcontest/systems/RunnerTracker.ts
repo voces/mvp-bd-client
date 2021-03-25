@@ -1,6 +1,7 @@
 import type { Entity } from "../../core/Entity";
 import { System } from "../../core/System";
 import { MoveTarget } from "../../engine/components/MoveTarget";
+import { ForPlayer } from "../components/ForPlayer";
 import { HasHitCheckpoint } from "../components/HitCheckpoint";
 import type { Runner } from "../entities/Runner";
 import { currentMazingContest } from "../mazingContestContext";
@@ -23,7 +24,8 @@ export class RunnerTracker extends System<Runner> {
 		const game = currentMazingContest();
 		if (!game.settings.checkpoints) return;
 
-		entity.walkTo(target(entity.owner.color!.index));
+		const pIdx = entity.get(ForPlayer)[0]?.player.color?.index;
+		if (pIdx !== undefined) entity.walkTo(target(pIdx));
 	}
 
 	get done(): boolean {

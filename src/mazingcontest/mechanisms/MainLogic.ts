@@ -11,7 +11,7 @@ import { Builder } from "../entities/Builder";
 import { Checkpoint } from "../entities/Checkpoint";
 import { Runner } from "../entities/Runner";
 import { Thunder } from "../entities/Thunder";
-import { isPathable } from "../helpers";
+import { getCheckpoint, isPathable } from "../helpers";
 import type { MazingContest } from "../MazingContest";
 import { currentMazingContest } from "../mazingContestContext";
 import {
@@ -19,8 +19,7 @@ import {
 	getEnemyPlaceholderPlayer,
 } from "../players/placeholder";
 import type { Player } from "../players/Player";
-import { center, offset, spawn, target, terrain } from "../terrain";
-import { isCheckpoint } from "../typeguards";
+import { center, offset, spawn, target } from "../terrain";
 
 interface Obstruction {
 	type: "thunder" | "block";
@@ -29,22 +28,34 @@ interface Obstruction {
 }
 
 const spawnCheckpoint = (game: MazingContest) => {
-	const x = terrain.width / 2 + Math.round(game.random.between(-9, 8)) + 0.5;
-	const y = terrain.height / 2 + Math.round(game.random.between(-9, 8)) + 0.5;
+	const firstPlayer = game.players.find((p) => p.id >= 0)!;
+	const firstPlayerIndex = firstPlayer.color!.index;
+	const lCenter = center(firstPlayerIndex);
+	const x = lCenter.x + Math.round(game.random.between(-9, 8)) + 0.5;
+	const y = lCenter.y + Math.round(game.random.between(-9, 8)) + 0.5;
 
 	const entity = new Checkpoint({
 		x,
 		y,
 		owner: getAlliedPlaceholderPlayer(),
 	});
+	new ForPlayer(entity, firstPlayer);
 
 	const newPos = game.pathingMap.nearestSpiralPathing(x, y, entity);
-
 	if (game.pathingMap.pathable(entity, x, y)) {
 		entity.position.setXY(newPos.x, newPos.y);
 
-		game.pathingMap.addEntity(entity);
-	} else entity.kill({ removeImmediately: true });
+		for (const player of game.players) {
+			if (player.id <= firstPlayer.id) continue;
+			const lOffset = offset(player.color!.index);
+			const clone = new Checkpoint({
+				x: newPos.x + lOffset.x,
+				y: newPos.y + lOffset.y,
+				owner: entity.owner,
+			});
+			new ForPlayer(clone, player);
+		}
+	} else throw new Error("Unable to place Checkpooint!");
 };
 
 const spawnUnits = (
@@ -53,16 +64,17 @@ const spawnUnits = (
 	factory: (props: { x: number; y: number; owner: Player }) => Unit,
 ) => {
 	const firstPlayer = game.players.find((p) => p.id >= 0)!;
+	const firstPlayerIndex = firstPlayer.color!.index;
+	const lCenter = center(firstPlayerIndex);
 	while (count--) {
-		const x = terrain.width / 2 + Math.round(game.random.between(-9, 8));
-		const y = terrain.height / 2 + Math.round(game.random.between(-9, 8));
+		const x = lCenter.x + Math.round(game.random.between(-9, 8));
+		const y = lCenter.y + Math.round(game.random.between(-9, 8));
 
 		const entity = factory({
 			x,
 			y,
 			owner: getAlliedPlaceholderPlayer(),
 		});
-		new ForPlayer(entity, firstPlayer);
 
 		const newPos = game.pathingMap.nearestSpiralPathing(x, y, entity);
 
@@ -70,20 +82,22 @@ const spawnUnits = (
 			entity.position.setXY(newPos.x, newPos.y);
 			game.pathingMap.addEntity(entity);
 
-			if (!isPathable(firstPlayer.color!.index))
+			if (!isPathable(firstPlayerIndex))
 				entity.kill({ removeImmediately: true });
-			else
+			else {
+				new ForPlayer(entity, firstPlayer);
 				for (const player of game.players) {
 					if (player.id <= firstPlayer.id) continue;
 					const lOffset = offset(player.color!.index);
 					const clone = factory({
 						x: newPos.x + lOffset.x,
 						y: newPos.y + lOffset.y,
-						owner: player,
+						owner: getAlliedPlaceholderPlayer(),
 					});
 					new ForPlayer(clone, player);
 					game.pathingMap.addEntity(clone);
 				}
+			}
 		} else entity.kill({ removeImmediately: true });
 	}
 };
@@ -135,11 +149,12 @@ export class MainLogic extends Mechanism {
 
 			let lTarget = target(player.color!.index);
 			if (game.settings.checkpoints) {
-				const checkpoint = game.entities.find(isCheckpoint)!;
-				lTarget = {
-					x: checkpoint.position.x,
-					y: checkpoint.position.y,
-				};
+				const checkpoint = getCheckpoint(player.color!.index);
+				if (checkpoint)
+					lTarget = {
+						x: checkpoint.position.x,
+						y: checkpoint.position.y,
+					};
 			}
 			u.walkTo(lTarget);
 		}

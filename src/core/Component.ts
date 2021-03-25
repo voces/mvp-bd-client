@@ -15,6 +15,7 @@ export class Component<
 	}
 
 	readonly entity: E;
+	readonly derived: boolean = false;
 
 	constructor(entity: E, ...rest: InitializationParameters) {
 		this.entity = entity;
@@ -60,10 +61,13 @@ export class Component<
 		});
 	}
 
-	toJSON(): Pick<this, Exclude<keyof this, "entity">> {
+	toJSON(): {
+		type: string;
+		[key: string]: unknown;
+	} {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { entity, ...props } = this;
-		return props;
+		const { entity, derived, ...props } = this;
+		return { type: this.constructor.name, ...props };
 	}
 }
 

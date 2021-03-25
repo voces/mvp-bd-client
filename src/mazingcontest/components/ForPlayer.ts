@@ -9,4 +9,8 @@ export class ForPlayer extends Component<[player: Player]> {
 		const mutable: Mutable<ForPlayer> = this;
 		mutable.player = player;
 	}
+
+	toJSON(): { type: string; player: number } {
+		return { type: this.constructor.name, player: this.player.id };
+	}
 }

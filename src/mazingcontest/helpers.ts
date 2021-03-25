@@ -1,5 +1,8 @@
 import { PATHING_TYPES } from "../engine/constants";
+import { ForPlayer } from "./components/ForPlayer";
+import type { Checkpoint } from "./entities/Checkpoint";
 import { currentMazingContest } from "./mazingContestContext";
+import { getAlliedPlaceholderPlayer } from "./players/placeholder";
 import { spawn, target } from "./terrain";
 import { isCheckpoint } from "./typeguards";
 
@@ -13,7 +16,8 @@ export const isPathable = (i: number): boolean => {
 	const finalSpawnEntity = { ...spawnEntity, ...spawn(i) };
 	const lTarget = target(i);
 	if (game.settings.checkpoints) {
-		const checkpoint = game.entities.find(isCheckpoint)!;
+		const checkpoint = getCheckpoint(i);
+		if (!checkpoint) return false;
 		const path = game.pathingMap.path(
 			finalSpawnEntity,
 			checkpoint.position,
@@ -43,3 +47,9 @@ export const isPathable = (i: number): boolean => {
 		Math.abs(last.x - lTarget.x) < 0.1 && Math.abs(last.y - lTarget.y) < 0.1
 	);
 };
+
+export const getCheckpoint = (i: number): Checkpoint | undefined =>
+	getAlliedPlaceholderPlayer().sprites.find(
+		(s): s is Checkpoint =>
+			isCheckpoint(s) && s.get(ForPlayer)[0]?.player?.color?.index === i,
+	);

@@ -12,12 +12,12 @@ export class BuildWatcher extends System<Obstruction> {
 	static readonly components = [];
 
 	test(entity: Entity): entity is Obstruction {
-		return isObstruction(entity);
+		return isObstruction(entity) && !isCheckpoint(entity);
 	}
 
 	onAddEntity(obstruction: Obstruction): void {
 		currentMazingContest().setTimeout(() => {
-			if (isCheckpoint(obstruction)) return;
+			if (isCheckpoint(obstruction) || !obstruction.isAlive) return;
 
 			const pId =
 				obstruction.owner.id >= 0
