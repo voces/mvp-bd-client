@@ -10,8 +10,9 @@ module.exports = {
 		"@typescript-eslint/prefer-nullish-coalescing": "error",
 		"@typescript-eslint/consistent-type-imports": ["error", { prefer: 'type-imports' }],
 		"no-duplicate-imports": "off",
-		"@typescript-eslint/no-duplicate-imports": ["error"],
+		"@typescript-eslint/typeduplicate-imports": ["error"],
 		"react/react-in-jsx-scope": "off",
+		"@typescript-eslint/no-unused-vars": ["warn", {ignoreRestSiblings: true}],
 		"no-restricted-syntax": ["error", {
 			"selector": "ExportDefaultDeclaration",
 			"message": "Default exports are disallowed. Prefer named exports."

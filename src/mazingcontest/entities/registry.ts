@@ -1,7 +1,11 @@
 import type { Entity } from "../../core/Entity";
+import { isConstructor } from "../helpers";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type EntityConstructor = new (...args: any[]) => Entity;
+interface EntityConstructor {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	new (...args: any[]): Entity;
+	fromJSON?: boolean | ((entity: ReturnType<Entity["toJSON"]>) => Entity);
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EntityFactory = (...args: any[]) => Entity;
@@ -11,9 +15,6 @@ const _entityRegistry: Record<string, EntityConstructor | EntityFactory> = {};
 export const entityRegistry = _entityRegistry as Readonly<
 	typeof _entityRegistry
 >;
-
-const isConstructor = (obj: unknown) =>
-	typeof obj === "function" && !!obj.prototype.constructor.name;
 
 export const registerEntity = (
 	factory: EntityConstructor | EntityFactory,

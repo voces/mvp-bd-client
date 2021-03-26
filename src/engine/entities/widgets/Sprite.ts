@@ -1,3 +1,4 @@
+import type { Component } from "../../../core/Component";
 import type { Emitter } from "../../../core/emitter";
 import { emitter } from "../../../core/emitter";
 import type { EntityID } from "../../../core/Entity";
@@ -229,6 +230,36 @@ class Sprite extends Widget {
 			health: this.health,
 			owner: this.owner?.id,
 		};
+	}
+
+	static fromJSON({
+		components,
+		type,
+		owner: ownerId,
+		...data
+	}: ReturnType<Sprite["toJSON"]>): Sprite {
+		console.log(data, this);
+		const map = components.reduce((map, component) => {
+			if (!map[component.type]) map[component.type] = [];
+			map[component.type]!.push(component);
+			return map;
+		}, {} as { [key: string]: ReturnType<Component["toJSON"]>[] | undefined });
+
+		const position = map.Position?.[0] ?? { x: 0, y: 0 };
+		const x = typeof position.x === "number" ? position.x : 0;
+		const y = typeof position.y === "number" ? position.y : 0;
+
+		const game = currentGame();
+
+		const owner =
+			ownerId === undefined
+				? undefined
+				: game.players.find((p) => p.id === ownerId);
+		if (!owner) debugger;
+
+		// return new this({ x, y, owner, ...data });
+		const entity = Object.assign(Object.create(this.prototype), data);
+		console.log(entity);
 	}
 }
 

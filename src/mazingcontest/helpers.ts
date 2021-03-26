@@ -53,3 +53,9 @@ export const getCheckpoint = (i: number): Checkpoint | undefined =>
 		(s): s is Checkpoint =>
 			isCheckpoint(s) && s.get(ForPlayer)[0]?.player?.color?.index === i,
 	);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isConstructor = <C extends new (...args: any[]) => unknown>(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+	obj: any,
+): obj is C => typeof obj === "function" && !!obj.prototype.constructor.name;

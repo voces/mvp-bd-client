@@ -7,6 +7,7 @@ import { PathingMap } from "../engine/pathing/PathingMap";
 import { nextColor } from "../engine/players/colors";
 import { registerNetworkedActionListeners } from "./actions";
 import { entityRegistry } from "./entities/registry";
+import { isConstructor } from "./helpers";
 import { withMazingContest } from "./mazingContestContext";
 import type {
 	ConnectionEvent,
@@ -14,6 +15,10 @@ import type {
 	NetworkEventCallback,
 } from "./MazingContestNetwork";
 import { MainLogic } from "./mechanisms/MainLogic";
+import {
+	getAlliedPlaceholderPlayer,
+	getEnemyPlaceholderPlayer,
+} from "./players/placeholder";
 import { patchInState, Player } from "./players/Player";
 import { BuildWatcher } from "./systems/BuildWatcher";
 import { RunnerTracker } from "./systems/RunnerTracker";
@@ -79,12 +84,22 @@ class MazingContest extends Game {
 
 		patchInState(this, state.players);
 
+		// Make sure neutrals exist!
+		getAlliedPlaceholderPlayer();
+		getEnemyPlaceholderPlayer();
+
 		for (const entity of state.entities) {
 			if (entity.id === "TERRAIN") continue;
 
 			if (typeof entity.type === "string") {
 				const factory = entityRegistry[entity.type];
-				console.log(entity.type, factory);
+				if (!factory) continue;
+				if (isConstructor(factory)) {
+					if ("fromJSON" in factory)
+						if (typeof factory.fromJSON === "function")
+							factory.fromJSON(entity);
+						else new factory(entity);
+				} else factory(entity);
 			}
 		}
 	};
