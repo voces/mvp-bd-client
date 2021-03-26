@@ -257,8 +257,8 @@ class Sprite extends Widget {
 				: game.players.find((p) => p.id === ownerId);
 		if (!owner) debugger;
 
-		// return new this({ x, y, owner, ...data });
-		const entity = Object.assign(Object.create(this.prototype), data);
+		return new this({ x, y, owner, ...data });
+		// const entity = Object.create(this.prototype);
 		console.log(entity);
 	}
 }

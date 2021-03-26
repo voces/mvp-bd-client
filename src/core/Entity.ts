@@ -10,7 +10,7 @@ export class Entity {
 
 	private map = new Map<ComponentConstructor, Component[]>();
 
-	constructor(id?: EntityID) {
+	constructor(id?: EntityID, components?: ReturnType<Component["toJSON"]>[]) {
 		this.id = id ?? currentApp().entityId++;
 	}
 

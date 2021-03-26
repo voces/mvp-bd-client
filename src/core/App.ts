@@ -145,6 +145,25 @@ export class App {
 		this.lastRender = thisRender;
 	}
 
+	componentTypes(): IterableIterator<
+		ComponentConstructor<Component<unknown[], Entity>>
+	> {
+		const componentTypes = this.componentUpdateMap.keys();
+
+		const iterator = {
+			next: () => {
+				for (const value of componentTypes)
+					if (!("isNoComponent" in value)) yield value;
+			},
+			*[Symbol.iterator]() {
+				for (const value of componentTypes)
+					if (!("isNoComponent" in value)) yield value;
+			},
+		};
+
+		return iterator;
+	}
+
 	render(): void {
 		withApp(this, () => this._render());
 	}
