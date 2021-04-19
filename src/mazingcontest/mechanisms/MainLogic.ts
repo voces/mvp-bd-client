@@ -114,6 +114,7 @@ const derivedCallback = () => {
 export class MainLogic extends Mechanism {
 	phase: "idle" | "build" | "run" = "idle";
 	round?: {
+		players: number[];
 		buildStart: number;
 		runnerStart?: number;
 	};
@@ -141,7 +142,7 @@ export class MainLogic extends Mechanism {
 		});
 
 		for (const player of game.players) {
-			if (player.id < 0) continue;
+			if (!this.round.players.includes(player.id)) continue;
 			const u = new Runner({
 				...spawn(player.color!.index),
 				owner: getEnemyPlaceholderPlayer(),
@@ -164,7 +165,10 @@ export class MainLogic extends Mechanism {
 
 	private startRound(time: number, game: MazingContest) {
 		logLine("startRound", time);
-		this.round = { buildStart: time };
+		this.round = {
+			buildStart: time,
+			players: game.players.map((p) => p.id).filter((v) => v >= 0),
+		};
 
 		const gold = game.settings.thunderTowers
 			? Math.floor((game.random() * game.random()) ** (1 / 2) * 4)
