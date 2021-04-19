@@ -6,6 +6,7 @@ import { TimerWindow } from "../../engine/components/TimerWindow";
 import type { Unit } from "../../engine/entities/widgets/sprites/Unit";
 import { isUnit } from "../../engine/typeguards";
 import { ForPlayer } from "../components/ForPlayer";
+import { MainLogicTimerHook } from "../components/MainLogictimerHook";
 import { Block } from "../entities/Block";
 import { Builder } from "../entities/Builder";
 import { Checkpoint } from "../entities/Checkpoint";
@@ -76,8 +77,7 @@ const spawnUnits = (
 			entity.position.setXY(newPos.x, newPos.y);
 			game.pathingMap.addEntity(entity);
 
-			if (!isPathable(firstPlayerIndex))
-				entity.kill({ removeImmediately: true });
+			if (!isPathable(firstPlayerIndex)) entity.remove();
 			else {
 				new ForPlayer(entity, firstPlayer);
 				for (const player of game.players) {
@@ -92,7 +92,7 @@ const spawnUnits = (
 					game.pathingMap.addEntity(clone);
 				}
 			}
-		} else entity.kill({ removeImmediately: true });
+		} else entity.remove();
 	}
 };
 
@@ -106,6 +106,11 @@ const spawnThunders = (game: MazingContest) => {
 	spawnUnits(game, count, (props) => new Thunder(props));
 };
 
+const derivedCallback = () => {
+	const mazingContest = currentMazingContest();
+	return () => mazingContest.mainLogic.startRunners();
+};
+
 export class MainLogic extends Mechanism {
 	phase: "idle" | "build" | "run" = "idle";
 	round?: {
@@ -113,11 +118,18 @@ export class MainLogic extends Mechanism {
 		runnerStart?: number;
 	};
 	timer?: Entity;
+	derivedCallback: number;
+
+	constructor() {
+		super();
+		this.derivedCallback = Timer.registerDerviedCallback(derivedCallback);
+	}
 
 	startRunners(): void {
 		if (!this.timer || !this.round) return;
 
 		const game = currentMazingContest();
+		logLine("startRunners", game.time);
 
 		game.remove(this.timer);
 		this.round.runnerStart = game.time;
@@ -134,6 +146,7 @@ export class MainLogic extends Mechanism {
 				...spawn(player.color!.index),
 				owner: getEnemyPlaceholderPlayer(),
 			});
+			new ForPlayer(u, player);
 			game.pathingMap.addEntity(u);
 
 			let lTarget = target(player.color!.index);
@@ -150,6 +163,7 @@ export class MainLogic extends Mechanism {
 	}
 
 	private startRound(time: number, game: MazingContest) {
+		logLine("startRound", time);
 		this.round = { buildStart: time };
 
 		const gold = game.settings.thunderTowers
@@ -199,10 +213,15 @@ export class MainLogic extends Mechanism {
 		this.timer = new Entity();
 		new Timer(
 			this.timer,
-			() => this.startRunners(),
+			derivedCallback(),
 			game.settings.buildTime,
+			false,
+			true,
+			undefined,
+			this.derivedCallback,
 		);
 		new TimerWindow(this.timer, "Time remaining: ");
+		new MainLogicTimerHook(this.timer);
 		game.add(this.timer);
 	}
 

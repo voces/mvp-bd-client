@@ -108,8 +108,8 @@ const offsetMultiples = [
 
 export const levelSize = { width: 36, height: 36 };
 export const offset = (i: number): Point => ({
-	x: offsetMultiples[i].x * levelSize.width,
-	y: offsetMultiples[i].y * levelSize.height,
+	x: offsetMultiples[i].x * (levelSize.width + 2),
+	y: offsetMultiples[i].y * (levelSize.height + 2),
 });
 export const center = (i: number): Point => {
 	const lOffset = offset(i);

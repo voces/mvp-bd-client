@@ -6,6 +6,8 @@ import { isEntity } from "../typeguards";
 import type { Mutable } from "../types";
 
 export class Position extends Component<[number, number, { zOffset: number }]> {
+	static argMap = ["x", "y"];
+
 	static setXY(
 		entity: Entity,
 		x: number,

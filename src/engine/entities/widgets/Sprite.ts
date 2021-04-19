@@ -1,4 +1,4 @@
-import type { Component } from "../../../core/Component";
+import type { Component, ComponentConstructor } from "../../../core/Component";
 import type { Emitter } from "../../../core/emitter";
 import { emitter } from "../../../core/emitter";
 import type { EntityID } from "../../../core/Entity";
@@ -11,7 +11,7 @@ import { MeshBuilderComponent } from "../../components/graphics/MeshBuilderCompo
 import { HoldPositionComponent } from "../../components/HoldPositionComponent";
 import { Hover } from "../../components/Hover";
 import { MoveTarget } from "../../components/MoveTarget";
-import type { Position } from "../../components/Position";
+import { Position } from "../../components/Position";
 import { Selected } from "../../components/Selected";
 import { PATHING_TYPES } from "../../constants";
 import { currentGame } from "../../gameContext";
@@ -55,6 +55,8 @@ export type SpriteEvents = {
 export type SpriteDefaultProps = Required<
 	Pick<SpriteProps, "collisionRadius" | "meshBuilder">
 >;
+
+const spriteDerivedComponents = [Position.name, MeshBuilderComponent.name];
 
 class Sprite extends Widget {
 	static readonly isSprite = true;
@@ -238,18 +240,28 @@ class Sprite extends Widget {
 		owner: ownerId,
 		...data
 	}: ReturnType<Sprite["toJSON"]>): Sprite {
-		console.log(data, this);
-		const map = components.reduce((map, component) => {
-			if (!map[component.type]) map[component.type] = [];
-			map[component.type]!.push(component);
-			return map;
-		}, {} as { [key: string]: ReturnType<Component["toJSON"]>[] | undefined });
+		const game = currentGame();
+		const map = components.reduce(
+			(map, component) => {
+				if (!map[component.type])
+					map[component.type] = {
+						class: game.componentsMap[component.type],
+						components: [],
+					};
+				map[component.type]!.components.push(component);
+				return map;
+			},
+			{} as {
+				[key: string]: {
+					class: ComponentConstructor | undefined;
+					components: ReturnType<Component["toJSON"]>[];
+				};
+			},
+		);
 
-		const position = map.Position?.[0] ?? { x: 0, y: 0 };
+		const position = map.Position?.components[0] ?? { x: 0, y: 0 };
 		const x = typeof position.x === "number" ? position.x : 0;
 		const y = typeof position.y === "number" ? position.y : 0;
-
-		const game = currentGame();
 
 		const owner =
 			ownerId === undefined
@@ -257,9 +269,21 @@ class Sprite extends Widget {
 				: game.players.find((p) => p.id === ownerId);
 		if (!owner) debugger;
 
-		return new this({ x, y, owner, ...data });
-		// const entity = Object.create(this.prototype);
-		console.log(entity);
+		const entity = new this({ x, y, owner, ...data });
+
+		for (const { type, ...componentProps } of components.filter(
+			(c) => !spriteDerivedComponents.includes(c.type),
+		)) {
+			const constructor = game.componentsMap[type];
+			if (!constructor) {
+				console.warn(`Unable to hydrate unknown component ${type}`);
+				continue;
+			}
+			const args = constructor.argMap.map((k) => componentProps[k]);
+			constructor.fromJSON(entity, ...args, componentProps);
+		}
+
+		return entity;
 	}
 }
 

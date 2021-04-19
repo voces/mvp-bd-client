@@ -3,6 +3,7 @@ import { System } from "../../core/System";
 import { MoveTarget } from "../../engine/components/MoveTarget";
 import { ForPlayer } from "../components/ForPlayer";
 import { HasHitCheckpoint } from "../components/HitCheckpoint";
+import { IsDone } from "../components/IsDone";
 import type { Runner } from "../entities/Runner";
 import { currentMazingContest } from "../mazingContestContext";
 import { target } from "../terrain";
@@ -29,6 +30,13 @@ export class RunnerTracker extends System<Runner> {
 	}
 
 	get done(): boolean {
-		return Array.from(this).every((r) => r.idle && r.has(HasHitCheckpoint));
+		let done = true;
+		for (const runner of this)
+			if (runner.idle && runner.has(HasHitCheckpoint)) {
+				if (!runner.has(IsDone))
+					new IsDone(runner, currentMazingContest().time);
+			} else done = false;
+
+		return done;
 	}
 }

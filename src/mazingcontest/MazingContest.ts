@@ -1,4 +1,4 @@
-import type { Entity } from "../core/Entity";
+import { Entity } from "../core/Entity";
 import { logLine } from "../core/logger";
 import { Terrain } from "../engine/entities/Terrain";
 // eslint-disable-next-line no-restricted-imports
@@ -6,6 +6,9 @@ import { Game } from "../engine/Game";
 import { PathingMap } from "../engine/pathing/PathingMap";
 import { nextColor } from "../engine/players/colors";
 import { registerNetworkedActionListeners } from "./actions";
+import { ForPlayer } from "./components/ForPlayer";
+import { IsDone } from "./components/IsDone";
+import { MainLogicTimerHook } from "./components/MainLogictimerHook";
 import { entityRegistry } from "./entities/registry";
 import { isConstructor } from "./helpers";
 import { withMazingContest } from "./mazingContestContext";
@@ -33,7 +36,7 @@ class MazingContest extends Game {
 
 	settings: Settings = {
 		numberOfRounds: 10,
-		buildTime: 60,
+		buildTime: 6,
 		thunderTowers: true,
 		checkpoints: true,
 		tnt: true,
@@ -73,14 +76,18 @@ class MazingContest extends Game {
 			this.addSystem(new BuildWatcher());
 
 			registerNetworkedActionListeners();
+
+			this.registerComponent(ForPlayer);
+			this.registerComponent(MainLogicTimerHook);
+			this.registerComponent(IsDone);
 		});
 	}
 
 	private onInit: NetworkEventCallback["init"] = ({ connections, state }) => {
-		console.log("onInit", state);
 		if (connections === 0) this.synchronizationState = "synchronized";
 
 		this.mainLogic.round = state.round;
+		this.entityId = state.entityId;
 
 		patchInState(this, state.players);
 
@@ -100,7 +107,7 @@ class MazingContest extends Game {
 							factory.fromJSON(entity);
 						else new factory(entity);
 				} else factory(entity);
-			}
+			} else this.add(Entity.fromJSON(entity));
 		}
 	};
 
@@ -119,11 +126,28 @@ class MazingContest extends Game {
 		return player;
 	}
 
+	onPlayerLeave(player: Player): void {
+		super.onPlayerLeave(player);
+		player.sprites.forEach((s) => s.remove());
+
+		// Clear all entities, except terrain, if no players left
+		if (this.players.every((s) => s.id < 0)) {
+			for (const entity of this.entities)
+				if (entity.id !== "TERRAIN") this.remove(entity);
+			this.mainLogic.round = undefined;
+		}
+
+		// Otherwise clear out the player's entities
+		for (const entity of this.entities) {
+			const forPlayer = entity.get(ForPlayer)[0];
+			if (forPlayer && forPlayer.player === player) this.remove(entity);
+		}
+	}
+
 	private onState: NetworkEventCallback["state"] = ({
 		time,
-		state: { players, entities },
+		state: { players },
 	}) => {
-		console.log("onState", entities);
 		this.update({ time });
 
 		patchInState(this, players);
