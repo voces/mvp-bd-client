@@ -1,23 +1,34 @@
-import type { Entity } from "../../core/Entity";
+import type { Entity, EntityID } from "../../core/Entity";
 import { isConstructor } from "../helpers";
 
-interface EntityConstructor {
+interface EntityConstructor<E extends Entity> {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	new (...args: any[]): Entity;
-	fromJSON?: boolean | ((entity: ReturnType<Entity["toJSON"]>) => Entity);
+	new (...args: any[]): E;
+	fromJSON?: boolean | ((entity: ReturnType<E["toJSON"]>) => E);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type EntityFactory = (...args: any[]) => Entity;
+type EntityFactory = (props: {
+	[key: string]: unknown;
+	id: EntityID;
+	components: {
+		[key: string]: unknown;
+		type: string;
+	}[];
+}) => Entity;
 
-const _entityRegistry: Record<string, EntityConstructor | EntityFactory> = {};
+const _entityRegistry: Record<
+	string,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	EntityConstructor<any> | EntityFactory
+> = {};
 
 export const entityRegistry = _entityRegistry as Readonly<
 	typeof _entityRegistry
 >;
 
 export const registerEntity = (
-	factory: EntityConstructor | EntityFactory,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	factory: EntityConstructor<any> | EntityFactory,
 	name?: string,
 ): void => {
 	if (!name) if (isConstructor(factory)) name = factory.name;

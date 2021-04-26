@@ -3,8 +3,8 @@ import { logLine } from "../core/logger";
 import { Terrain } from "../engine/entities/Terrain";
 // eslint-disable-next-line no-restricted-imports
 import { Game } from "../engine/Game";
-import { PathingMap } from "../engine/pathing/PathingMap";
 import { nextColor } from "../engine/players/colors";
+import { PathingSystem } from "../engine/systems/PathingSystem";
 import { registerNetworkedActionListeners } from "./actions";
 import { ForPlayer } from "./components/ForPlayer";
 import { IsDone } from "./components/IsDone";
@@ -50,6 +50,7 @@ class MazingContest extends Game {
 
 	mainLogic!: MainLogic;
 	runnerTracker!: RunnerTracker;
+	pathingSystem!: PathingSystem;
 
 	constructor(network: MazingContestNetwork) {
 		super(network);
@@ -66,7 +67,7 @@ class MazingContest extends Game {
 				{ x: levelSize.height / 2, y: levelSize.width / 2 - 7 },
 				0,
 			);
-			this.pathingMap = new PathingMap({
+			this.pathingSystem = new PathingSystem({
 				pathing: terrain.pathing,
 				layers: terrain.pathingCliffs.slice().reverse(),
 				resolution: 2,
@@ -107,6 +108,7 @@ class MazingContest extends Game {
 							factory.fromJSON(entity);
 						else new factory(entity);
 				} else factory(entity);
+				// Entity doesn't auto-add to App (Sprite does)
 			} else this.add(Entity.fromJSON(entity));
 		}
 	};

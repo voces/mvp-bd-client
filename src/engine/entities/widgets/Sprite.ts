@@ -11,6 +11,7 @@ import { MeshBuilderComponent } from "../../components/graphics/MeshBuilderCompo
 import { HoldPositionComponent } from "../../components/HoldPositionComponent";
 import { Hover } from "../../components/Hover";
 import { MoveTarget } from "../../components/MoveTarget";
+import { PathingComponent } from "../../components/PathingComponent";
 import { Position } from "../../components/Position";
 import { Selected } from "../../components/Selected";
 import { PATHING_TYPES } from "../../constants";
@@ -176,12 +177,12 @@ class Sprite extends Widget {
 
 		this.clear(Selected);
 		this.clear(Hover);
+		this.clear(PathingComponent);
 
 		if (this.owner) {
 			const index = this.owner.sprites.indexOf(this);
 			if (index >= 0) this.owner.sprites.splice(index, 1);
 		}
-		game.pathingMap.removeEntity(this);
 		// const index = this.round.sprites.indexOf(this);
 		// if (index >= 0) this.round.sprites.splice(index, 1);
 
@@ -198,7 +199,6 @@ class Sprite extends Widget {
 		this.dispatchEvent("remove");
 		if (!callInitializedFromApp) game.remove(this);
 		this.removeEventListeners();
-		game.pathingMap.removeEntity(this);
 
 		if (this.owner) {
 			const index = this.owner.sprites.indexOf(this);
@@ -267,7 +267,6 @@ class Sprite extends Widget {
 			ownerId === undefined
 				? undefined
 				: game.players.find((p) => p.id === ownerId);
-		if (!owner) debugger;
 
 		const entity = new this({ x, y, owner, ...data });
 

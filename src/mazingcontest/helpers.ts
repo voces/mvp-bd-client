@@ -18,7 +18,7 @@ export const isPathable = (i: number): boolean => {
 	if (game.settings.checkpoints) {
 		const checkpoint = getCheckpoint(i);
 		if (!checkpoint) return false;
-		const path = game.pathingMap.path(
+		const path = game.pathingSystem.path(
 			finalSpawnEntity,
 			checkpoint.position,
 		);
@@ -29,7 +29,7 @@ export const isPathable = (i: number): boolean => {
 		)
 			return false;
 
-		const path2 = game.pathingMap.path(
+		const path2 = game.pathingSystem.path(
 			{ ...spawnEntity, ...spawn(i) },
 			lTarget,
 			checkpoint.position,
@@ -41,7 +41,7 @@ export const isPathable = (i: number): boolean => {
 		);
 	}
 
-	const path = game.pathingMap.path(finalSpawnEntity, lTarget);
+	const path = game.pathingSystem.path(finalSpawnEntity, lTarget);
 	const last = path[path.length - 1];
 	return (
 		Math.abs(last.x - lTarget.x) < 0.1 && Math.abs(last.y - lTarget.y) < 0.1

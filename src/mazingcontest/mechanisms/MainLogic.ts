@@ -1,6 +1,7 @@
 import { Entity } from "../../core/Entity";
 import { logLine } from "../../core/logger";
 import { Mechanism } from "../../core/Merchanism";
+import { PathingComponent } from "../../engine/components/PathingComponent";
 import { Timer } from "../../engine/components/Timer";
 import { TimerWindow } from "../../engine/components/TimerWindow";
 import type { Unit } from "../../engine/entities/widgets/sprites/Unit";
@@ -36,8 +37,8 @@ const spawnCheckpoint = (game: MazingContest) => {
 	});
 	new ForPlayer(entity, firstPlayer);
 
-	const newPos = game.pathingMap.nearestSpiralPathing(x, y, entity);
-	if (game.pathingMap.pathable(entity, x, y)) {
+	const newPos = game.pathingSystem.nearestSpiralPathing(x, y, entity);
+	if (game.pathingSystem.pathable(entity, x, y)) {
 		entity.position.setXY(newPos.x, newPos.y);
 
 		for (const player of game.players) {
@@ -71,11 +72,11 @@ const spawnUnits = (
 			owner: getAlliedPlaceholderPlayer(),
 		});
 
-		const newPos = game.pathingMap.nearestSpiralPathing(x, y, entity);
+		const newPos = game.pathingSystem.nearestSpiralPathing(x, y, entity);
 
-		if (game.pathingMap.pathable(entity, newPos.x, newPos.y)) {
+		if (game.pathingSystem.pathable(entity, newPos.x, newPos.y)) {
 			entity.position.setXY(newPos.x, newPos.y);
-			game.pathingMap.addEntity(entity);
+			new PathingComponent(entity);
 
 			if (!isPathable(firstPlayerIndex)) entity.remove();
 			else {
@@ -89,7 +90,7 @@ const spawnUnits = (
 						owner: getAlliedPlaceholderPlayer(),
 					});
 					new ForPlayer(clone, player);
-					game.pathingMap.addEntity(clone);
+					new PathingComponent(clone);
 				}
 			}
 		} else entity.remove();
@@ -148,7 +149,7 @@ export class MainLogic extends Mechanism {
 				owner: getEnemyPlaceholderPlayer(),
 			});
 			new ForPlayer(u, player);
-			game.pathingMap.addEntity(u);
+			new PathingComponent(u);
 
 			let lTarget = target(player.color!.index);
 			if (game.settings.checkpoints) {
@@ -202,6 +203,7 @@ export class MainLogic extends Mechanism {
 				...center(owner.color!.index),
 				owner,
 			});
+			new PathingComponent(u);
 
 			if (owner === game.localPlayer) {
 				game.selectionSystem.select(u);
