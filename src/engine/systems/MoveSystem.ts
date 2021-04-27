@@ -39,7 +39,6 @@ export class MoveSystem extends System<MovingSprite> {
 		retry = true,
 	): void {
 		const moveTarget = entity.get(MoveTarget)[0];
-		console.log("MoveSystem#update", entity.id, moveTarget);
 		if (!moveTarget) return this.remove(entity);
 
 		const pathingSystem = currentGame().pathingSystem!;
@@ -50,7 +49,6 @@ export class MoveSystem extends System<MovingSprite> {
 
 		// Validate data
 		if (isNaN(x) || isNaN(y)) {
-			console.log("clearing1");
 			entity.clear(moveTarget);
 			throw new Error(`Returning NaN location x=${x} y=${y}`);
 		}
@@ -61,7 +59,6 @@ export class MoveSystem extends System<MovingSprite> {
 
 		// We've reached the end
 		if (moveTarget.path.distance < moveTarget.progress) {
-			console.log("clearing2");
 			entity.clear(moveTarget);
 			return;
 		}

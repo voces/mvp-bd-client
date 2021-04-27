@@ -290,7 +290,6 @@ export const calcAndTweenShortenedPath = (
 		: pathingSystem.withoutEntity(target, () =>
 				pathingSystem.path(entity, targetPoint),
 		  );
-	console.log(path);
 
 	// Check how far we are away from the target and get remaining distance
 	// E.g., if we don't make it to the target, we don't need to shorten (as

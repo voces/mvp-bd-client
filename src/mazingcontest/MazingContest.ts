@@ -71,7 +71,7 @@ class MazingContest extends Game {
 				pathing: terrain.pathing,
 				layers: terrain.pathingCliffs.slice().reverse(),
 				resolution: 2,
-			});
+			}).addToApp(this);
 			this.mainLogic = new MainLogic().addToApp(this);
 			this.runnerTracker = new RunnerTracker().addToApp(this);
 			this.addSystem(new BuildWatcher());

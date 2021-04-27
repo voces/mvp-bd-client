@@ -27,25 +27,6 @@ const isPathingMapEntity = (
 	return true;
 };
 
-const getPathingMapEntity = (
-	entity: Entity | PathingMapEntity,
-	requirePathingEntity = true,
-): PathingMapEntity => {
-	const pathingEntity =
-		entity instanceof Entity ? entity.get(PathingEntity)[0] : undefined;
-
-	if (pathingEntity) return pathingEntity;
-
-	if (requirePathingEntity)
-		throw new Error("Expected an entity with a PathingEntity component");
-
-	if (isPathingMapEntity(entity)) return entity;
-
-	throw new Error(
-		"Expected an entity with a PathingEntity component or to be a PathingMapEntity",
-	);
-};
-
 export class PathingSystem extends System {
 	static components = [Position, PathingComponent];
 
@@ -55,6 +36,7 @@ export class PathingSystem extends System {
 	readonly layer: PathingMap["layer"];
 	readonly grid: PathingMap["grid"];
 
+	private readonly componentMap = new Map<Entity, PathingEntity>();
 	private readonly pathingMap: PathingMap;
 
 	constructor(terrain: ConstructorParameters<typeof PathingMap>[0]) {
@@ -77,17 +59,43 @@ export class PathingSystem extends System {
 		let obstruction;
 		if (isObstruction(entity)) obstruction = entity;
 
-		const pathingEntity = new PathingEntity(entity, {
-			collisionRadius: sprite?.collisionRadius ?? 0,
-			blocksPathing: sprite?.blocksPathing ?? 0,
-			blocksTilemap: obstruction?.blocksTilemap,
-			requiresPathing: sprite?.requiresPathing ?? 0,
-			requiresTilemap: obstruction?.requiresTilemap,
-			structure: obstruction?.structure ?? false,
-			x: () => entity.get(Position)[0]!.x,
-			y: () => entity.get(Position)[0]!.y,
-		});
+		const pathingEntity =
+			entity.get(PathingEntity)[0] ??
+			new PathingEntity(entity, {
+				collisionRadius: sprite?.collisionRadius ?? 0,
+				blocksPathing: sprite?.blocksPathing ?? 0,
+				blocksTilemap: obstruction?.blocksTilemap,
+				requiresPathing: sprite?.requiresPathing ?? 0,
+				requiresTilemap: obstruction?.requiresTilemap,
+				structure: obstruction?.structure ?? false,
+				x: () => entity.get(Position)[0]!.x,
+				y: () => entity.get(Position)[0]!.y,
+			});
+		this.componentMap.set(entity, pathingEntity);
 		this.pathingMap.addEntity(pathingEntity);
+	}
+
+	private getPathingMapEntity(
+		entity: Entity | PathingMapEntity,
+		requirePathingEntity = true,
+	): PathingMapEntity {
+		const pathingEntity =
+			entity instanceof Entity
+				? entity.get(PathingEntity)[0] ?? this.componentMap.get(entity)
+				: undefined;
+
+		if (pathingEntity) return pathingEntity;
+
+		if (requirePathingEntity)
+			throw new Error(
+				"Expected an entity with a PathingEntity component",
+			);
+
+		if (isPathingMapEntity(entity)) return entity;
+
+		throw new Error(
+			"Expected an entity with a PathingEntity component or to be a PathingMapEntity",
+		);
 	}
 
 	onRemoveEntity(entity: Entity): void {
@@ -96,11 +104,16 @@ export class PathingSystem extends System {
 			if (!pathingEntity) continue;
 			this.pathingMap.removeEntity(pathingEntity);
 		}
+
+		const pathingEntity = this.componentMap.get(entity);
+		if (pathingEntity) this.pathingMap.removeEntity(pathingEntity);
+
+		this.componentMap.delete(entity);
 	}
 
 	pathable(entity: Entity, x: number, y: number): boolean {
 		return this.pathingMap.pathable(
-			getPathingMapEntity(entity, false),
+			this.getPathingMapEntity(entity, false),
 			x,
 			y,
 		);
@@ -115,7 +128,7 @@ export class PathingSystem extends System {
 		return this.pathingMap.nearestSpiralPathing(
 			xWorld,
 			yWorld,
-			getPathingMapEntity(entity, false),
+			this.getPathingMapEntity(entity, false),
 			layer,
 		);
 	}
@@ -125,11 +138,18 @@ export class PathingSystem extends System {
 		target: Point,
 		start?: Point,
 	): Point[] {
-		return this.pathingMap.path(getPathingMapEntity(entity, false), target, start);
+		return this.pathingMap.path(
+			this.getPathingMapEntity(entity, false),
+			target,
+			start,
+		);
 	}
 
 	withoutEntity<A>(entity: Entity, fn: () => A): A {
-		return this.pathingMap.withoutEntity(getPathingMapEntity(entity), fn);
+		return this.pathingMap.withoutEntity(
+			this.getPathingMapEntity(entity),
+			fn,
+		);
 	}
 
 	recheck(
@@ -140,7 +160,7 @@ export class PathingSystem extends System {
 	): boolean {
 		return this.pathingMap.recheck(
 			path,
-			getPathingMapEntity(entity),
+			this.getPathingMapEntity(entity),
 			amount,
 			offset,
 		);

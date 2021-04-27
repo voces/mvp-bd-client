@@ -7,6 +7,7 @@ import { TimerWindow } from "../../engine/components/TimerWindow";
 import type { Unit } from "../../engine/entities/widgets/sprites/Unit";
 import { isUnit } from "../../engine/typeguards";
 import { ForPlayer } from "../components/ForPlayer";
+import { IsDone } from "../components/IsDone";
 import { MainLogicTimerHook } from "../components/MainLogictimerHook";
 import { Block } from "../entities/Block";
 import { Builder } from "../entities/Builder";
@@ -22,6 +23,7 @@ import {
 } from "../players/placeholder";
 import type { Player } from "../players/Player";
 import { center, offset, spawn, target } from "../terrain";
+import { isRunner } from "../typeguards";
 
 const spawnCheckpoint = (game: MazingContest) => {
 	const firstPlayer = game.players.find((p) => p.id >= 0)!;
@@ -40,6 +42,7 @@ const spawnCheckpoint = (game: MazingContest) => {
 	const newPos = game.pathingSystem.nearestSpiralPathing(x, y, entity);
 	if (game.pathingSystem.pathable(entity, x, y)) {
 		entity.position.setXY(newPos.x, newPos.y);
+		new PathingComponent(entity);
 
 		for (const player of game.players) {
 			if (player.id <= firstPlayer.id) continue;
@@ -50,6 +53,7 @@ const spawnCheckpoint = (game: MazingContest) => {
 				owner: entity.owner,
 			});
 			new ForPlayer(clone, player);
+			new PathingComponent(clone);
 		}
 	} else throw new Error("Unable to place Checkpooint!");
 };
@@ -235,7 +239,16 @@ export class MainLogic extends Mechanism {
 		if (!this.round) return;
 
 		if (this.round.runnerStart)
-			logLine("endRound", game.time - this.round.runnerStart);
+			logLine(
+				"endRound",
+				game.time - this.round.runnerStart,
+				game.entities
+					.filter((e) => isRunner(e))
+					.map(
+						(e) =>
+							e.get(IsDone)[0]!.time - this.round!.runnerStart!,
+					),
+			);
 
 		this.round = undefined;
 		game.entities.forEach((v) => isUnit(v) && v.kill());
