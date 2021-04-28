@@ -26,21 +26,12 @@ import { patchInState, Player } from "./players/Player";
 import { BuildWatcher } from "./systems/BuildWatcher";
 import { RunnerTracker } from "./systems/RunnerTracker";
 import { levelSize, terrain } from "./terrain";
-import type { Settings } from "./types";
 
 class MazingContest extends Game {
 	static readonly isMazingContest = true;
 
 	localPlayer!: Player;
 	players: Player[] = [];
-
-	settings: Settings = {
-		numberOfRounds: 10,
-		buildTime: 6,
-		thunderTowers: true,
-		checkpoints: true,
-		tnt: true,
-	};
 
 	addNetworkListener!: MazingContestNetwork["addEventListener"];
 	removeNetworkListener!: MazingContestNetwork["removeEventListener"];

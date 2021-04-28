@@ -13,6 +13,7 @@ export class Builder extends Unit {
 		builds: [Block, Thunder],
 		collisionRadius: 0.5,
 		requiresPathing: 0,
+		blocksPathing: 0,
 		speed: 25,
 		zOffset: 2,
 	};

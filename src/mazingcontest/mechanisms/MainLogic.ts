@@ -156,14 +156,12 @@ export class MainLogic extends Mechanism {
 			new PathingComponent(u);
 
 			let lTarget = target(player.color!.index);
-			if (game.settings.checkpoints) {
-				const checkpoint = getCheckpoint(player.color!.index);
-				if (checkpoint)
-					lTarget = {
-						x: checkpoint.position.x,
-						y: checkpoint.position.y,
-					};
-			}
+			const checkpoint = getCheckpoint(player.color!.index);
+			if (checkpoint)
+				lTarget = {
+					x: checkpoint.position.x,
+					y: checkpoint.position.y,
+				};
 			u.walkTo(lTarget);
 		}
 	}
@@ -175,9 +173,7 @@ export class MainLogic extends Mechanism {
 			players: game.players.map((p) => p.id).filter((v) => v >= 0),
 		};
 
-		const gold = game.settings.thunderTowers
-			? Math.floor((game.random() * game.random()) ** (1 / 2) * 4)
-			: 0;
+		const gold = Math.floor((game.random() * game.random()) ** (1 / 2) * 4);
 		const lumber = Math.ceil(
 			(game.random() * game.random()) ** (1 / 2) * 35,
 		);
@@ -215,7 +211,7 @@ export class MainLogic extends Mechanism {
 			}
 		}
 
-		if (game.settings.checkpoints) spawnCheckpoint(game);
+		spawnCheckpoint(game);
 
 		spawnBlocks(game);
 		spawnThunders(game);
@@ -224,7 +220,7 @@ export class MainLogic extends Mechanism {
 		new Timer(
 			this.timer,
 			derivedCallback(),
-			game.settings.buildTime,
+			30, // build time
 			false,
 			true,
 			undefined,

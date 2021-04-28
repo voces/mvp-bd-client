@@ -29,7 +29,7 @@ export class BuildWatcher extends System<Obstruction> {
 					"Expected obstruction to be a real player or have a ForPlayer",
 				);
 
-			if (isPathable(pId) || !obstruction.isAlive) return;
+			if (isPathable(pId)) return;
 
 			obstruction.kill();
 

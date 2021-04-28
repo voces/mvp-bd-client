@@ -22,9 +22,6 @@ export class RunnerTracker extends System<Runner> {
 
 		new HasHitCheckpoint(entity);
 
-		const game = currentMazingContest();
-		if (!game.settings.checkpoints) return;
-
 		const pIdx = entity.get(ForPlayer)[0]?.player.color?.index;
 		if (pIdx !== undefined) entity.walkTo(target(pIdx));
 	}
