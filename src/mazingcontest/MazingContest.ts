@@ -3,6 +3,7 @@ import { logLine } from "../core/logger";
 import { Terrain } from "../engine/entities/Terrain";
 // eslint-disable-next-line no-restricted-imports
 import { Game } from "../engine/Game";
+import type { Alliances } from "../engine/mechanisms/Alliances";
 import { nextColor } from "../engine/players/colors";
 import { PathingSystem } from "../engine/systems/PathingSystem";
 import { registerNetworkedActionListeners } from "./actions";
@@ -75,19 +76,24 @@ class MazingContest extends Game {
 		});
 	}
 
-	private onInit: NetworkEventCallback["init"] = ({ connections, state }) => {
+	private onInit: NetworkEventCallback["init"] = ({
+		connections,
+		state: { round, entityId, players, entities, alliances },
+	}) => {
 		if (connections === 0) this.synchronizationState = "synchronized";
 
-		this.mainLogic.round = state.round;
-		this.entityId = state.entityId;
+		this.mainLogic.round = round;
+		this.entityId = entityId;
 
-		patchInState(this, state.players);
+		patchInState(this, players);
 
 		// Make sure neutrals exist!
 		getAlliedPlaceholderPlayer();
 		getEnemyPlaceholderPlayer();
 
-		for (const entity of state.entities) {
+		this.alliances.fromJSON(alliances);
+
+		for (const entity of entities) {
 			if (entity.id === "TERRAIN") continue;
 
 			if (typeof entity.type === "string") {
@@ -125,6 +131,7 @@ class MazingContest extends Game {
 
 		// Clear all entities, except terrain, if no players left
 		if (this.players.every((s) => s.id < 0)) {
+			logLine("abort round");
 			for (const entity of this.entities)
 				if (entity.id !== "TERRAIN") this.remove(entity);
 			this.mainLogic.round = undefined;
@@ -173,12 +180,14 @@ class MazingContest extends Game {
 		players: ReturnType<Player["toJSON"]>[];
 		entities: ReturnType<Entity["toJSON"]>[];
 		round: MainLogic["round"];
+		alliances: ReturnType<Alliances["toJSON"]>;
 	} {
 		return {
 			...super.toJSON(),
 			players: this.players.map((p) => p.toJSON()),
 			entities: this.entities.map((e) => e.toJSON()),
 			round: this.mainLogic.round,
+			alliances: this.alliances.toJSON(),
 		};
 	}
 }
