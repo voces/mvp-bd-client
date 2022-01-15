@@ -19,7 +19,7 @@
   "main": "server/src/index.js",
   "dependencies": {
     "@types/three": "^0.126.1",
-    "marked": "^2.0.1",
+    "marked": "^4.0.10",
     "notextures": "^4.0.3",
     "preact": "^10.5.8",
     "three": "^0.126.1"
