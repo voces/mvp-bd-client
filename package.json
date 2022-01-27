@@ -22,7 +22,7 @@
     "marked": "^2.0.1",
     "notextures": "^4.0.3",
     "preact": "^10.5.8",
-    "three": "^0.126.1"
+    "three": "^0.137.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.12.11",
